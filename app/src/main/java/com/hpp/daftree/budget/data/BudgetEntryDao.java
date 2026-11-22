@@ -1,0 +1,88 @@
+package com.hpp.daftree.budget.data;
+
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
+import androidx.room.Query;
+import androidx.room.Update;
+
+import java.util.List;
+
+@Dao
+public interface BudgetEntryDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    long insert(BudgetEntry entry);
+
+    @Update
+    void update(BudgetEntry entry);
+
+    @Query("SELECT * FROM budget_entries WHERE id = :id LIMIT 1")
+    BudgetEntry getByIdSync(int id);
+
+    @Query("SELECT * FROM budget_entries WHERE firestoreId = :firestoreId LIMIT 1")
+    BudgetEntry getByFirestoreIdSync(String firestoreId);
+
+    @Query("UPDATE budget_entries SET isDeleted = 1, syncStatus = 'DELETED', deleteDate = :now, lastModified = :now WHERE id = :id")
+    void softDeleteById(int id, long now);
+
+    @Query("SELECT e.id AS id, e.firestoreId AS firestoreId, e.categoryId AS categoryId, " +
+            "e.currencyId AS currencyId, e.type AS type, e.amount AS amount, e.note AS note, " +
+            "e.entryDate AS entryDate, e.yearMonth AS yearMonth, " +
+            "c.code AS categoryCode, c.name AS categoryName, c.isDefault AS categoryIsDefault, " +
+            "c.iconKey AS categoryIconKey, c.colorHex AS categoryColorHex " +
+            "FROM budget_entries e " +
+            "LEFT JOIN budget_categories c ON e.categoryId = c.id " +
+            "WHERE e.yearMonth = :yearMonth AND e.currencyId = :currencyId AND e.isDeleted = 0 " +
+            "ORDER BY e.entryDate DESC, e.id DESC")
+    LiveData<List<BudgetEntryWithCategory>> getEntriesForMonth(String yearMonth, int currencyId);
+
+    @Query("SELECT e.id AS id, e.firestoreId AS firestoreId, e.categoryId AS categoryId, " +
+            "e.currencyId AS currencyId, e.type AS type, e.amount AS amount, e.note AS note, " +
+            "e.entryDate AS entryDate, e.yearMonth AS yearMonth, " +
+            "c.code AS categoryCode, c.name AS categoryName, c.isDefault AS categoryIsDefault, " +
+            "c.iconKey AS categoryIconKey, c.colorHex AS categoryColorHex " +
+            "FROM budget_entries e " +
+            "LEFT JOIN budget_categories c ON e.categoryId = c.id " +
+            "WHERE e.yearMonth = :yearMonth AND e.currencyId = :currencyId AND e.isDeleted = 0 " +
+            "ORDER BY e.entryDate DESC, e.id DESC")
+    List<BudgetEntryWithCategory> getEntriesForMonthSync(String yearMonth, int currencyId);
+
+    @Query("SELECT COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0) AS totalIncome, " +
+            "COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0) AS totalExpense, " +
+            "COUNT(*) AS entryCount " +
+            "FROM budget_entries " +
+            "WHERE yearMonth = :yearMonth AND currencyId = :currencyId AND isDeleted = 0")
+    LiveData<MonthSummaryStats> getMonthSummary(String yearMonth, int currencyId);
+
+    @Query("SELECT COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0) AS totalIncome, " +
+            "COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0) AS totalExpense, " +
+            "COUNT(*) AS entryCount " +
+            "FROM budget_entries " +
+            "WHERE yearMonth = :yearMonth AND currencyId = :currencyId AND isDeleted = 0")
+    MonthSummaryStats getMonthSummarySync(String yearMonth, int currencyId);
+
+    @Query("SELECT c.id AS categoryId, c.code AS categoryCode, c.name AS name, c.isDefault AS isDefault, " +
+            "c.iconKey AS iconKey, c.colorHex AS colorHex, " +
+            "COALESCE(SUM(e.amount), 0) AS totalAmount, COUNT(e.id) AS entryCount " +
+            "FROM budget_categories c " +
+            "LEFT JOIN budget_entries e ON e.categoryId = c.id " +
+            "AND e.yearMonth = :yearMonth AND e.currencyId = :currencyId " +
+            "AND e.type = 'EXPENSE' AND e.isDeleted = 0 " +
+            "WHERE c.type = 'EXPENSE' AND c.isDeleted = 0 " +
+            "GROUP BY c.id " +
+            "ORDER BY totalAmount DESC, c.sortOrder ASC")
+    LiveData<List<CategoryExpenseTotal>> getExpenseDistributionForMonth(String yearMonth, int currencyId);
+
+    @Query("SELECT yearMonth, " +
+            "COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0) AS totalIncome, " +
+            "COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0) AS totalExpense " +
+            "FROM budget_entries " +
+            "WHERE yearMonth IN (:yearMonths) AND currencyId = :currencyId AND isDeleted = 0 " +
+            "GROUP BY yearMonth ORDER BY yearMonth ASC")
+    LiveData<List<MonthlyTotals>> getMonthlyComparison(List<String> yearMonths, int currencyId);
+
+    @Query("SELECT * FROM budget_entries WHERE syncStatus != 'SYNCED'")
+    List<BudgetEntry> getUnsyncedEntriesSync();
+}

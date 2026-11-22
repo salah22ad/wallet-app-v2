@@ -1,0 +1,69 @@
+name: Debug CI - Budget Module
+
+on:
+  push:
+    branches: [ "feat/budget-module" ]
+  workflow_dispatch:
+
+jobs:
+  build-debug:
+    runs-on: ubuntu-latest
+    env:
+      TZ: "Asia/Aden"
+      JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21 with Gradle Cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Prepare Runner Environment (Debug Safe)
+        run: |
+          set -e
+          export ANDROID_HOME="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          {
+            echo "sdk.dir=${ANDROID_HOME}"
+            echo "FACEBOOK_APP_ID=${{ secrets.FACEBOOK_APP_ID || '1310377330875463' }}"
+            echo "FACEBOOK_CLIENT_TOKEN=${{ secrets.FACEBOOK_CLIENT_TOKEN || 'debug_placeholder_token' }}"
+          } > local.properties
+
+          sed -i 's/\r$//' gradlew gradle.properties app/build.gradle.kts 2>/dev/null || true
+          sed -i '/GRADLE_USER_HOME=F:/d' gradlew
+          chmod +x gradlew
+          rm -f gradle/gradle-daemon-jvm.properties
+
+          # فصل توقيع release عن buildType debug مؤقتاً داخل بيئة CI فقط
+          sed -i '/signingConfig = signingConfigs\.getByName("release")/d' app/build.gradle.kts
+
+          # ضبط الذاكرة وتعطيل configuration-cache على CI لتجنب تعارضات مؤقتة
+          sed -i '/^org\.gradle\.jvmargs=/d' gradle.properties
+          sed -i '/^org\.gradle\.configuration-cache=/d' gradle.properties
+          printf "\norg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=1024m -Dkotlin.daemon.jvm.options=-Xmx1536m -Dfile.encoding=UTF-8\norg.gradle.configuration-cache=false\n" >> gradle.properties
+
+      - name: Build Debug APK
+        run: |
+          set -o pipefail
+          mkdir -p build_logs
+          ./gradlew assembleDebug -x lint --max-workers=2 --stacktrace 2>&1 | tee build_logs/debug_build.log
+
+      - name: Publish Failure Summary
+        if: failure()
+        run: |
+          echo "## ❌ أخطاء بناء Debug" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          grep -i -E "error:|FAILURE:|What went wrong:|Execution failed|cannot find symbol|Caused by:" -C 3 build_logs/debug_build.log | head -n 120 >> $GITHUB_STEP_SUMMARY \vert{}\vert{} tail -n 60 build_logs/debug_build.log >>$GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Debug APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wallet-v2-debug-apk-${{ github.run_number }}
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 7
