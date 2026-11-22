@@ -1,0 +1,25 @@
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+
+# Log files
+*.log
+
+# Android Studio files
+.idea/
+*.iml
+*.iws
+
+# Device specific files
+captures/
+# تجاهل مجلد البناء داخل الموديول
+app/build/
+
+# تجاهل مجلد الإصدارات النهائية (APKs)
+app/release/
+
+# تجاهل أي ملفات تنتهي بصيغة apk أو aab في أي مكان
+*.apk
+*.aab

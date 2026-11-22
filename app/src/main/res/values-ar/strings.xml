@@ -1,0 +1,1863 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">محفظتي الذكية</string>
+    <string name="language_selection_title">اختر اللغة</string>
+    <string name="change_language">تغيير اللغة</string>
+    <string name="english">English</string>
+    <string name="arabic">العربية</string>
+    <string name="spanish">Español</string>
+    <string name="frances">Français</string>
+    <string name="deutsh">Deutsh</string>
+    <string name="turck">Türkçe</string>
+    <string name="russian">Русский</string>
+    <string name="select">اختر</string>
+    <string name="login_welcome_back">مرحباً بعودتك!</string>
+    <string name="login_email_hint">البريد الإلكتروني</string>
+    <string name="login_password_hint">كلمة المرور</string>
+    <string name="login_forgot_password">نسيت كلمة المرور؟</string>
+    <string name="login_button">تسجيل الدخول</string>
+    <string name="login_with_google">تسجيل الدخول بحساب Google</string>
+    <string name="login_no_account">ليس لديك حساب؟ <font color="#006492"><b>أنشئ حساباً</b></font></string>
+    <string name="share_report">مشاركةالتقرير PDF </string>
+    <string name="register_title">إنشاء حساب جديد</string>
+    <string name="register_name_hint">الاسم الكامل</string>
+    <string name="register_button">إنشاء الحساب</string>
+    <string name="register_already_have_account">لديك حساب بالفعل؟ <font color="#006492"><b>سجل الدخول</b></font></string>
+
+    <string name="forgot_password_title">إعادة تعيين كلمة المرور</string>
+    <string name="forgot_password_message">أدخل بريدك الإلكتروني المسجل لإرسال رابط إعادة التعيين.</string>
+    <string name="forgot_password_send_button">إرسال</string>
+    <string name="forgot_password_cancel_button">إلغاء</string>
+    <string name="error_name_required">الاسم مطلوب</string>
+    <string name="error_email_required">البريد الإلكتروني مطلوب</string>
+    <string name="error_invalid_email">صيغة البريد الإلكتروني غير صحيحة</string>
+    <string name="error_password_required">كلمة المرور مطلوبة</string>
+    <string name="error_password_short">كلمة المرور يجب أن تكون 6 أحرف على الأقل</string>
+
+    <string name="register_creating_account">جاري إنشاء الحساب...</string>
+    <string name="register_success">تم إنشاء الحساب بنجاح</string>
+    <string name="register_failed">فشل التسجيل. حاول مرة أخرى.</string>
+    <string name="login_success">تم تسجيل الدخول بنجاح</string>
+    <string name="error_auth_failed">فشل تسجيل الدخول. تحقق من بياناتك.</string>
+    <string name="error_google_signin_failed">فشل تسجيل الدخول عبر جوجل</string>
+    <string name="forgot_password_sent">تم إرسال رابط إعادة التعيين إلى بريدك الإلكتروني</string>
+    <string name="error_generic">حدث خطأ ما. يرجى المحاولة مرة أخرى.</string>
+    <string name="main_title_accounts">الحسابات</string>
+    <string name="fab_add_account_desc">إضافة حساب جديد</string>
+    <string name="add_transaction_desc">إضافة عملية</string>
+    <string name="summary_debit">إجمالي المبلغ عليك</string>
+    <string name="summary_credit">إجمالي المبلغ لك</string>
+
+    <string name="summary_debit_acc">إجمالي المبلغ عليه</string>
+    <string name="summary_credit_acc">إجمالي المبلغ له</string>
+    <string name="currency_local">محلي</string>
+    <string name="menu_filter">فلترة</string>
+    <string name="filter_all">كل الحسابات</string>
+    <string name="filter_suppliers">موردين</string>
+    <string name="filter_customers">عملاء</string>
+    <string name="filter_general">عام</string>
+    <string name="add_transaction_title">إضافة عملية </string>
+    <string name="add_new_transaction">إضافة عملية جديدة</string>
+    <string name="account_name_hint">اسم الحساب</string>
+    <string name="amount_hint">المبلغ</string>
+    <string name="details_hint">التفاصيل </string>
+    <string name="type_credit">له (دائن)</string>
+    <string name="type_debit">عليه (مدين)</string>
+    <string name="save_button">حفظ العملية</string>
+    <string name="recent_transactions_label">آخر العمليات</string>
+    <string name="create_new_account_title">إنشاء حساب جديد</string>
+    <string name="phone_number_hint">رقم الهاتف (اختياري)</string>
+    <string name="account_type_label">نوع الحساب:</string>
+    <string name="menu_search">بحث</string>
+    <string name="menu_export_pdf">تصدير PDF</string>
+    <string name="menu_more">المزيد</string>
+    <string name="menu_share_pdf">مشاركة كـ PDF</string>
+    <string name="menu_print">طباعة</string>
+    <string name="total_balance_label">الرصيد الإجمالي: </string>
+    <string name="send_sms_desc">إرسال رسالة نصية</string>
+    <string name="edit_phone_title">تعديل رقم الهاتف</string>
+    <string name="date_hint">التاريخ</string>
+    <string name="currency_dollar">دولار</string>
+    <string name="currency_saudi">سعودي</string>
+    <string name="error_account_name_not_triple">اسم الحساب يجب أن يكون ثلاثياً على الأقل</string>
+    <string name="edit_transaction_title">عرض / تعديل العملية</string>
+    <string name="edit">تعديل</string>
+    <string name="delete">حذف</string>
+    <string name="delete_confirmation_title">تأكيد الحذف</string>
+    <string name="delete_confirmation_message">هل أنت متأكد من حذف هذه العملية؟ لا يمكن التراجع عن هذا الإجراء.</string>
+    <string name="yes_delete">نعم، حذف</string>
+    <string name="cancel">إلغاء</string>
+    <string name="calculator">آلة حاسبة</string>
+    <string name="ok">موافق</string>
+    <string name="add_new_account_title">إضافة حساب جديد</string>
+    <string name="add_account">إضافة الحساب</string>
+    <string name="account_type_hint">نوع الحساب</string>
+    <string name="account_type_general">عام</string>
+    <string name="account_type_customer">عملاء</string>
+    <string name="account_type_supplier">موردين</string>
+    <string name="error_select_from_list">الرجاء اختيار حساب من القائمة الموجودة.</string>
+    <string name="error_account_name_length">يجب أن يتكون الإسم ثنائي على الأقل.</string>
+    <string name="error_account_exists">هذا الحساب موجود بالفعل.</string>
+
+    <string name="transaction_type_arrow">سهم نوع العملية</string>
+    <string name="action_add_transaction_for_account">إضافة عملية</string>
+    <string name="navigation_drawer_open">فتح قائمة التنقل</string>
+    <string name="navigation_drawer_close">إغلاق قائمة التنقل</string>
+    <string name="nav_header_desc">رأس التنقل</string>
+    <string name="nav_header_subtitle">البريد الإلكتروني للمستخدم</string>
+    <string name="menu_add_amount">إضافة مبلغ</string>
+    <string name="menu_report_total_amounts">تقرير- إجمالي المبالغ</string>
+    <string name="menu_report_detailed_amounts">تقرير- تفاصيل كل المبالغ</string>
+    <string name="menu_report_monthly_amounts">تقرير- إجمالي المبالغ شهرياً</string>
+    <string name="menu_report_categories">تقرير- إجمالي التصنيفات</string>
+    <string name="menu_report_account_movement">تقرير- حركة الحسابات</string>
+    <string name="menu_automatic_recurrence">التكرار التلقائي</string>
+    <string name="menu_data_management">إدارة البيانات</string>
+    <string name="menu_backup_data">حفظ نسخة احتياطية</string>
+    <string name="menu_restore_data">استرجاع قاعدة البيانات</string>
+    <string name="menu_restore_data_other">استرجاع من دفتر الحسابات</string>
+    <string name="menu_google_drive">جوجل درايف</string>
+    <string name="menu_app_settings">إعدادات التطبيق</string>
+    <string name="menu_settings">الإعدادات</string>
+    <string name="menu_contact_support">للتواصل والدعم</string>
+    <string name="menu_about_app">حول البرنامج</string>
+    <string name="menu_share_app">مشاركة البرنامج</string>
+    <string name="menu_exit">إغلاق التطبيق</string>
+    <string name="action_search">بحث</string>
+    <string name="action_notifications">الإشعارات</string>
+    <string name="app_logo">شعار التطبيق</string>
+
+    <string name="calculator_title">الآلة الحاسبة</string>
+    <string name="button_clear">مسح</string>
+    <string name="button_equals">=</string>
+    <string name="button_ok">موافق</string>
+    <string name="error_invalid_expression">تعبير غير صالح</string>
+    <string name="confirm_delete_account_title">تأكيد حذف الحساب</string>
+    <string name="confirm_delete_account_message">هل أنت متأكد أنك تريد حذف حساب %1$s؟ سيتم حذف جميع العمليات المرتبطة به.</string>
+    <string name="account_updated_successfully">تم تحديث الحساب بنجاح</string>
+    <string name="account_deleted_successfully">تم حذف الحساب بنجاح</string>
+    <string name="confirm_logout_title">تأكيد تسجيل الخروج</string>
+    <string name="confirm_logout_message">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
+    <string name="button_logout">تسجيل الخروج</string>
+    <string name="error_calculation">خطأ في الحساب</string>
+    <string name="error_text">خطأ</string>
+    <string name="button_cancel">إلغاء</string>
+    <string name="action_logout">تسجيل خروج</string>
+    <string name="setting_title">الإعدادات</string>
+    <string name="profile_title">البيانات الشخصية</string>
+    <string name="error_account_name_empty">لا يمكن ان يكون الاسم فارغ ..!</string>
+    <string name="currencies_title">العملات</string>
+    <string name="company_name">الشركة (اختياري)</string>
+    <string name="user_address">العنوان</string>
+    <string name="full_name">الاسم الكامل</string>
+    <string name="phone_no">رقم الهاتف</string>
+    <string name="email_address">البريد الإلكتروني</string>
+    <string name="save_changes">حفظ التغييرات</string>
+    <string name="accounts_type_title">الحسابات</string>
+    <string name="reports_title">إنشاء التقارير</string>
+    <string name="start_date_hint">من تاريخ</string>
+    <string name="end_date_hint">إلى تاريخ</string>
+    <string name="enter_password">أدخل كلمة المرور</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="confirm">تأكيد</string>
+    <string name="login">دخول</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="app_version_format">الإصدار: %d</string>
+    <string name="new_invoice_tit">فاتورة جديدة</string>
+    <string name="editr_invoice_tit">تعديل فاتورة</string>
+    <string name="item_default">إفتراضي</string>
+    <string name="notification_procedure">اضغط على زر \'بدء الخادم\' ثم أدخل العنوان التالي في متصفح الكمبيوتر (تأكد من أن الكمبيوتر والهاتف على نفس شبكة الواي فاي):</string>
+    <string name="start_server">بدء الخادم</string>
+    <string name="web_server_title">الاتصال بالسيرفر</string>
+    <string name="type_account_general">عام</string>
+    <string name="local_currency">محلي</string>
+    <string name="clients_account_type">عملاء</string>
+    <string name="error_deleted">لا يمكن حذف العنصر الافتراضي</string>
+    <string name="yes">نعم</string>
+    <string name="currency_deleted_successfully">تم حذف العمله بنجاح</string>
+    <string name="edite_name">الاسم</string>
+    <string name="edit_currency">تعديل عملة</string>
+    <string name="add_currency">إضافة عملة</string>
+    <string name="save">حفظ</string>
+    <string name="required_field">لا يمكن ان ان يكون الحقل فارغ</string>
+    <string name="currency_saved_successfully">تم الحفظ بنجاح</string>
+    <string name="error_name_length">يجب ان لا يتعدى الاسم عن كلمتين</string>
+    <string name="edit_account_type">تعديل تصنيف حساب</string>
+    <string name="add_account_type">إضافة تصنيف حساب</string>
+    <string name="no">لا</string>
+
+    <string name="menu_purchase_app">شراء التطبيق</string>
+    <string name="menu_watch_ad">مشاهدة إعلان </string>
+    <string name="menu_watch_ad2">مشاهدة إعلان</string>
+    <string name="menu_google_login">تسجيل الدخول بـ Google</string>
+    <string name="menu_logout">تسجيل الخروج</string>
+    <string name="menu_invite_friend">دعوة صديق</string>
+    <string name="enter_invinate_code">أدخل كود الدعوة هنا</string>
+    <string name="btn_undo">تراجع</string>
+    <string name="btn_erase">مسح</string>
+    <string name="phone_contact">هاتف</string>
+    <string name="whats_app_contact">واتساب</string>
+    <string name="email_contact">إيميل</string>
+    <string name="welcome_title">مرحباً بك في تطبيق </string>
+    <string name="welcome_description">تطبيق احترافي ، الحل الذكي والآمن لإدارة كل حساباتك وديونك مباشرة من جوالك. \n                  سهولة فائقة: واجهة بسيطة وذكية تمكنك من تسجيل أي عملية مالية في ثوانٍ،  وتصديرها إلى ملفات PDF منسقة \n                 إدارة شاملة للحسابات: أنشئ ملفًا لكل عميل، مورد، أو حساب شخصي وتتبع كل معاملاته بدقة.</string>
+    <string name="currency_description"> لانشاء عملة بلدك اوتوماتيكبا قم بتفعيل خيار الموقع الجغرافي مالم فسيتم إنشاء اول عمله باسم محلي يمكنك تعديل الاسم فيما بعد من خيار العملات بالقائمة الجانبية</string>
+    <string name="free_plan_info">الخطة المجانية: 500 عملية إنشاء  مجاناً!\n استمتع بجميع مميزات التطبيق مع 500 عملية مجانية للتجربة.</string>
+    <string name="license_info">💎 الترخيص الكامل:              \n  • شراء مدى الحياة بمبلغ 12 دولار - دفعة واحدة فقط                \n• إمكانية الاستخدام على جهازين                \n• عروض أسعار غير محدودة               \n• دعم فني مجاني                \n• تحديثات مستمرة\n</string>
+    <string name="contact_info">📞 للتواصل والاستفسارات:                \nهاتف: +967730036045 - +967780405427                \nواتساب: +967730036045 - +967780405427                \nبريد إلكتروني: haddad2inc@gmail.com\n</string>
+    <string name="developer_info">إنشاء وتطوير: المهندس صلاح أحمد الحداد</string>
+    <string name="phone_number_uri">tel:+967730036045</string>
+    <string name="whatsapp_uri">https://wa.me/+967730036045?text=</string>
+    <string name="email_uri">mailto:haddad2inc@gmail.com</string>
+    <string name="email_subject">السلام عليكم\nعندي استفسار حول تطبيق إنشاء عروض اسعار</string>
+    <string name="send_email_chooser_title">بواسطة تطبيق محفظتي الذكية</string>
+    <string name="info_same_trans">توجد عملية مشابهة تمامًا في نفس اليوم. هل أنت متأكد من رغبتك في حفظ هذه العملية أيضًا؟</string>
+    <string name="caution_titel">تحذير</string>
+    <string name="yes_save">نعم، حفظ</string>
+    <string name="wronge_currency">عملة غير صالحة، يرجى الاختيار من القائمة.</string>
+    <string name="details_required">يجب ادخال التفاصيل</string>
+    <string name="amount_required">المبلغ مطلوب</string>
+    <string name="wronge_account">الحساب غير صحيح, اختار من القائمة</string>
+    <string name="required">مطلوب</string>
+    <string name="cant_open_app">لا يمكن فتح التطبيق</string>
+    <string name="device_limit_exceeded_title">تحذير: تجاوز الحد الأقصى للأجهزة</string>
+    <string name="device_limit_exceeded_message">تم تسجيل الدخول بهذا الحساب على جهازين بالفعل\nللمتابعة يجب إزالة أحد الأجهزة أدناه:\n</string>
+    <string name="device_removal_instructions">اضغط على \'إزالة\' بجانب الجهاز الذي تريد إلغاء تسجيله\nأو اضغط \'متابعة كمجاني\' للدخول بخطة مجانية</string>
+    <string name="continue_as_free_user">متابعة كمجاني</string>
+    <string name="confirm_removal_title">تأكيد الحذف</string>
+    <string name="confirm_removal_message">\n    هل تريد إزالة الجهاز %1$s (معرّف: %2$s) من قائمة الأجهزة المصرح بها؟</string>
+    <string name="remove">إزالة</string>
+    <string name="device_removed_success">تم إزالةالجهاز بنجاح</string>
+    <string name="device_removal_failed">فشل في إزالة الجهاز</string>
+    <string name="not_specified">غير محدد</string>
+    <string name="purchase_code_instructions_part1">تفاصيل شراء الكود</string>
+
+    <string name="device_last_activate">آخر نشاط: </string>
+    <string name="device_name">Samsung Galaxy S21</string>
+    <string name="device_details">SM-G991B • Android 13</string>
+    <string name="remove_device">إزالة الجهاز</string>
+    <string name="login_now">سجل الدخول الان</string>
+    <string name="error_generating_code">خطأ في توليد الكود</string>
+    <string name="purchase_code_label">شراء الكود</string>
+    <string name="code_copied_success">تم نسخ الكود بنجاح!</string>
+    <string name="whatsapp_greeting">السلام عليكم</string>
+    <string name="whatsapp_purchase_request">أريد شراء ترخيص تطبيق محفظتي الذكية</string>
+    <string name="purchase_code_label_whatsapp">"🔑 الكود المميز:  %1$s "</string>
+    <string name="whatsapp_payment_details_request">يرجى تفعيل الترخيص وإرسال تفاصيل الدفع</string>
+    <string name="whatsapp_thank_you">" وشكراً لكم"</string>
+    <string name="whatsapp_not_found">تعذر فتح واتساب\n</string>
+
+
+    <string name="account_email_label">"📧 الحساب: %1$s "</string>
+    <string name="purchase_instructions_title">" 📋 تعليمات الشراء:"</string>
+    <string name="purchase_instruction_step1">" 1. انسخ الكود المميز أدناه "</string>
+    <string name="purchase_instruction_step2">"2. تواصل مع مطور التطبيق عبر واتساب  "</string>
+    <string name="purchase_instruction_step3">" 3. أرسل الكود مع طلب شراء الترخيص  "</string>
+    <string name="purchase_instruction_step4">" 4. بعد تأكيد الدفع، سيتم تفعيل حسابك"</string>
+    <string name="license_price_lifetime5">"💰 سعر الترخيص: 18 دولار $ مدى الحياة  "</string>
+    <string name="device_usage_limit">" 📱 يمكن استخدامه على جهازين "</string>
+    <string name="note_auto_logout">" ⚠️ ملاحظة: سيتم تسجيل خروجك تلقائياً بعد نسخ الكود"</string>
+    <string name="welcome_word">"مرحباً, "</string>
+    <string name="manage_devices">إدارة الأجهزة</string>
+    <string name="signout">تسجيل الخروج</string>
+    <string name="google_account">حساب Google</string>
+    <string name="account_detail_activity_help">- قم بالنقر على زر الإضافة اسفل الشاشة لإضافة عملية جديدة\n-  قم بالنقر المطول على اي عملية مالية للتعديل او الحذف\n</string>
+    <string name="transaction_limit">لقد استهلكت جميع عملياتك المجانية\n يمكنك الان اضافة ثلاث عمليات كحصة مجانية لكل يوم. \n كما يمكنك الحصول على المزيد من خلال:</string>
+    <string name="trans_limit_titel">انتهت العمليات المجانية!</string>
+    <string name="daily_limit_titel">تم استيفاء الحصة اليومية</string>
+    <string name="daily_limit">لقد استهلكت حصتك المجانية اليومية من العمليات لهذا اليوم.\nكما يمكنك الحصول على المزيد من خلال دعوة صديق: \n للحصول على عدد غير محدود من العمليات، يرجى شراء التطبيق.</string>
+
+    <string name="privacy_policy_text">
+        <![CDATA[
+        <h1>سياسة الخصوصية لتطبيق محفظتي الذكية</h1>
+        <p><b>آخر تحديث: 13 سبتمبر 2025</b></p>
+        <p>نشكرك على استخدام تطبيق محفظتي الذكية. خصوصيتك تهمنا، وهذه السياسة توضح كيفية جمعنا واستخدامنا وحمايتنا لمعلوماتك.</p>
+
+        <h2>1. البيانات التي نجمعها</h2>
+        <p>لتقديم خدماتنا، نقوم بجمع الأنواع التالية من البيانات:</p>
+        <ul>
+            <li><b>البيانات الشخصية:</b> اسمك، بريدك الإلكتروني، رقم هاتفك، وعنوانك (اختياري)، والتي تقدمها عند إعداد ملفك الشخصي.</li>
+            <li><b>البيانات المالية:</b> أسماء الحسابات، أنواع الحسابات، العملات، وتفاصيل العمليات المالية (المبالغ، التواريخ، التفاصيل) التي تقوم بإدخالها.</li>
+            <li><b>بيانات المزامنة:</b> يتم تخزين نسخة من بياناتك المالية والشخصية بشكل آمن على خوادم Google Firestore لتمكين ميزة المزامنة بين أجهزتك وحفظ نسخة احتياطية.</li>
+            <li><b>بيانات الموقع (لمرة واحدة):</b> عند التسجيل لأول مرة، نطلب إذن الوصول إلى موقعك الجغرافي التقريبي <b>لمرة واحدة فقط</b> بهدف تحديد عملتك المحلية تلقائيًا. نحن لا نقوم بتخزين أو تتبع موقعك بعد هذه العملية.</li>
+        </ul>
+
+        <h2>2. كيف نستخدم بياناتك</h2>
+        <p>عند استخدامك للتطبيق، قد نطلب منك تقديم معلومات شخصية معينة، والتي قد تشمل على سبيل المثال لا الحصر للأغراض التالية:</p>
+        <ul>
+            <li>توفير وتشغيل التطبيق: لتمكينك من استخدام جميع ميزات التطبيق، بما في ذلك إنشاء العمليات المالية ، وإدارة بياناتك الشخصية، وحفظ البيانات.</li>
+           <li>لإدارة حسابك، وتطبيق قيود الترخيص (مثل حد الجهازين لكل حساب)، وتتبع حالة اشتراكك (مجاني/مميز).</li>
+ <li>لتمكين ميزة المزامنة السحابية الآمنة.</li>
+       <li>لإرسال إشعارات مهمة إليك بخصوص تحديثات التطبيق، أو ميزات جديدة، أو رسائل ترويجية (إذا وافقت على تلقيها).</li>
+ <li>لعرض إعلانات مكافأة داخل التطبيق، والتي تتيح لك الوصول إلى ميزات إضافية. يتم ذلك بالتعاون مع مزودي الإعلانات.</li>
+     <li> لحماية التطبيق ومستخدميه من الأنشطة الاحتيالية أو غير المصرح بها.
+</li>
+ <li>للامتثال للمتطلبات القانونية والتنظيمية المعمول بها.</li>
+ <li>لإنشاء التقارير والفواتير بصيغة PDF.</li>
+            <li>لتأمين تطبيقك عبر كلمة المرور أو البصمة.</li>
+            <li>لتفعيل ميزة استعادة كلمة المرور عبر رفع ملف إلى حسابك الشخصي في Google Drive (بموافقتك الصريحة في كل مرة).</li>
+        </ul>
+
+        <h2>3. مشاركة البيانات</h2>
+        <p><b>نحن لا نبيع أو نشارك بياناتك الشخصية أو المالية مع أي طرف ثالث لأغراض تسويقية.</b> يتم تخزين بياناتك فقط على البنية التحتية الآمنة لشركة جوجل (Firebase Authentication, Firestore) وحسابك الخاص في Google Drive (لميزة استعادة كلمة المرور).</p>
+
+        <h2>4. أمان البيانات</h2>
+        <p>نحن نأخذ أمان بياناتك على محمل الجد:</p>
+        <ul>
+            <li>تستخدم المزامنة السحابية قواعد أمان صارمة تضمن أن لا أحد يستطيع الوصول إلى بياناتك غيرك.</li>
+            <li>كلمة المرور الخاصة بقفل التطبيق يتم تخزينها محليًا على جهازك فقط ولا تتم مزامنتها مع السحابة.</li>
+            <li>بيانات بصمة الإصبع يتم التعامل معها بشكل آمن من خلال نظام أندرويد نفسه ولا يتم تخزينها في التطبيق.</li>
+        </ul>
+
+        <h2>5. الاحتفاظ بالبيانات وحذفها</h2>
+        <p>يتم الاحتفاظ ببياناتك طالما أن حسابك نشط. يمكنك حذف حساباتك وعملياتك في أي وقت من خلال التطبيق، وسيتم حذفها من قاعدة البيانات المحلية والسحابية عند المزامنة التالية.</p>
+
+        <h2>6. التواصل معنا</h2>
+        <p>إذا كان لديك أي أسئلة بخصوص سياسة الخصوصية، يمكنك التواصل معنا عبر وسائل الاتصال المتاحة في قسم "التواصل والدعم" داخل التطبيق.</p>
+        ]]>
+    </string>
+    <string name="privacy_policy_titel">سياسة الخصوصية</string>
+    <string name="menu_privacy_policy">سياسة الخصوصية</string>
+    <string name="menu_update_app">تحديث التطبيق</string>
+    <string name="device_remove_tit">تم إزالة الجهاز</string>
+    <string name="device_remove">تم ازالة هذا الجهاز من قائمة الاجهزة المصرح لها بهذا الحساب\nولم يعد بإمكانك الإضافة او التعديل او تصفح التقارير لهذا الحساب وشكراً</string>
+    <string name="reward_message">🎁 تهانينا! لقد حصلت على 3 نقاط مكافأة ترحيب.</string>
+    <string name="welcome_message">مرحباً بك في تطبيق محفظتي الذكية!</string>
+    <string name="invite_friend_msg">\n✨ قام صديقك %1$s بدعوتك لتجربة تطبيق %2$s ✨\n
+🚀 الحل الذكي والآمن لإدارة كل حساباتك وديونك مباشرة من جوالك\n\n
+🎁 استخدم الرابط الخاص بي لتحصل على مكافأة عند التسجيل:\n\n
+        %3$s \n\n
+ ℹ️ للمزيد من المعلومات  عن التطبيق يمكنك زيارة الموقع التالي:\n\n
+        %4$s </string>
+    <!--        ☁️ تتم المزامنة تلقائيًا مع حسابك الخاص، مما يضمن عدم ضياعها حتى لو فقدت هاتفك، ويمكنك الوصول إليها من أي جهاز.\n-->
+    <!--🔒بإمكانك قفل التطبيق بكلمة مرور أو ببصمة إصبعك.\n-->
+    <!--🌐 يمكنك تسجيل وتصفح كل عملياتك في أي وقت بدون إنترنت، وسيتم المزامنة تلقائيًا عند توفر الشبكة.\n-->
+    <!--🔄 اذا كان لديك بيانات في تطبيقات قديمة أو نسخ احتياطية؟ يمكنك استيرادها بسهولة ومتابعة عملك بدون انقطاع.\n-->
+    <!--استخدم الرابط الخاص بي لتحصل على مكافأة عند التسجيل:\n\n-->
+    <!--%3$s-->
+    <!--</string>-->
+    <string name="referral_already_registered">أنت مسجل مسبقاً ولا يمكنك استخدام رابط الدعوة للحصول على النقاط.</string>
+    <string name="device_limit_exceeded">لقد وصلت للحد الأقصى من الأجهزة المسجلة.</string>
+    <string name="error_add_device">خطأ في التحقق من الترخيص:  %1$s</string>
+    <string name="device_added_successfully">تم إضافة الجهاز بنجاح</string>
+    <string name="location_permission_denied">لم يتم منح الإذن، سيتم إضافة العملة الافتراضية.</string>
+    <string name="permission_denied">تم رفض الإذن بشكل دائم. الرجاء تمكينه من إعدادات التطبيق</string>
+    <string name="login_cancel">تم إلغاء تسجيل الدخول.</string>
+    <string name="verify_email">تم التسجيل بنجاح!</string>
+    <string name="verify_email_message">لقد أرسلنا رابط تحقق إلى بريدك الإلكتروني. يرجى النقر عليه لتفعيل حسابك بشكل كامل</string>
+    <string name="understand_action">فهمت، سأتحقق من بريدي</string>
+    <string name="register_start">جاري إنشاء حسابك...</string>
+    <string name="general_notif">عام</string>
+    <string name="synced_notif">مزامنة</string>
+    <string name="unsynced_notif">عمليات معلقة</string>
+    <string name="channel_general_name">الإشعارات العامة</string>
+    <string name="channel_general_desc">إشعارات حول التحديثات والمعلومات العامة</string>
+    <string name="channel_important_name">إشعارات هامة</string>
+    <string name="channel_important_desc">إشعارات تخص العمليات المالية الهامة</string>
+    <string name="error_no_uid">المستخدم الحالي غير مسجل الدخول.</string>
+    <string name="sync_listeners_attached">تم تفعيل مستمعي المزامنة.</string>
+    <string name="error_fetch_accounts">فشل في تلقي تغييرات الحسابات.</string>
+    <string name="error_fetch_transactions">فشل في تلقي تغييرات المعاملات.</string>
+    <string name="error_fetch_currencies">فشل في تلقي تغييرات العملات.</string>
+    <string name="error_fetch_account_types">فشل في تلقي تغييرات أنواع الحسابات.</string>
+    <string name="error_fetch_user">فشل في تلقي تغييرات بيانات المستخدم.</string>
+    <string name="sync_accounts_applied">تم تطبيق %1$d تغييرات على الحسابات.</string>
+    <string name="sync_transactions_applied">تم تطبيق %1$d تغييرات على المعاملات.</string>
+    <string name="sync_currencies_applied">تم تطبيق %1$d تغييرات على العملات.</string>
+    <string name="sync_account_types_applied">تم تطبيق %1$d تغييرات على أنواع الحسابات.</string>
+    <string name="sync_user_applied">تم تحديث بيانات المستخدم.</string>
+    <string name="start_impoart_accounts">جاري استيراد الحسابات...</string>
+    <string name="start_impoart_userProfile">جاري استيراد البيانات الشخصية</string>
+    <string name="impoarting_accounts">"استيراد الحسابات: "</string>
+    <string name="fail_impoart_accounts">"فشل في جلب الحسابات: "</string>
+    <string name="start_impoart_currencies">جاري استيراد العملات...</string>
+    <string name="impoarting_currencies">"استيراد العملات: "</string>
+    <string name="fail_impoart_currencies">"فشل في جلب العملات: "</string>
+    <string name="start_impoart_transactions">جاري استيراد العمليات...</string>
+    <string name="impoart_transactions">"استيراد العمليات: "</string>
+    <string name="fail_impoart_transactions">"فشل في جلب العمليات المالية: "</string>
+    <string name="start_impoart_accountTypes">جاري استيراد انواع الحسابات المخصصة...</string>
+    <string name="impoart_accountTypes">"استيراد أنواع الحسابات: "</string>
+    <string name="fail_impoart_accountTypes">"فشل في جلب أنواع الحسابات: "</string>
+    <string name="daily_plan_tit">📌 تم تجديد خطتك اليومية</string>
+    <string name="daily_plan_msg">سيتم الآن إعادة مزامنة العمليات المعلقة تلقائياً.</string>
+    <!-- Report Strings -->
+
+    <string name="report_title_detailed_statement">كشف حساب تفصيلي</string>
+    <string name="report_subtitle_account">الحساب: %s</string>
+    <string name="report_subtitle_account_type">نوع الحساب: %s</string>
+    <string name="report_period_all">لكامل الفترات</string>
+    <string name="report_period_from_to">الفترة من: %1$s إلى: %2$s</string>
+    <string name="report_currency">العملة: %s</string>
+    <string name="report_column_date">التاريخ</string>
+    <string name="report_column_details">التفاصيل</string>
+    <string name="report_column_debit">مدين (عليكم)</string>
+    <string name="report_column_credit">دائن (لكم)</string>
+    <string name="report_column_balance">الرصيد</string>
+    <string name="report_column_account_name">اسم الحساب</string>
+    <string name="report_column_balance_type">نوع الرصيد</string>
+    <string name="report_column_last_transaction_date">تاريخ آخر حركة</string>
+    <string name="report_column_month">الشهر</string>
+    <string name="report_column_total_debit">إجمالي الصادر (عليهم)</string>
+    <string name="report_column_total_credit">إجمالي الواصل (لهم)</string>
+    <string name="report_column_net_movement">صافي الحركة</string>
+    <string name="report_column_final_balance">الرصيد النهائي</string>
+    <string name="report_balance_type_debit">عليكم</string>
+    <string name="report_balance_type_credit">لكم</string>
+    <string name="report_totals">الإجماليات</string>
+    <string name="report_final_balance_debit">الرصيد النهائي - عليكم</string>
+    <string name="report_final_balance_credit">الرصيد النهائي - لكم</string>
+    <string name="report_total_balances">إجمالي الأرصدة</string>
+    <string name="report_no_data">لا توجد أي عمليات لهذا الحساب بأي عملة.</string>
+    <string name="report_signature_accountant">توقيع المحاسب</string>
+    <string name="report_signature_manager">توقيع المدير</string>
+
+    <!-- Header Strings -->
+    <string name="header_page">صفحة 2%d | تاريخ الطباعة: 1%s</string>
+    <string name="page">صفحة </string>
+    <!--    <string name="print_date"> تاريخ الطباعة </string>-->
+    <!--    <string name="period">للفترة </string>-->
+    <!--    <string name="from"> من </string>-->
+    <!--    <string name="to">" الى "</string>-->
+    <!--    <string name="all_periods">" كل الفترات "</string>-->
+
+    <string name="print_date">تاريخ الطباعة</string>
+    <string name="account">الحساب </string>
+    <string name="account_type">نوع الحساب</string>
+    <string name="currency">العملة</string>
+    <string name="on_currency">بعملة: </string>
+    <string name="all_currencies">كل العملات</string>
+    <string name="period">الفترة</string>
+    <string name="from">من</string>
+    <string name="to">إلى</string>
+    <string name="all_periods">كل الفترات</string>
+    <string name="monthly_summary">ملخص الحركة الشهرية: </string>
+    <string name="detailed_statement">كشف حساب تفصيلي</string>
+    <string name="detailed_statement_currency"> كشف حساب بعملة: </string>
+
+    <string name="report_title_monthly_summary">ملخص الحركة الشهرية</string>
+    <string name="monthly_account_moves">الحركة الشهريه لحساب</string>
+    <string name="monthly_account_summary">كشف حساب شهري</string>
+    <string name="consolidated_movement">كشف حركة مجمع</string>
+    <string name="consolidated_balances">تقرير أرصدة الحسابات</string>
+    <string name="account_name">اسم الحساب</string>
+    <string name="balance_type">نوع الرصيد</string>
+    <string name="balance">الرصيد</string>
+    <string name="last_transaction_date">تاريخ آخر حركة</string>
+    <string name="month">الشهر</string>
+    <string name="total_debit">إجمالي الصادر</string>
+    <string name="total_credit">إجمالي الواصل</string>
+    <string name="net_movement">صافي الحركة</string>
+    <string name="final_balance">الرصيد النهائي</string>
+    <string name="date">التاريخ</string>
+    <string name="details">التفاصيل</string>
+    <string name="debit">مدين</string>
+    <string name="credit">دائن</string>
+    <string name="cumulative_balance">الرصيد التراكمي</string>
+    <string name="totals">الإجماليات</string>
+    <string name="previous_balance">الرصيد السابق</string>
+    <string name="no_data">لا توجد بيانات</string>
+    <string name="accountant_signature">توقيع المحاسب</string>
+    <string name="manager_signature">توقيع المدير</string>
+    <string name="menu_new_bill">فاتورة جديدة</string>
+    <string name="menu_reports">التقارير</string>
+    <string name="menu_profile">البيانات الشخصية</string>
+    <string name="menu_currencies">العملات</string>
+    <string name="menu_account_types">تصنيفات الحسابات</string>
+    <string name="menu_settings_securety">الأمان</string>
+    <string name="menu_password_lock">قفل بكلمة مرور</string>
+    <string name="menu_biometric_lock">قفل بالبصمة</string>
+    <string name="menu_help_support">الدعم والمساعدة</string>
+    <string name="menu_help">المساعدة</string>
+    <string name="menu_privacy_policy_update">تحديثات سياسة الخصوصية والتطبيق</string>
+    <string name="account_label">الحساب: %1$s</string>
+    <string name="period_from_to">الفترة من: %1$s إلى: %2$s</string>
+    <string name="period_all">لكامل الفترات</string>
+    <string name="no_data_found">لا توجد أي عمليات لهذا الحساب بأي عملة.</string>
+    <string name="monthly_type_summary">الحركة الشهرية الإجمالية</string>
+
+
+    <string name="local">محلي</string>
+    <string name="cancel_1">إلغاء</string>
+    <string name="new_">🎁 مكافأة جديدة!</string>
+    <string name="ar_long_text"> صديقاً! شكراً لك، لقد حصلت على </string>
+    <string name="ar_long_text_1"> عملية إضافية.</string>
+    <string name="s">\\s+</string>
+    <string name="ok_1">موافق</string>
+    <string name="general">عام</string>
+    <string name="ar_text_9">حصلت على </string>
+    <string name="new_1"> نقاط جديدة بفضل دخول مستخدم جديد بواسطة رابط دعوتك الخاص!</string>
+    <string name="ar_long_text_2"> قم بدعوةأصدقاء اكثر لتحصل على النسخة الكاملة مجاناً.</string>
+    <string name="string_2f">%,.2f</string>
+    <string name="string_">[,]</string>
+    <string name="append">).append(</string>
+    <string name="ar_text_9_1">لقد دعوت </string>
+    <string name="save_1">حفظ</string>
+    <string name="delete_1">حذف</string>
+    <string name="ar_text_5">مطلوب</string>
+    <string name="account_1">نوع الحساب: </string>
+    <string name="ar_long_text_3">🎉 مكافأة الدعوة🎉</string>
+    <string name="account_2">كل الحسابات</string>
+    <string name="ar_text_5_1">سعودي</string>
+    <string name="ar_text_5_2">دولار</string>
+    <string name="ar_text_10">الإجماليات</string>
+    <string name="RewardManager">RewardManager </string>
+    <string name="ar_text_7">التاريخ</string>
+    <string name="ar_text_8">التفاصيل</string>
+    <string name="ar_text_6">الرصيد</string>
+    <string name="account_3">اسم الحساب</string>
+    <string name="ar_text_5_3">حسناً</string>
+    <string name="confirm_1">تأكيد الحذف</string>
+    <string name="login_1">يجب تسجيل الدخول أولاً</string>
+    <string name="FROM_accounts_acc">FROM accounts acc </string>
+    <string name="GROUP_BY_accid">GROUP BY acc.id </string>
+    <string name="ad_rewards">, ad_rewards=</string>
+    <string name="string_0f">%,.0f</string>
+    <string name="account_4">الحساب: </string>
+    <string name="ar_text_8_1"> بعمله: </string>
+    <string name="account_5">لا توجد أي عمليات لهذا الحساب بأي عملة.</string>
+    <string name="previous">الرصيد السابق</string>
+    <string name="general_1"> للمعاملة: </string>
+    <string name="senderUid"> senderUid: </string>
+    <string name="createdAt"> createdAt: </string>
+    <string name="ar_long_text_4">حقل points مفقود أو غير صحيح للإشعار: </string>
+    <string name="defaultCurrencyName">defaultCurrencyName: </string>
+    <string name="edit_1">تعديل حساب</string>
+    <string name="ddMMyyyy">dd-MM-yyyy</string>
+    <string name="ar_long_text_5">جاري إنشاء التقرير...</string>
+    <string name="transactions_count">transactions_count=</string>
+    <string name="ar_long_text_6">الرصيد النهائي - لكم</string>
+    <string name="ar_long_text_7">الرصيد النهائي - عليكم</string>
+    <string name="textplain">text/plain</string>
+    <string name="yyyyMMdd_HHmm">yyyy-MM-dd HH:mm</string>
+    <string name="nn">\n\n</string>
+    <string name="ar_long_text_8">الحركة الشهرية الإجمالية</string>
+    <string name="ar_long_text_9">كشف حركة مجمع</string>
+    <string name="ar_long_text_10">ملخص أرصدة: </string>
+    <string name="ar_long_text_11">لا يوجد مستخدم مسجل حاليًا. فشلت الاستعادة.</string>
+    <string name="ar_long_text_12">🎉 مكافأة الدعوة</string>
+    <string name="currentReferrals">currentReferrals: </string>
+    <string name="result"> ,result: </string>
+    <string name="newMilestoneCount"> ,newMilestoneCount: </string>
+    <string name="CONST_NUMBER"> ,CONST_NUMBER: </string>
+    <string name="ar_long_text_13">لقد وصل أصدقائك إلى </string>
+    <string name="ar_long_text_14">لقد وصل أصدقائك </string>
+    <string name="ar_text_5_4"> لكم </string>
+    <string name="ar_text_7_1"> عليكم </string>
+    <string name="delete_2">لا يمكن الحذف</string>
+    <string name="amountEditTextrequestFocus">amountEditText.requestFocus()</string>
+    <string name="SHA256">SHA-256</string>
+    <string name="ar_long_text_15">المستخدم غير مسجل الدخول</string>
+    <string name="string__1">\\.</string>
+    <string name="yyyyMMdd_HHmmss">yyyy-MM-dd HH:mm:ss</string>
+    <string name="yS3O5hZpp9Yjb7cCAm90OQy934r2">yS3O5hZpp9Yjb7cCAm90OQy934r2</string>
+    <string name="ar_long_text_16">جاري عرض الإعلان...</string>
+    <string name="ar_long_text_17">تم استيراد بيانات الترخيص من Firestore: </string>
+    <string name="haddad2incgmailcom">haddad2inc@gmail.com</string>
+    <string name="ar_long_text_18">لا توجد عملات نشطة</string>
+    <string name="ar_text_3">نعم</string>
+    <string name="ar_long_text_19">لا يوجد اتصال بالواي فاي</string>
+    <string name="error">خطأ في الاتصال بالخادم</string>
+    <string name="ar_long_text_20">تطبيق محفظتي الذكية</string>
+    <string name="ar_long_text_21">ادارات مالية يومية</string>
+    <string name="ar_text_10_1">تعز، اليمن</string>
+    <string name="string_967_734_249_712">+967780405427</string>
+    <string name="ar_text_5_5">عملاء</string>
+    <string name="ar_text_6_1">موردين</string>
+    <string name="yyyyMMdd_hhmmss_a_z">yyyy-MM-dd hh:mm:ss a z</string>
+    <string name="ar_text_6_2">مبيعات</string>
+    <string name="ar_long_text_22">تم استيفاء الحصة اليومية</string>
+    <string name="account_6">لقد استهلكت حصتك المجانية من العمليات لهذا اليوم. للحصول على عدد غير محدود من العمليات، يرجى ترقية حسابك.</string>
+    <string name="ar_long_text_23">شراء التطبيق الآن</string>
+    <string name="ar_text_6_3">لاحقاً</string>
+    <string name="applicationpdf">application/pdf</string>
+    <string name="because_local_status_is"> because local status is </string>
+    <string name="isDefaultFromFirestore">isDefaultFromFirestore: </string>
+    <string name="texthtml_charsetutf8">text/html; charset=utf-8</string>
+    <string name="Error">Error: </string>
+    <string name="ar_text_5_6">عليكم</string>
+    <string name="ar_text_3_1">لكم</string>
+    <string name="ar_text_8_2">العملة: </string>
+    <string name="ar_long_text_24">مدين (عليك)</string>
+    <string name="ar_text_9_2">دائن (له)</string>
+    <string name="ar_text_5_7">الشهر</string>
+    <string name="ar_long_text_25">صافي الحركة</string>
+    <string name="ar_long_text_26">الرصيد النهائي</string>
+    <string name="startDate"> startDate </string>
+    <string name="endDate"> endDate </string>
+    <string name="ar_text_10_2">نوع الرصيد</string>
+    <string name="ar_long_text_27">تاريخ آخر حركة</string>
+    <string name="ar_long_text_28">الرصيد التراكمي</string>
+    <string name="ar_long_text_29">جاري استيراد العملات...</string>
+    <string name="localCurrencyId">localCurrencyId: </string>
+    <string name="ar_long_text_30">جاري استيراد العمليات...</string>
+    <string name="account_7">جاري استيراد انواع الحسابات المخصصة...</string>
+    <string name="Restore_from_Firestore_failed">Restore from Firestore failed</string>
+    <string name="local_1">الحساب غير موجود محلياً: </string>
+    <string name="Failed_to_check_user_rewards">Failed to check user rewards</string>
+    <string name="Transaction_missing_ownerUID_skipping_sync_ID">Transaction missing ownerUID, skipping sync. ID: </string>
+    <string name="Parent_account_not_synced_skipping_transaction_Acc">Parent account not synced, skipping transaction. Account ID: </string>
+    <string name="smsto">smsto:</string>
+    <string name="ar_long_text_31">فشل إنشاء التقرير</string>
+    <string name="Current_UID">Current UID = </string>
+    <string name="ownerUID">, ownerUID = </string>
+    <string name="delete_3">لا توجد عمليات للحذف لهذا الـ ownerUID</string>
+    <string name="error_1">خطأ في الاستعلام: </string>
+    <string name="account_8">حساب مميز</string>
+    <string name="account_9">حساب مجاني</string>
+    <string name="ar_long_text_32">رمز المصادقة غير صالح</string>
+    <string name="login_2">فشل تسجيل الدخول بـ Google</string>
+    <string name="login_3">فشل تسجيل الدخول بـ Google: </string>
+    <string name="ar_long_text_33">فشل في إنشاء بيانات المستخدم.</string>
+    <string name="login_4">فشل في تحديث بيانات تسجيل الدخول.</string>
+    <string name="Bearer">Bearer </string>
+    <string name="ar_long_text_34">إرسال الإشعار للجميع</string>
+    <string name="ar_long_text_35">الرابط المستلم: </string>
+    <string name="ar_long_text_36">كود الدعوة: </string>
+    <string name="ar_long_text_37">تم استقبال دعوة من: </string>
+    <string name="daftree_databasewal">daftree_database-wal</string>
+    <string name="daftree_databaseshm">daftree_database-shm</string>
+    <string name="ar_long_text_38">فشل تحديد العملة، سيتم استخدام الافتراضية.</string>
+    <string name="ar_long_text_39">الموقع غير متاح، سيتم استخدام العملة الافتراضية.</string>
+    <string name="cancel_2">المستخدم غير مسجل دخوله، إلغاء المزامنة</string>
+    <string name="Error_in_addDefaultData">Error in addDefaultData: </string>
+    <string name="DeviceLimitExceeded">DeviceLimitExceeded: </string>
+    <string name="add">تم إضافة الجهاز بنجاح</string>
+    <string name="ar_long_text_40">أنت مسجل مسبقاً ولا يمكنك استخدام رابط الدعوة للحصول على النقاط.</string>
+    <string name="error_2">خطأ</string>
+    <string name="User_listen_failed">User listen failed</string>
+    <string name="ar_long_text_41">تم مسح بيانات الإصدارات للاختبار</string>
+    <string name="ar_text_9_3">دعوة صديق</string>
+    <string name="ar_long_text_42">فشل النسخ الاحتياطي: </string>
+    <string name="ar_text_5_8">تحذير</string>
+    <string name="password">يرجى إدخال كلمة المرور</string>
+    <string name="currency_1"> currency </string>
+    <string name="applicationxsqlite3">application/x-sqlite3</string>
+    <string name="ar_long_text_43">لا توجد عمليات للعملات الأخرى</string>
+    <string name="hppdaftreewebapp">hpp-daftree.web.app</string>
+    <string name="YYYYMM">YYYY-MM</string>
+    <string name="ar_long_text_44">عملة غير صالحة، يرجى الاختيار من القائمة.</string>
+    <string name="account_10">يرجى اختيار حساب صحيح</string>
+    <string name="ar_text_7_2">مشتريات</string>
+    <string name="ar_long_text_45">قيمة مبيعات</string>
+    <string name="ar_long_text_46">قيمة مشتريات</string>
+    <string name="ar_long_text_47">دفعة نقدية من مبيعات</string>
+    <string name="ar_long_text_48">دفعة نقدية من مشتريات</string>
+    <string name="save_2">تم حفظ الفاتورة بنجاح</string>
+    <string name="ar_long_text_49">عملة غير صالحة</string>
+    <string name="open">لا يوجد تطبيق لفتح ملفات PDF</string>
+
+    <string name="error_access_user_doc">"فشل الوصول لمستند المستخدم: "</string>
+    <string name="error_create_user">"فشل إنشاء مستند المستخدم: "</string>
+    <string name="bill_not_found">لم يتم العثور على الفاتورة</string>
+    <string name="confirm_delete_invoice">هل أنت متأكد من حذف هذه الفاتورة وكل العمليات المرتبطة بها؟</string>
+    <string name="success_delete_invoice">تم حذف الفاتورة</string>
+    <string name="error_generating_report">لا يمكن إنشاء هذا التقرير، تأكد من اختيار حساب صحيح.</string>
+    <string name="failed_gen_report">"فشل إنشاء التقرير: "</string>
+
+    <string name="login_password_renter_hint">إهادة كلمة المرور</string>
+
+
+    <string name="welcome_text">مرحبًا بك في تطبيق</string>
+    <string name="or_text">أو</string>
+    <string name="agreement_text">بمجرد التسجيل، فإنك توافق على  <font color="#FFFF8A65"><b>شروط الاستخدام</b></font> <font color="#FFFF8A65"><b>وسياسة الخصوصيةً</b></font></string>
+    <string name="terms_cond">شروط الاستخدام</string>
+    <string name="privacy_cond">وسياسة الخصوصية</string>
+
+    <string name="login_with_email">تسجيل الدخول بالبريد الإلكتروني</string>
+
+    <string name="email_hint">البريد الإلكتروني</string>
+    <string name="password_hint">كلمة المرور</string>
+    <string name="forgot_password">نسيت كلمة المرور؟</string>
+
+    <string name="no_account">ليس لديك حساب؟ <font color="#006492"><b>أنشئ حساباً</b></font></string>
+    <string name="name_hint">الاسم الكامل</string>
+    <string name="password_renter_hint">تأكيد كلمة المرور</string>
+    <string name="already_have_account">لديك حساب؟ تسجيل الدخول</string>
+
+    <!-- Lock Screen Form -->
+    <string name="lock_title">التطبيق مقفل</string>
+    <string name="enter_button">دخــــول</string>
+    <string name="change_password">تغيير كلمة المرور</string>
+    <string name="forgot_password_lock">نسيت كلمة المرور؟</string>
+
+    <!-- Dialogs and Messages -->
+    <string name="currency_setup_title">إعداد العملة الافتراضية</string>
+    <string name="currency_setup_message">\n هل تريد استخدام عملة بلدك كعملة افتراضية؟ يتطلب هذا تفعيل إذن تحديد الموقع. يمكنك تغييرها لاحقاً من شاشة العملات.</string>
+    <string name="use_location">نعم، استخدم موقعي</string>
+    <string name="skip_location">لا، شكراً</string>
+    <string name="error_password_mismatch">كلمة المرور غير متطابقة</string>
+    <string name="error_add_device_">خطأ في إضافة الجهاز: %s</string>
+    <string name="lock_error_empty">يرجى إدخال كلمة المرور</string>
+    <string name="lock_error_incorrect">كلمة المرور غير صحيحة</string>
+    <string name="change_password_title">تغيير كلمة المرور</string>
+    <string name="change_password_confirm">تأكيد التغيير</string>
+    <string name="change_password_cancel">إلغاء</string>
+    <string name="change_password_success">تم تغيير كلمة المرور بنجاح</string>
+    <string name="change_password_error_fields">يرجى ملء جميع الحقول</string>
+    <string name="change_password_error_mismatch">كلمة المرور الجديدة غير متطابقة</string>
+    <string name="change_password_error_old_incorrect">كلمة المرور القديمة غير صحيحة</string>
+    <string name="forgot_password_lock_title">نسيت كلمة المرور؟</string>
+    <string name="forgot_password_lock_message">سيتم الآن محاولة رفع ملف نصي يحتوي على كلمة المرور إلى حسابك في جوجل درايف. هل تريد المتابعة؟</string>
+    <string name="forgot_password_lock_yes">نعم، متابعة</string>
+    <string name="forgot_password_lock_cancel">إلغاء</string>
+    <string name="password_upload_success">تم رفع كلمة المرور إلى جوجل درايف بنجاح</string>
+    <string name="password_upload_failed">فشل رفع كلمة المرور</string>
+
+    <!-- From GoogleAuthHelper and other logics -->
+    <string name="no_internet">لا يوجد اتصال بالإنترنت</string>
+    <string name="invalid_token">رمز المصادقة غير صالح</string>
+    <string name="auth_failure">فشل المصادقة مع Firebase</string>
+    <string name="user_data_failure">فشل في التحقق من بيانات المستخدم</string>
+    <string name="create_user_failure">فشل في إنشاء بيانات المستخدم</string>
+    <string name="update_login_failure">فشل في تحديث بيانات تسجيل الدخول</string>
+    <string name="delete_account">حذف الحساب</string>
+    <string name="logout_succes">تم تسجيل الخروج</string>
+    <string name="referral_already_registered2">أنت مسجل مسبقاً! ولا يمكنك استخدام رابط الدعوة للحصول على النقاط ,\n ويمكنك دعوة اصدقائك لكسب نقاط مجانية ومكافئات.</string>
+    <string name="about_referral">معلومات عن نظام الدعوة</string>
+    <string name="about_referral_message">رابط الدعوة مخصص للمستخدمين الجدد فقط. \nيمكنك مشاركة الرابط مع أصدقائك لتحصل على مكافآت عندما يستخدمون رابط دعوتك للاشتراك بالتطبيق.</string>
+    <string name="premium_plan">نسخة مدفوعة</string>
+    <string name="free_plan">نسخة مجانية</string>
+    <!--    <string name="language_selection_warning1" translatable="false">تنبيه هام: سيتم إعداد العملات وأنواع الحسابات الافتراضية بناءً على اللغة التي تختارها الآن. هذا الإعداد يتم لمرة واحدة فقط عند إنشاء حسابك.\n<b>Important:</b> Default currencies and account types will be set based on the language you choose now. This setup is done only once when creating your account.    \n\n<b>Importante:</b> Las monedas y los tipos de cuenta predeterminados se configurarán según el idioma que elijas ahora. Esta configuración se realiza solo una vez al crear tu cuenta.\n</string>-->
+    <string name="continue_button">متابعة</string>
+    <!--    <string name="language_selection_warning"><b>تنبيه هام:</b>-->
+    <!--        سيتم إعداد العملات وأنواع الحسابات الافتراضية بناءً على اللغة التي تختارها الآن. هذا الإعداد يتم لمرة واحدة فقط عند إنشاء حسابك.\n\n<b>Important:</b> Default currencies and account types will be set based on the language you choose now. This setup is done only once when creating your account.    \n\n-->
+    <!--        <b>Importante:</b> Las monedas y los tipos de cuenta predeterminados se configurarán según el idioma que elijas ahora. Esta configuración se realiza solo una vez al crear tu cuenta.\n></string>-->
+
+    <!--    <string name="language_selection_warning">-->
+    <!--    <![CDATA[-->
+    <!--<b><font color="#FF0000">تنبيه هام</font></b>: لإضافة عملة بلدك أوتوماتيكيًا قم بتفعيل الموقع الجغرافي عندما يطلب منك التطبيق التفعيل.\nسيتم إعداد العملات وأنواع الحسابات الافتراضية بناءً على اللغة التي تختارها الآن.\n\n-->
+    <!--<b><font color="#FF0000">Important</font></b>: To add your country\'s currency automatically, enable location services when the app asks you to activate it.\nDefault currencies and account types will be set based on the language you choose now.\n\n-->
+    <!--<b><font color="#FF0000">Importante</font></b>: Para agregar automáticamente la moneda de tu país, habilita los servicios de ubicación cuando la aplicación te lo solicite.\nLas monedas y los tipos de cuenta predeterminados se configurarán según el idioma que elijas ahora.\n\n-->
+    <!--<b><font color="#FF0000">Avertissement important</font></b>: Pour ajouter automatiquement la devise de votre pays, activez les services de localisation lorsque l\'application vous le demande.\nLes devises et types de comptes par défaut seront configurés en fonction de la langue que vous choisissez maintenant.-->
+    <!--    ]]>-->
+    <!--</string>-->
+
+
+    <string name="set_currency">تحديد العملة </string>
+    <string name="currency_hint">العملات</string>
+    <string name="set_date">"تحديد التاريخ "</string>
+    <string name="report_type_title">نوع التقرير</string>
+    <string name="radio_total_balance">إجمالي الأرصدة لحساب فردي</string>
+    <string name="radio_detailed_movement">تفاصيل جميع المبالغ لحساب فردي</string>
+    <string name="radio_monthly_summary">إجمالي المبالغ شهرياً لحساب فردي</string>
+    <string name="radio_total_balance_by_account_type">إجمالي الأرصدة حسب تصنيف الحساب</string>
+    <string name="radio_detailed_movement_by_account_type">تفاصيل جميع المبالغ حسب تصنيف الحساب</string>
+    <string name="radio_monthly_summary_by_account_type">إجمالي المبالغ شهرياً حسب تصنيف الحساب</string>
+    <string name="button_generate_pdf">إنشاء تقرير PDF</string>
+    <string name="report_title_monthly_account_summary">كشف حساب شهري</string>
+    <string name="report_title_consolidated_movement">كشف حركة مجمع</string>
+    <string name="report_title_consolidated_balances">ملخص أرصدة الحسابات</string>
+
+
+    <string name="report_title_multi_currency_statement">كشف حساب متعدد العملات</string>
+
+    <string name="report_title_monthly_summary_by_type">الحركة الشهرية الإجمالية</string>
+    <string name="report_label_account">الحساب</string>
+    <string name="report_label_account_type">نوع الحساب</string>
+    <string name="report_label_all_currencies">كل العملات</string>
+    <string name="report_label_by_currency">بعملة</string>
+    <string name="report_label_period_from">الفترة من</string>
+    <string name="report_label_period_to">إلى</string>
+    <string name="report_label_all_periods">لكامل الفترات</string>
+    <string name="report_label_previous_balance">الرصيد السابق</string>
+
+    <string name="header_month">الشهر</string>
+    <string name="header_total_debit">إجمالي الصادر (عليه)</string>
+    <string name="header_total_credit">إجمالي الواصل (له)</string>
+    <string name="header_net_movement">صافي الحركة</string>
+    <string name="header_final_balance">الرصيد النهائي</string>
+    <string name="header_date">التاريخ</string>
+    <string name="header_account_name">اسم الحساب</string>
+    <string name="header_details">التفاصيل</string>
+    <string name="header_debit_you">مدين (عليكم)</string>
+    <string name="header_credit_you">دائن (لكم)</string>
+    <string name="header_debit_them">مدين (عليه)</string>
+    <string name="header_credit_them">دائن (له)</string>
+    <string name="header_cumulative_balance">الرصيد التراكمي</string>
+    <string name="header_balance_type">نوع الرصيد</string>
+    <string name="header_balance">الرصيد</string>
+    <string name="header_last_transaction_date">تاريخ آخر حركة</string>
+
+    <string name="summary_totals">الإجماليات</string>
+    <string name="summary_final_balance_on_you">الرصيد النهائي - عليكم</string>
+    <string name="summary_final_balance_for_you">الرصيد النهائي - لكم</string>
+    <string name="summary_final_balance_on_them">الرصيد النهائي - عليهم</string>
+    <string name="summary_final_balance_for_them">الرصيد النهائي - لهم</string>
+    <string name="summary_total_balances_for_type">إجمالي الأرصدة لهذا النوع</string>
+    <string name="balance_type_on_them">عليه</string>
+    <string name="balance_type_for_them">له</string>
+
+    <string name="message_no_transactions_for_account">لا توجد أي عمليات لهذا الحساب بأي عملة.</string>
+    <string name="total_balance_type_for_them">إجمالي الأرصدة لهذا النوع - لهم</string>
+    <string name="total_balance_type_on_them">إجمالي الأرصدة لهذا النوع - عليهم</string>
+    <string name="tv_device_message">يمكنك ربط حسابك بجهازين كحد أقصى. لإضافة جهاز جديد، يجب إزالة أحد الأجهزة الحالية.</string>
+    <string name="devices_licenced">📱 الأجهزة المرتبطة حالياً:</string>
+    <string name="cancel_exit">إلغاء وتسجيل الخروج</string>
+
+    <string name="report_footer_page">صفحة %1$d</string>
+    <string name="report_footer_print_date">تاريخ الطباعة: %1$s </string>
+    <string name="invoce_value">قيمة الفاتورة</string>
+    <string name="amount_pay">المبلغ المدفوع نقدا</string>
+    <string name="remaining_remain">"المبلغ المتبقي: "</string>
+    <string name="success_saving">تم حفظ العملية بنجاح!</string>
+    <string name="sms_share">مشاركة عبر الرسائل</string>
+    <string name="whatsapp_share">مشاركة عبر الواتساب</string>
+    <string name="share_by">مشاركة تأكيد العملية</string>
+    <string name="server_offline">الخادم متوقف</string>
+    <string name="share">مشاركة</string>
+    <string name="welcome_back">مرحبا بعودتك، تمت المزامنة بنجاح!</string>
+    <string name="old_password_hint">كلمة المرور القديمة</string>
+    <string name="new_password_hint">كلمة المرور الجديدة</string>
+    <string name="confirm_password_hint">تأكيد كلمة المرور الجديدة</string>
+    <string name="passwoed_setting">إعداد كلمة المرور</string>
+    <string name="purchase_code_hint">🔑 الكود المميز:</string>
+    <string name="copy_code">📋 نسخ الكود</string>
+    <string name="whatsapp_send_code">📱 واتساب</string>
+    <string name="close">إغلاق</string>
+    <string name="sync_contacts">استعادة البيانات</string>
+    <string name="sync_data">استعادة البيانات</string>
+    <string name="sync_message">جاري استيراد الحسابات...</string>
+    <string name="no_accounts">لا توجد حسابات من هذا النوع</string>
+    <string name="all">" الكل"</string>
+    <string name="all_move_by_account_type">"كشف حركة لنوع الحساب: "</string>
+    <string name="login_with_facebook">تسجيل الدخول بحساب Facebook</string>
+    <string name="facebook_login_success">تم تسجيل الدخول بحساب فيسبوك بنجاح</string>
+    <!--    <string name="facebook_login_failed">فشل تسجيل الدخول بحساب فيسبوك</string>-->
+    <string name="connecting_facebook">جاري الاتصال بفيسبوك...</string>
+    <string name="authenticating_facebook">جاري المصادقة مع فيسبوك...</string>
+    <string name="loading_user_data">جاري تحميل بيانات المستخدم...</string>
+    <string name="registration_success">🎉 تم التسجيل بنجاح!</string>
+    <string name="registration_success_message">تم الانتهاء من إعدادات تكوين الحساب بنجاح.\n\nيمكنك الآن البدء في استخدام التطبيق.</string>
+    <!--    <string name="login_with_facebook">تسجيل الدخول بحساب فيسبوك</string>-->
+    <!--    <string name="facebook_login_success">تم تسجيل الدخول بحساب فيسبوك بنجاح</string>-->
+    <string name="facebook_login_failed">فشل تسجيل الدخول بحساب فيسبوك</string>
+    <string name="facebook_login_canceled">تم إلغاء تسجيل الدخول عبر فيسبوك</string>
+    <string name="creating_account">جاري إنشاء الحساب...</string>
+    <string name="creating_system_account">جاري إنشاء الحساب في النظام...</string>
+    <string name="sending_verification">جاري إرسال رسالة التحقق...</string>
+    <string name="saving_user_data">جاري حفظ بيانات المستخدم...</string>
+    <string name="updating_profile">جاري تحديث الملف الشخصي...</string>
+    <string name="preparing_account">جاري إعداد حسابك...</string>
+    <string name="preparing_basic_data">جاري تحضير البيانات الأساسية...</string>
+    <string name="checking_location_permission">جاري التحقق من صلاحيات الموقع...</string>
+    <string name="detecting_local_currency">جاري تحديد العملة المحلية...</string>
+    <string name="requesting_location_permission">جاري طلب صلاحية الموقع...</string>
+    <string name="account_setup_complete">تم الانتهاء من إعداد الحساب</string>
+    <string name="start_using_app">يمكنك الآن البدء في استخدام التطبيق</string>
+
+    <string name="update_app_message">سيتم توجيهك إلى صفحة التحديث على متجر UpToDown. هل تريد المتابعة؟</string>
+    <string name="report_label_currency">العملة</string>
+    <string name="report_label_all_accounts">كل الحسابات</string>
+    <string name="report_label_all_accounts_types">كل أنواع الحسابات</string>
+    <string name="report_label_period">الفترة</string>
+    <string name="report_label_from">من</string>
+    <string name="report_label_to">إلى</string>
+    <string name="report_label_month">الشهر</string>
+    <string name="report_label_debit">مدين (عليه)</string>
+    <string name="report_label_credit">دائن (له)</string>
+    <string name="report_label_net_movement">صافي الحركة</string>
+    <string name="report_label_final_balance">الرصيد النهائي</string>
+    <string name="report_label_date">التاريخ</string>
+    <string name="report_label_details">التفاصيل</string>
+    <string name="report_label_balance">الرصيد</string>
+    <string name="report_label_cumulative_balance">الرصيد التراكمي</string>
+    <string name="report_label_totals">الإجماليات</string>
+    <string name="report_label_final_balance_them">الرصيد النهائي - عليهم</string>
+    <string name="report_label_final_balance_you">الرصيد النهائي - لهم</string>
+    <string name="report_label_balance_type">نوع الرصيد</string>
+    <string name="report_label_last_transaction_date">تاريخ آخر حركة</string>
+    <string name="report_label_account_name">اسم الحساب</string>
+
+    <string name="report_balance_type_them">عليه</string>
+    <string name="report_balance_type_you">له</string>
+    <string name="report_error_generating">خطأ في توليد التقرير</string>
+    <string name="report_print_date">تاريخ الطباعة</string>
+    <string name="report_page">صفحة</string>
+    <string name="use_biometric">استخدم بصمتك للمتابعة</string>
+    <string name="referral_reward_title">🎉 مكافأة الدعوة</string>
+    <string name="referral_reward_message">حصلت على %1$d نقاط جديدة بفضل دخول مستخدم جديد بواسطة رابط دعوتك الخاص!</string>
+    <string name="referral_reward_bonus_message">🎁 مكافأة جديدة! لقد وصلت إلى %1$d صديقاً. شكراً لك، حصلت على %2$d عملية إضافية.</string>
+    <string name="referral_reward_bonus_points">قم بدعوة أصدقاء أكثر لتحصل على النسخة الكاملة مجاناً.</string>
+
+    <string name="warning_title">تحذير</string>
+    <string name="fingerprint_not_supported">الهاتف لا يدعم القفل بالبصمة</string>
+    <string name="fingerprint_unavailable">البصمة غير متوفرة حالياً</string>
+    <string name="fingerprint_not_enrolled">لم يتم تسجيل أي بصمة. يرجى تسجيل بصمة في إعدادات الهاتف.</string>
+    <string name="enable_password_first">يجب تفعيل قفل التطبيق أولاً قبل استخدام البصمة. هل تريد تعيين كلمة مرور الآن؟</string>
+    <string name="password_required">يرجى إدخال كلمة المرور</string>
+    <string name="password_not_match">كلمة المرور غير متطابقة</string>
+    <string name="password_saved_success">تم حفظ كلمة المرور بنجاح</string>
+    <string name="password_saved_failed">لم يتم حفظ كلمة المرور بنجاح</string>
+    <string name="biometric_disabled">تم إلغاء قفل البصمة</string>
+    <string name="confirm_delete_message">هذا الحساب لديه ( %1$s ) عمليات مرتبطة به. هل أنت متأكد من حذفه وحذف كل عملياته نهائيًا ؟</string>
+    <string name="connecting_google">جاري الاتصال بجوجل...</string>
+    <string name="sync_title">فشل المزامنة</string>
+    <string name="error_sync_message">حدث خطأ أثناء استعادة البيانات:\n%1$s</string>
+    <string name="sync_start">جاري استيراد البيانات، يرجى الانتظار...</string>
+    <string name="sync_finish">تم بنجاح استيراد   %1$d   حساب و  %2$d  عملية.</string>
+    <string name="fail_read_user_data">فشل الوصول لبيانات المستخدم.</string>
+    <string name="device_unlecinced">الجهاز الحالي غير مرخص.</string>
+    <string name="checking_device_license">فحص ترخيص الجهاز......</string>
+    <string name="user_remove">\n\nلقد قمت بحذف حسابك من قبل ولإعادة التفعيل يرجى التواصل مع مسئول التطبيق</string>
+    <string name="user_remove_tit">تنبيه!</string>
+    <string name="server_stopped">الخادم متوقف</string>
+    <string name="server_running">الخادم يعمل</string>
+    <string name="stop_server">الخادم متوقف</string>
+    <string name="server_error">خطأ في الخادم</string>
+    <string name="facebook_auth_failed">فشل في تسجيل الدخول</string>
+    <string name="guest_text">المتابعة بدون حساب</string>
+    <string name="zero_balance">مرحباً  %1$s ، ليس هناك رصيد حالي بعملة  ( %2$s)\n</string>
+    <string name="final_sms_balance">" مرحباً  %1$s ، رصيدكم الحالي لدينا بعملة (  %2$s)\n هو  %3$s    %4$s\n"</string>
+    <string name="guest_warning">لم تسجّل الدخول بعد! سجّل دخولك الآن لحماية بياناتك المالية من الفقدان.</string>
+    <string name="menu_login"><font color="#3BA662"><b>تسجيل الدخول</b></font></string>
+    <string name="version_text">%1$s الإصدار - %2$s</string>
+    <string name="convert_guest_to_official">تحويل الحساب إلى رسمي</string>
+    <string name="converting_guest_account">جاري تحويل الحساب إلى رسمي…</string>
+    <string name="conversion_success">تم تحويل الحساب إلى رسمي بنجاح</string>
+    <string name="conversion_failed">فشل في تحويل الحساب إلى رسمي</string>
+    <string name="register_guest_mode">تسجيل حساب رسمي</string>
+    <string name="create_official_account">إنشاء حساب رسمي</string>
+    <string name="official_account_message">أنشئ حساباً رسمياً للاستمتاع بجميع المزايا</string>
+    <string name="guest_mode_warning">أنت تستخدم التطبيق كضيف. سجّل حساباً رسمياً لحفظ بياناتك</string>
+    <string name="check_regestiration_account">جاري التحقق من الحساب...</string>
+    <string name="preparing_guest_account">جاري إعداد حساب الضيف…</string>
+    <string name="creating_guest_account">جاري تهيئة التطبيق…</string>
+    <string name="setting_up_guest_data">جاري إعداد البيانات الأساسية…</string>
+    <string name="adding_default_currency">جاري استخدام العملة الافتراضية...</string>
+    <string name="update_available_title">تحديث جديد %s متوفر</string>
+    <string name="update_available_message">يوجد تحديث جديد للتطبيق يحتوي على تحسينات وإصلاحات . ننصح بتحديث التطبيق للحصول على أفضل تجربة.</string>
+    <string name="update_now">تحديث الآن</string>
+    <string name="remind_later">تذكير لاحقاً</string>
+
+    <string name="device_identification_error">خطأ في تعريف الجهاز</string>
+    <string name="device_add_failed">فشل في إضافة الجهاز</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="logout_cancelled">تم إلغاء تسجيل الدخول.</string>
+    <string name="guest_account_created">تم إنشاء حساب الضيف بنجاح: %s</string>
+    <string name="data_setup_error">خطأ في إعداد البيانات</string>
+    <string name="connection_issue">مشكلة في الاتصال</string>
+    <string name="sync_connection_error">حدثت مشكلة في الاتصال أثناء المزامنة. سيتم استخدام البيانات المحلية.</string>
+
+    <string name="skip_duplicate_currency">تخطي عملة مكررة: %s</string>
+    <string name="new_currency_added">تم إضافة عملة جديدة: %s</string>
+    <string name="skip_existing_currency_by_name">تخطي عملة موجودة مسبقاً بالاسم: %s</string>
+    <string name="skip_existing_currency">تخطي عملة موجودة مسبقاً: %s</string>
+    <string name="currency_transaction_error">خطأ في معاملة العملات</string>
+    <string name="last_update_using">أنت تستخدم أحدث إصدار من التطبيق</string>
+    <string name="for_you">" لك "</string>
+    <string name="on_you">" عليك "</string>
+    <string name="amonts">" مبلغ وقدره "</string>
+    <string name="fianal_remain">"الرصيد الحالي "</string>
+    <string name="preper_guest_account">جاري تهيئة التطبيق ....</string>
+    <string name="for_him">له</string>
+    <string name="on_them">عليه</string>
+    <string name="device_block_title">تم حظر الجهاز</string>
+    <string name="device_block_message">عذراً، لا يمكنك استخدام التطبيق على هذا الجهاز.\n\n
+        وذلك بسبب مخالفتك سياسة الإستخدام للتطبيق بهذا الجهاز
+        \n\n\nللمساعدة، يرجى التواصل مع الدعم الفني.</string>
+    <string name="exit">خروج</string>
+    <string name="failed_check_device">تعذر الحصول على معرف الجهاز</string>
+    <string name="blocked_device_message">تم حظر الجهاز بسبب مخالفته سياسة الإستخدام للتطبيق</string>
+    <string name="first_start_message">\n إذا لم تكن مستخدم جديد ولديك بيانات مخزنة في حسابك من قبل \n قم بتسجيل الدخول لحسابك من القائمة الجانبية للواجهه الرئيسية .</string>
+    <string name="whatsapp_request"> لقد قام التطبيق بحظر جهازي ولم استطيع استخدامة\nوهذا رقم جهازي الذي تم حضره:-\n</string>
+    <string name="deviceId">" %1$s \n"</string>
+    <string name="whatsapp_request_final">"نرجوا منكم شرح اسباب الحظر "</string>
+    <string name="contact_support">مساعدة</string>
+    <string name="whatsapp_app_tit">"أنا احد مستخدمي تطبيق "</string>
+    <string name="local_email">مستخدم غير رسمي</string>
+    <string name="google_play_purchase">بواسطة Google Play</string>
+    <string name="whatsapp_send_code_purchase">عبر التواصل المباشر مع المطور</string>
+    <string name="purchase_canceled">تم إلغاء عملية الشراء</string>
+    <string name="purchase_failed">"خطأ في عملية الشراء: "</string>
+    <string name="app_details_failed">فشل في تحميل معلومات المنتج</string>
+    <string name="purchase_failed_start">فشل في بدء عملية الشراء</string>
+    <string name="license_activated">تم تفعيل الرخصة بنجاح!</string>
+    <string name="menu_rate_app">تقييم التطبيق</string>
+    <string name="welcom_message">مرحبا بك \n\n للبدء في إستخدام التطبيق وإضافة الحسابات قم بالنقر اسفل الشاشة على ( + ) وادخل اسم الحساب وعند الانتقال لاضافة المبلغ سوف يظهر مربع حوار اضافة الحساب قم باضافة تفاصيل الحساب ونوع الحساب وحفظ الحساب \n
+- قم باتمام باقي بيانات العملية \n
+- قم باختيار ازرار لك او عليك حسب نوع العملية سيتم الحفظ مباشرة \n\n
+** لمزيد من التعليمات  يرجى فتح القائمة الجانبية وإختيار المساعدة وقم بقرائة كل التفاصيل   </string>
+    <string name="rate_massge">هل أعجبك التطبيق؟\n\n 🌟
+نود معرفة رأيك لتحسين تجربتك أكثر!\n
+يرجى تقييم التطبيق ومشاركتنا ملاحظاتك أو اقتراحاتك عبر صفحة التقييم — كل تقييم منك يساعدنا على تطوير المزايا التي تهمك أكثر.\n\n
+💡 ضع في تقييمك النقاط التالية إن أحببت:\n
+ ⚡ أداء التطبيق وسرعته \n
+ 💡 سهولة الاستخدام \n
+🎨 التصميم والتجربة البصرية \n
+🎯 دقة النتائج أو الخدمات المقدمة \n
+🔧 أي اقتراحات أو ملاحظات لتطوير المستقبل \n\n
+🙏 شكرًا لدعمك وثقتك — نحن نعمل على جعل تجربتك الأفضل دائمًا ❤️</string>
+    <string name="rate_buttonn">⭐ تقييم التطبيق الآن</string>
+    <string name="channel_main_name">الإشعارات الرئيسية</string>
+    <string name="channel_main_desc">جميع إشعارات التطبيق</string>
+    <string name="under_devloping">تحت التطوير</string>
+    <string name="item_already_exists">لديك نفس الاسم مسبقاً!</string>
+    <string name="currency_add_successfully">تمت إضافة العملة بنجاح</string>
+    <!--    <string name="cuurency_error_deleted">" \n عملية. يرجى حذف هذه العمليات أولاً. لا يمكن حذف هذه العملة لأنها مستخدمة في  %1$s "</string>-->
+    <!--    <string name="cuurency_error_deleted">\n لا يمكن حذف هذه العملة لأنها مستخدمة في   %1$s  عملية. يرجى حذف هذه العمليات أولاً. </string>-->
+    <string name="currency_delete_message">هل أنت متأكد من حذف العملة  %1$s ؟</string>
+    <string name="currency_already_exists">يوجد عملة بهذا الاسم بالفعل!</string>
+    <string name="currency_must_not_empty">اسم العملة لا يمكن أن يكون فارغًا</string>
+    <string name="edit_delet">"تعديل / حذف "</string>
+    <string name="currency_update_successfully">تم تحديث العملة بنجاح</string>
+    <string name="currency_name">اسم العملة</string>
+    <string name="currency_symbol">رمز العملة</string>
+    <string name="currency_symbol_loc">م</string>
+    <string name="currency_code">كود العملة</string>
+    <string name="currency_name_required">يرجى إدخال اسم العملة</string>
+    <string name="currency_symbol_required">يرجى إدخال رمز العملة</string>
+    <string name="currency_code_required">يرجى إدخال كود العملة</string>
+    <string name="currency_details">تفاصيل العملة</string>
+    <string name="currency_edit_help">يمكنك تعديل اسم العملة ورمزها وكودها. الرمز يظهر في الواجهة والكود يستخدم للتخزين.</string>
+    <string name="guest_daily_noti_message">يرجى تسجيل الدخول! ليتم مزامنة بياناتك بالوقت الفعلي.</string>
+    <string name="daily_noti_message">مرحبا, هل أتممت اليوم تسجيل بياناتك المالية لك و عليك.</string>
+    <string name="daily_noti_title">تذكير يومي</string>
+    <string name="noti_summery">إشعار</string>
+    <string name="main_noti_app">إشعارات التطبيق الرئيسية</string>
+    <string name="all_noti_app">جميع إشعارات التطبيق</string>
+    <string name="finance_noti">إشعار مالي</string>
+    <string name="daily_remainder">تذكير مالي يومي</string>
+    <string name="report_caution_message">\nلإستخدام هذه الميزة يرجى تسجيل الدخول\n</string>
+    <string name="error_admin_only">ليس لديك صلاحية لتفعيل النسخة</string>
+    <string name="unsynced_data_title">بيانات غير متزامنة</string>
+    <string name="unsynced_data_message">لديك بيانات قمت بإنشائها في الحساب المؤقت. \nهل تريد إضافتها لحسابك الرسمي ؟</string>
+    <string name="tv_warning">تنبية:\nإذا لم تظهر البيانات بعد انتهاء إستيراد البيانات\nيتم إغلاق التطبيق من الخلفية وإعاة فتحة مرة اخرى.</string>
+    <string name="cuurency_error_deleted">\n لا يمكن حذف هذه العملة لأنها مستخدمة في %1$s عملية. يرجى حذف هذه العمليات أولاً.</string>
+
+    <string name="channel_name">التذكيرات اليومية</string>
+    <string name="channel_description">إشعارات التذكير اليومية بتحديث المصاريف</string>
+    <string name="notifications_enabled">تم تفعيل الإشعارات اليومية</string>
+    <string name="notifications_disabled">تم إيقاف الإشعارات اليومية</string>
+    <string name="info_null_Account">n\الحساب ( %1$s ) غير صحيح أو غير موجود \nهل تريد حفظ هذا الحساب كحساب جديد؟</string>
+    <string name="daily_reminder">تذكير يومي</string>
+    <string name="profile_updated_successfully">تم حفظ البيانات بنجاح</string>
+    <string name="delete_title">خطأ في الحذف</string>
+    <string name="retry_again">حاول مرة أخرى</string>
+
+
+    <string name="register_and_claim">تسجيل ومطالبة بالمكافأة</string>
+    <string name="continue_as_guest">متابعة كضيف</string>
+    <string name="referral_not_available_title">مكافآت الإحالة غير متاحة</string>
+    <string name="referral_not_available_message">نعتذر، مكافآت الإحالة متاحة للمستخدمين الجدد فقط. يمكنك متابعة استخدام التطبيق .</string>
+
+    <string name="no_accounts_or_transactions">لا توجد حسابات أو عمليات\nابدأ بالإضافة بالنقر على ( + ) اسفل الشاشة</string>
+
+    <string name="daily_reminder_channel_name">تذكيرات يومية</string>
+    <string name="daily_reminder_channel_desc">إشعارات يومية لتذكيرك بتسجيل معاملاتك المالية</string>
+    <string name="daily_reminder_title">تذكير يومي</string>
+    <string name="daily_reminder_message">مرحباً، هل أتممت اليوم تسجيل بياناتك المالية؟</string>
+    <string name="daily_reminder_big_text">دعنا نذكرك بمراجعة وإضافة معاملاتك المالية اليوم. اضغط هنا لفتح التطبيق وإضافة عملياتك</string>
+    <string name="daily_reminder_summary">إشعار يومي</string>
+    <string name="dismiss">إلغاء</string>
+    <string name="open_app">فتح التطبيق</string>
+    <string name="daily_reminder_processing">جاري تهيئة الإشعار</string>
+    <string name="preparing_daily_reminder">جاري تحضير التذكير المالي اليومي</string>
+    <string name="daftree_daily_reminder_channel">daftree_daily_reminder</string>
+    <string name="referred_reward_message">لقد قمت بإستخدام رابط الدعوة المقدمة من صديقك .\nهل تريد تسجيل الدخول لتلقي مكافئة الدعوة؟</string>
+    <string name="channel_daily_name">الإشعارات اليومية</string>
+    <string name="general_notifications_disabled">الإشعارات العامة معطلة</string>
+    <string name="daily_notifications_disabled">الإشعارات اليومية معطلة</string>
+    <string name="daily_notifications_enabled">الإشعارات اليومية مُفعلة</string>
+    <string name="daily_notification_now">الإشعار اليومي متاح الآن</string>
+    <string name="daily_notification_in_minutes">الإشعار التالي خلال  %1$d  دقيقة</string>
+    <string name="daily_notification_in_hours">الإشعار التالي خلال  %1$d  ساعة</string>
+    <string name="general_notifications_enabled">تم تفعيل الإشعارات العامة</string>
+    <string name="general_notifications_set_disabled">تم إيقاف الإشعارات العامة</string>
+
+
+    <string name="transaction_updated">تم تعديل العملية بنجاح</string>
+    <string name="error_get_user_detail">فشل في الحصول على بيانات المستخدم</string>
+
+
+    <string name="email_verification_title">تفعيل الحساب مطلوب</string>
+    <string name="email_verification_message">تم إرسال رابط التفعيل إلى:\n%s\n\nيرجى فتح الرابط في بريدك الإلكتروني ثم العودة إلى التطبيق.\n\nسيتم الاستمرار تلقائياً بعد التفعيل.</string>
+    <string name="resend_verification">إعادة الإرسال</string>
+    <string name="change_email_button">تغيير البريد</string>
+    <string name="resend_countdown">إعادة الإرسال متاحة بعد: %d ثانية</string>
+    <string name="resend_available">يمكنك إعادة إرسال الرابط الآن</string>
+    <string name="verification_progress">جاري الانتظار... (%d/%d محاولة)</string>
+    <string name="verification_success">تم تفعيل الحساب بنجاح! جاري إكمال التسجيل...</string>
+    <string name="verification_error">خطأ في التحقق: %s</string>
+    <string name="verification_timeout_title">انتهى وقت الانتظار</string>
+    <string name="verification_timeout_message">لم يتم تفعيل الحساب خلال الوقت المحدد.\n\nيرجى التأكد من فتح رابط التفعيل في بريدك الإلكتروني أو إعادة إرسال الرابط.</string>
+    <string name="retry_verification">إعادة المحاولة</string>
+    <string name="cancel_verification">إلغاء</string>
+    <string name="registration_in_progress">يوجد عملية تسجيل قيد المعالجة. يرجى الانتظار...</string>
+    <string name="verification_resent_success">تم إعادة إرسال رابط التحقق بنجاح</string>
+    <string name="verification_resent_failed">فشل إعادة إرسال الرابط: %s</string>
+    <string name="registration_cancelled">تم إلغاء عملية التسجيل</string>
+
+    <!-- Account Deletion Strings -->
+    <string name="account_deleted_title">الحساب محذوف</string>
+    <string name="account_deleted_message">تم حذف هذا الحساب مسبقاً</string>
+    <string name="deletion_reason">السبب: %s</string>
+    <string name="deletion_final_message">لا يمكن تسجيل الدخول بهذا الحساب مرة أخرى.</string>
+    <string name="email_already_used">هذا البريد الإلكتروني مستخدم بالفعل</string>
+    <string name="weak_password_error">كلمة المرور ضعيفة جداً</string>
+
+    <!-- Function Error Messages -->
+    <string name="function_permission_denied">خطأ في صلاحيات النظام</string>
+    <string name="function_internal_error">خطأ داخلي في النظام</string>
+    <string name="function_invalid_email">البريد الإلكتروني غير صالح</string>
+    <string name="function_unauthenticated">يجب تسجيل الدخول أولاً</string>
+
+    <!-- Enhanced Verification Dialog Strings -->
+    <string name="enhanced_verification_title">تفعيل الحساب</string>
+    <string name="enhanced_verification_email_sent">تم إرسال رابط التفعيل إلى بريدك الإلكتروني</string>
+    <string name="enhanced_verification_instructions">يرجى فتح الرابط ثم العودة إلى التطبيق</string>
+    <string name="enhanced_verification_time_left">الوقت المتبقي: %d دقيقة</string>
+    <string name="enhanced_verification_resend">إعادة الإرسال</string>
+    <string name="enhanced_verification_cancel">تغيير البريد</string>
+
+    <!-- Fallback Check Strings -->
+    <string name="fallback_check_message">جاري التحقق من حالة الحساب...</string>
+    <string name="direct_check_message">جاري التحقق المباشر من الحساب...</string>
+
+    <!-- Auth Error Messages -->
+    <string name="auth_unknown_error">فشل في إنشاء الحساب: خطأ غير معروف</string>
+    <string name="auth_user_data_error">فشل في الحصول على بيانات المستخدم بعد الإنشاء</string>
+    <string name="auth_profile_error">فشل في إعداد الحساب</string>
+    <string name="auth_verification_error">فشل إرسال رابط التحقق: %s</string>
+
+    <!-- Progress Messages -->
+    <string name="progress_preparing">جاري الإعداد...</string>
+    <string name="progress_creating_account">جاري إنشاء الحساب...</string>
+    <string name="progress_sending_verification">جاري إرسال رابط التحقق...</string>
+    <string name="progress_checking_status">جاري التحقق من الحالة...</string>
+
+    <!-- Generic Actions -->
+    <string name="action_retry">إعادة المحاولة</string>
+    <string name="action_continue">متابعة</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_confirm">تأكيد</string>
+    <string name="action_dismiss">تجاهل</string>
+    <string name="verification_failed">خطأ في التحقق النهائي. يرجى إعادة المحاولة.</string>
+    <string name="verification_failed_not_available">التحقق النهائي فشل - المستخدم غير موجود أو غير مفعل</string>
+    <string name="verification_error_user_null">فقدان الاتصال بالمستخدم</string>
+    <string name="error_dialoge">خطأ في عرض نافذة التحقق</string>
+    <string name="account_activation_required">تفعيل الحساب مطلوب</string>
+    <string name="sending_verification_email">جاري إرسال رابط التحقق إلى بريدك الإلكتروني...</string>
+    <string name="invalid_email">البريد الإلكتروني غير صالح</string>
+    <string name="weak_password">كلمة المرور ضعيفة جداً</string>
+    <string name="user_created">"تم إنشاء الحساب بنجاح: "</string>
+    <string name="unknown_error">خطأ غير معروف</string>
+    <string name="checking_account_status">جاري التحقق من حالة الحساب...</string>
+    <string name="account_deleted">تم حذف هذا الحساب مسبقاً</string>
+    <string name="no_deletion_reason">غير محدد</string>
+    <string name="verification_note">"تنبية: اذا لم تجد رسالة التحقق في البريد الوارد\nستجد الرسالة في قسم الرسائل الغير مرغوب بها "</string>
+
+    <!-- Battery Optimization Dialog Strings -->
+    <!-- Early Usage Dialog (Splash Screen) -->
+
+    <string name="delete_message">حدث خطأ عند حذف الحساب</string>
+    <string name="delete_account_message">هل أنت متأكد من رغبتك في حذف حسابك؟ هذه العملية لا يمكن التراجع عنها وسيتم حذف جميع بياناتك بشكل دائم.</string>
+    <string name="yes_delete_acc">نعم، احذف حسابي</string>
+
+    <string name="start_subtitle">أضف أول مصروف لك.</string>
+    <string name="start_title">ابدأ اليوم بتحسين وضعك وتدوين عملياتك المالية!</string>
+    <!-- Transfer Funds Dialog -->
+    <string name="transfer_funds_title">التحويل بين الحسابات</string>
+    <string name="transfer_funds">تحويل</string>
+    <string name="from_account_hint">حساب المرسل (الدائن)</string>
+    <string name="to_account_hint">حساب المستقبل (المدين)</string>
+    <string name="transfer_from_hint">من حساب (الدائن)</string>
+    <string name="transfer_to_hint">إلى حساب (المدين)</string>
+    <string name="transfer_button">تحويل</string>
+
+    <!-- Transfer Error Messages -->
+    <string name="error_same_account">لا يمكن التحويل لنفس الحساب</string>
+    <string name="error_select_accounts">يرجى اختيار الحسابات</string>
+    <string name="transfer_success">تم التحويل بنجاح</string>
+    <string name="error_empty_amount">يرجى إدخال المبلغ</string>
+    <string name="error_invalid_amount">المبلغ غير صحيح</string>
+    <string name="error_select_currency">يرجى اختيار العملة</string>
+    <string name="error_account_not_found">الحساب غير موجود</string>
+    <string name="error_currency_not_found">العملة غير موجودة</string>
+    <string name="battery_dialog_welcome">🎉 مرحباً بك في تطبيق محفظتي الذكية!\n\nشكراً لاختيارك تطبيقنا المحترف لإدارة مصروفاتك اليومية</string>
+
+    <string name="_115">محلي</string>
+    <string name="_115_2b4e">سعودي</string>
+    <string name="_115_fa34">دولار</string>
+    <string name="_368">لا توجد حركات لعملات أخرى في هذا الحساب</string>
+    <string name="_398">محلي</string>
+    <string name="_407">محلي</string>
+    <string name="_408">دولار</string>
+    <string name="_409">سعودي</string>
+    <string name="stateBalance_"> لكم </string>
+    <string name="stateBalance__705c"> عليكم </string>
+    <string name="message_">مرحباً </string>
+    <string name="message__e8a2">، رصيدكم الحالي لدينا بعملة (</string>
+    <string name="message__3b3c">) هو</string>
+    <string name="_551">تم حفظ التعديلات</string>
+    <string name="_565">لا يمكن فتح تطبيق الرسائل</string>
+    <string name="_572">جاري تحميل بيانات الحساب، يرجى المحاولة بعد لحظات</string>
+    <string name="_599">مرحباً </string>
+    <string name="_599_5b7c">، ليس هناك رصيد حالي بعملة (</string>
+    <string name="_604">مرحباً </string>
+    <string name="_604_57a9">، رصيدكم الحالي لدينا بعملة (</string>
+    <string name="_604_54a3">) هو</string>
+    <string name="_829">تمت إضافة العملية بنجاح</string>
+    <string name="_844">تنبيه</string>
+    <string name="_845">لديك </string>
+    <string name="_845_7a92"> عملية تنتظر المزامنة. </string>
+    <string name="_846">يجب مزامنة هذه العمليات أولاً قبل إنشاء عمليات جديدة.</string>
+    <string name="_847">مزامنة الآن</string>
+    <string name="_852">لاحقاً</string>
+    <string name="_867">تم استيفاء الحصة اليومية</string>
+    <string name="_868">لقد استهلكت حصتك المجانية من العمليات لهذا اليوم. للحصول على عدد غير محدود من العمليات، يرجى ترقية حسابك.</string>
+    <string name="_869">شراء التطبيق الآن</string>
+    <string name="_873">لاحقاً</string>
+    <string name="_912">جاري عرض الإعلان...</string>
+    <string name="_984">لا يمكن فتح تطبيق الرسائل</string>
+    <string name="_1013">تعديل حساب</string>
+    <string name="_1015">إلغاء</string>
+    <string name="_1016">حفظ</string>
+    <string name="_1025">تم حفظ التعديلات</string>
+    <string name="transactionType_"> عليك </string>
+    <string name="transactionType__3d57"> لك </string>
+    <string name="balanceType_"> لكم </string>
+    <string name="balanceType__4618"> عليكم </string>
+    <string name="_1040">مبلغ وقدره </string>
+    <string name="_1041">الرصيد المتبقي </string>
+    <string name="_1086">تطبيق واتساب غير مثبت. جاري توجيهك للمتجر...</string>
+    <string name="_1122">لا توجد حركات لعملات أخرى في هذا الحساب</string>
+    <string name="_1175">تم حذف العملية</string>
+    <string name="_1211">لا توجد عمليات لتصديرها</string>
+    <string name="_1223">جاري إنشاء التقرير...</string>
+    <string name="_1251">فشل إنشاء التقرير</string>
+    <string name="_1266">مشاركة التقرير عبر...</string>
+    <string name="_1272">لا توجد عمليات لإنشاء تقرير</string>
+    <string name="_1277">جاري إنشاء التقرير...</string>
+    <string name="_1300">تم حفظ التقرير بنجاح</string>
+    <string name="_1302">فشل إنشاء التقرير</string>
+    <string name="_1311">جاري تحميل البيانات، يرجى المحاولة بعد لحظات</string>
+    <string name="_1317">لا توجد عمليات لإنشاء تقرير</string>
+    <string name="_1322">جاري إنشاء التقرير...</string>
+    <string name="_1354">فشل إنشاء التقرير</string>
+    <string name="_1379">لا يوجد تطبيق لفتح ملفات PDF</string>
+    <string name="_1391">ابحث في التفاصيل...</string>
+    <string name="_52">عملاء</string>
+    <string name="_52_896f">موردين</string>
+    <string name="_52_894c">عام</string>
+    <string name="_64">عنصر افتراضي</string>
+    <string name="_65">لا يمكن تعديل أو حذف العناصر الافتراضية للتطبيق.</string>
+    <string name="_66">موافق</string>
+    <string name="name__99">عملاء</string>
+    <string name="name__101">موردين</string>
+    <string name="name__103">عام</string>
+    <string name="_127">تعديل / حذف تصنيف</string>
+    <string name="_129">حفظ</string>
+    <string name="_130">تعديل</string>
+    <string name="_131">حذف</string>
+    <string name="_161">يوجد تصنيف بهذا الاسم بالفعل!</string>
+    <string name="_164">تم تحديث التصنيف بنجاح</string>
+    <string name="_182">لا يمكن الحذف</string>
+    <string name="_183">لا يمكن حذف هذا التصنيف لأنه مستخدم في </string>
+    <string name="_183_bb54"> حساب. يرجى تغيير تصنيف هذه الحسابات أولاً.</string>
+    <string name="_184">موافق</string>
+    <string name="_190">تأكيد الحذف</string>
+    <string name="_191">هل أنت متأكد من حذف تصنيف  </string>
+    <string name="text_191"> ؟</string>
+    <string name="_192">إلغاء</string>
+    <string name="_193">حذف</string>
+    <string name="_195">تم حذف التصنيف</string>
+    <string name="_224">إضافة نوع جديد</string>
+    <string name="_225">أدخل اسم الحساب (كلمتين بحد أقصى)</string>
+    <string name="_227">حفظ</string>
+    <string name="_236">إلغاء</string>
+    <string name="_244">اسم التصنيف لا يمكن أن يكون فارغًا</string>
+    <string name="_250">هذا التصنيف موجودة بالفعل</string>
+    <string name="_275">خطأ: المستخدم غير مسجل</string>
+    <string name="_282">خطأ: المستخدم غير مسجل</string>
+    <string name="_292">هذا التصنيف موجودة بالفعل</string>
+    <string name="_303">تمت إضافة التصنيف بنجاح</string>
+    <string name="_320">خطأ: المستخدم غير مسجل</string>
+    <string name="_334">تمت إضافة العملة بنجاح</string>
+    <string name="_352">لا يمكن الحذف</string>
+    <string name="_353">لا يمكن حذف هذا التصنيف لأنه مستخدم في </string>
+    <string name="_353_ff94"> حساب. يرجى تغيير تصنيف هذه الحسابات أولاً.</string>
+    <string name="_354">موافق</string>
+    <string name="_360">تأكيد الحذف</string>
+    <string name="_361">هل أنت متأكد من حذف تصنيف  </string>
+    <string name="text_361"> \'؟</string>
+    <string name="_362">إلغاء</string>
+    <string name="_363">حذف</string>
+    <string name="_365">تم حذف التصنيف</string>
+    <string name="_422">يوجد تصنيف بهذا الاسم بالفعل!</string>
+    <string name="_425">تم تحديث التصنيف بنجاح</string>
+
+
+    <string name="handleFacebookAccessToken_01">فشل في الحصول على رمز فيسبوك</string>
+    <string name="handleFacebookAccessToken_02">خطأ غير متوقع: </string>
+    <string name="setupFacebookCallback_03">جاري المصادقة مع فيسبوك...</string>
+    <string name="signIn_04">لا يوجد اتصال بالإنترنت</string>
+    <string name="signIn_05">فشل في بدء تسجيل الدخول: </string>
+    <string name="handleSignInResult_06">فشل في الحصول على بيانات التسجيل</string>
+    <string name="handleSignInResult_07">رمز المصادقة غير صالح</string>
+    <string name="handleSignInResult_08">فشل تسجيل الدخول بـ Google: </string>
+    <string name="firebaseAuthWithGoogle_09">خطأ غير متوقع: </string>
+    <string name="saveOrUpdateUserInFirestore_10">فشل في التحقق من بيانات المستخدم: </string>
+    <string name="saveOrUpdateUserInFirestore_11">خطأ في الاتصال: </string>
+    <string name="saveOrUpdateUserInFirestoreUpgrade_12">فشل في التحقق من بيانات المستخدم: </string>
+    <string name="saveOrUpdateUserInFirestoreUpgrade_13">خطأ في الاتصال: </string>
+    <string name="saveUserToFirestore_14">فشل في حفظ بيانات المستخدم: </string>
+    <string name="createDefaultNewUserData_15">تطبيق محفظتي الذكية</string>
+    <string name="createDefaultNewUserData_16">ادارات مالية يومية</string>
+    <string name="createDefaultNewUserData_17"> اليمن</string>
+    <string name="createDefaultNewUserData_18">خطأ غير متوقع: </string>
+    <string name="createNewUserDataUpgrade_19">فشل في إنشاء بيانات المستخدم.</string>
+    <string name="updateUserLoginData_20">فشل في تحديث بيانات تسجيل الدخول.</string>
+    <string name="updateUserLoginDataUpgrade_21">فشل في تحديث بيانات تسجيل الدخول.</string>
+    <string name="search_language_hint">ابحث عن لغة...</string>
+    <string name="document_was_created_by">"تم إنشاء هذا المستند بواسطة "</string>
+    <string name="page_info_format">الصفحة %d | تاريخ الطباعة: %s</string>
+
+    <string name="sending_verification_to_email">تم إرسال رابط التفعيل إلى البريد الإلكتروني:</string>
+    <string name="search_for_account">إبحث عن حساب ...</string>
+
+    <string name="checkAppSaftey_01">خطأ في الأمان</string>
+    <string name="checkAppSaftey_02">تم اكتشاف تلاعب في التطبيق أو بيئة غير آمنة (مثل الروت أو توقيع غير صحيح). سيتم إغلاق التطبيق.</string>
+    <string name="checkAppSaftey_03">موافق</string>
+    <string name="checkAppSaftey_04">وضع المطور مفعل</string>
+    <string name="checkAppSaftey_05">تم اكتشاف تفعيل وضع المطور. قد يؤدي ذلك إلى ثغرات أمنية. يرجى إيقافه للمتابعة.</string>
+    <string name="checkAppSaftey_06">الانتقال إلى الإعدادات</string>
+    <string name="checkAppSaftey_07">خطأ</string>
+    <string name="checkAppSaftey_08">تعذر الانتقال مباشرة إلى إعدادات المطور. يرجى إيقافها يدويًا من إعدادات الجهاز.</string>
+    <string name="checkAppSaftey_09">موافق</string>
+    <string name="checkAppSaftey_10">إغلاق التطبيق</string>
+    <string name="showUpdateDialog_11">تم تطبيق التحديثات الصغيرة</string>
+    <string name="showUpdateDialog_12">تم استعراض التحديثات الجديدة</string>
+    <string name="setupEventListeners_13">جاري تحميل بيانات المستخدم...</string>
+    <string name="setupEventListeners_14">جاري تحميل العملات...</string>
+    <string name="simulateWatchAd_15">جاري عرض الإعلان...</string>
+    <string name="showNotificationStatusMessage_16">تم تفعيل الإشعارات اليومية</string>
+    <string name="showNotificationStatusMessage_17">تم إيقاف الإشعارات اليومية</string>
+    <string name="onReferralRewardReceived_18">حسناً</string>
+    <string name="performBackup_19">تم حفظ النسخة الاحتياطية بنجاح!</string>
+    <string name="performBackup_20">فشل النسخ الاحتياطي: </string>
+    <string name="cycleCurrency_21">لا توجد عملات نشطة</string>
+    <string name="checkEnrolledFingerprints_22">تأكيد البصمة</string>
+    <string name="checkEnrolledFingerprints_23">ضع إصبعك للتحقق من البصمة</string>
+    <string name="handlePasswordLock_24">تنبيه</string>
+    <string name="handlePasswordLock_25">يجب إلغاء قفل البصمة أولاً قبل إلغاء كلمة المرور.</string>
+    <string name="handlePasswordLock_26">تم إلغاء قفل كلمة المرور</string>
+    <string name="showUnsyncedDataWarningDialog_27">بيانات غير متزامنة</string>
+    <string name="showUnsyncedDataWarningDialog_28">لديك بيانات لم تتم مزامنتها مع السحابة بعد. إذا قمت بتسجيل الخروج الآن، ستفقد هذه البيانات نهائيًا. هل تريد المتابعة؟</string>
+    <string name="showUnsyncedDataWarningDialog_29">خروج على أي حال</string>
+    <string name="showUnsyncedDataWarningDialog_30">إلغاء</string>
+    <string name="handleLogout_31">تسجيل الخروج</string>
+    <string name="handleLogout_32">هل أنت متأكد أنك تريد تسجيل الخروج؟</string>
+    <string name="handleLogout_33">نعم</string>
+    <string name="handleLogout_34">إلغاء</string>
+    <string name="setupViewPager_35">كل الحسابات</string>
+    <string name="showFilterDialog_36">كل الحسابات</string>
+    <string name="showFilterDialog_37">كل الحسابات</string>
+    <string name="backupDatabase_38">فشل النسخ الاحتياطي: </string>
+    <string name="startRestoreProcess_39">خطأ في الاستيراد</string>
+    <string name="startRestoreProcess_40">موافق</string>
+    <string name="startRestoreProcess_41">امتداد الملف غير مدعوم</string>
+    <string name="openUpdatePage_42">تعذر فتح رابط التحديث</string>
+    <string name="openUpdatePage_43">يرجى تثبيت متصفح للإنترنت</string>
+    <string name="showDeviceManagementDialog_44">ستستمر كمستخدم مجاني على هذا الجهاز.</string>
+    <string name="updateNavigationHeader_45">يرجى تسجيل الدخول</string>
+    <string name="checkForAppUpdate_46">فشل في فحص التحديثات: </string>
+    <string name="createBackupFile_47">خطأ في إنشاء ملف النسخة الاحتياطية</string>
+    <string name="openBackupFile_48">خطأ في فتح منتقي الملفات</string>
+    <string name="simulateRestoreProcess_49">جاري استيراد البيانات من: </string>
+    <string name="simulateRestoreProcess_50">تم استيراد النسخة الاحتياطية بنجاح</string>
+    <string name="setupAddTransactionButtonGlow_51">جاري تحميل العملات...</string>
+    <string name="requestDndWithDialog_52">تفعيل التذكير اليومي مهم جداً</string>
+    <string name="requestDndWithDialog_53">لتضمن وصول التذكير اليومي —</string>
+    <string name="requestDndWithDialog_54">يجب السماح للتطبيق باستخدام أذونات الإشعار المتقدمة.\n\n</string>
+    <string name="requestDndWithDialog_55">هذا التذكير يساعدك على متابعة مصروفاتك اليومية والمحافظة على ميزانيتك بشكل منتظم.</string>
+    <string name="requestDndWithDialog_56">سماح الآن</string>
+    <string name="requestDndWithDialog_57">لاحقاً</string>
+    <string name="downloading_language_please_wait">جاري تحميل ملفات اللغة، يرجى الانتظار...</string>
+    <string name="no_internet_language_warning">لا يوجد اتصال بالإنترنت. يتعذر تحميل باقي اللغات، يرجى الاتصال بالإنترنت لعرض كل اللغات بشكل صحيح.</string>
+    <string name="downloading_languages_resources">جاري تحميل حزم اللغات الإضافية...</string>
+    <string name="languages_downloaded_success">تم تحميل اللغات بنجاح</string>
+    <string name="upgrade_plan">ترقية الخطة</string>
+    <string name="later">لاحقاً</string>
+    <string name="daily_plan_tit2">تنبيه: عمليات معلقة</string>
+    <string name="daily_plan_msg2">يوجد لديك عمليات مالية لم تتم مزامنتها بسبب وصولك للحد الأقصى. قم بترقية خطتك لإتمام المزامنة.</string>
+
+    <!-- عناوين الشاشات -->
+    <string name="title_debt_activation">تفعيل مديونتي عند الغير</string>
+    <string name="title_debt_summary">مديونتي عند الغير</string>
+    <string name="title_debt_details">كشف حسابي التفصيلي</string>
+    <string name="title_verification">التحقق من الهاتف</string>
+
+    <!-- شاشة التفعيل -->
+    <string name="activation_subtitle">أدخل بياناتك لتفعيل الميزة</string>
+    <string name="hint_full_name">الاسم الكامل او الإسم التجاري</string>
+    <string name="hint_phone">رقم الهاتف</string>
+    <string name="btn_activate">تفعيل الميزة</string>
+    <string name="error_full_name_required">يرجى إدخال الاسم الكامل</string>
+    <string name="error_name_short">الاسم قصير جداً</string>
+    <string name="error_phone_required">يرجى إدخال رقم الهاتف</string>
+    <string name="error_phone_used">رقم الهاتف هذا مُستخدم مسبقاً</string>
+    <string name="activation_success">تم تفعيل الميزة بنجاح</string>
+
+    <!-- التحقق من الهاتف -->
+    <string name="verification_title">تم إرسال كود التحقق</string>
+    <string name="verification_message">تم إرسال كود مكون من 6 أرقام إلى رقم الهاتف</string>
+    <string name="hint_verification_code">كود التحقق</string>
+    <string name="btn_verify">تحقق</string>
+    <string name="btn_resend">إعادة إرسال</string>
+    <string name="btn_resend_timer">إعادة إرسال بعد %d ثانية</string>
+    <string name="error_verification_invalid">كود التحقق غير صحيح</string>
+    <string name="error_verification_expired">كود التحقق منتهي الصلاحية</string>
+    <string name="verification_sent">تم إرسال الكود مجدداً</string>
+
+    <!-- شاشة الملخص -->
+    <string name="summary_title">ملخص الأرصدة</string>
+    <string name="total_credit_you">إجمالي ما لي: %1$.2f</string>
+    <string name="total_debit_you">إجمالي ما علي: %1$.2f</string>
+    <string name="net_balance">صافي الرصيد: %1$.2f</string>
+    <string name="net_balance_positive">%1$.2f (لك)</string>
+    <string name="net_balance_negative">%1$.2f (عليك)</string>
+    <string name="user_count">لديك حسابات مسجلة لدى %d شخص</string>
+    <string name="loading_message">جاري تحميل الكشف...</string>
+
+    <!-- شاشة التفاصيل -->
+    <string name="details_title">كشف حسابي التفصيلي المسجل عند الأخ / %s</string>
+    <string name="currency_label">العملة: %s</string>
+    <string name="total_balance">صافي الرصيد: %1$.2f</string>
+    <string name="grand_total">الإجمالي:</string>
+    <string name="no_transactions">لا توجد معاملات</string>
+
+    <!-- رأس الجدول -->
+    <string name="header_currency">اسم العملة</string>
+    <string name="header_debit">اجمالي مدين</string>
+    <string name="header_credit">اجمالي دائن</string>
+
+    <!-- حالة فارغة -->
+    <string name="empty_title">لا توجد حسابات</string>
+    <string name="empty_message">لا توجد حسابات مسجلة برقمك</string>
+    <string name="empty_hint">لتفعيل الميزة، اطلب من أصدقائك إضافة رقمك إلى حسابك في تطبيقهم</string>
+
+    <!-- حالة الخطأ -->
+    <string name="error_title">حدث خطأ</string>
+    <string name="error_network">يرجى التحقق من اتصالك بالإنترنت</string>
+    <string name="btn_retry">إعادة المحاولة</string>
+
+    <!-- التحقق من الإنترنت -->
+    <string name="no_network_title">لا يوجد اتصال بالإنترنت</string>
+    <string name="no_network_message">يجب الاتصال بالإنترنت لاستخدام هذه الميزة. يرجى التحقق من اتصالك وإعادة المحاولة.</string>
+    <string name="btn_check_connection">فحص الاتصال</string>
+
+    <!-- العملات -->
+    <string name="currency_unknown">عملة</string>
+    <string name="currency_rial_yemeni">ريال يمني</string>
+    <string name="currency_rial_saudi">ريال سعودي</string>
+    <string name="currency_dirham">درهم اماراتي</string>
+
+    <!-- أنواع المعاملات -->
+    <string name="type_debit_you">مدين</string>
+    <string name="type_credit_you">دائن</string>
+
+    <!-- خيارات -->
+    <string name="menu_refresh">تحديث</string>
+    <string name="menu_share">مشاركة</string>
+
+    <!-- التواريخ والأرقام -->
+    <string name="date_format">yyyy-MM-dd</string>
+    <string name="number_format">%1$.2f</string>
+
+
+    <string name="activate_linked_account">تفعيل متابعة حساباتي</string>
+    <string name="linked_account">متابعة حساباتي</string>
+    <string name="linked_accounts">متابعة حساباتي</string>
+    <string name="linked_account_subtitle">\nتابع حساباتك وحركاتك المسجلة عند الآخرين</string>
+    <string name="error_phone_invalid">رقم الهاتف غير صحيح</string>
+    <string name="error_verification_failed">فشل التحقق: %s</string>
+    <string name="error_link_failed">فشل ربط الرقم: %s</string>
+    <string name="error_save_failed">فشل حفظ البيانات: %s</string>
+    <string name="error_code_incomplete">الكود غير مكتمل</string>
+
+    <string name="msg_feature_activated">تم تفعيل الميزة بنجاح!</string>
+    <string name="dialog_verify">تحقق</string>
+    <string name="dialog_cancel">إلغاء</string>
+
+    <string name="error_login_required">يجب تسجيل الدخول</string>
+    <string name="error_feature_disabled">يجب تفعيل ميزة \'متابعة ديوني عند الغير\' من القائمة الجانبية أولاً.</string>
+    <string name="error_no_phone_registered">لم يتم العثور على رقم هاتف مسجل. يرجى تحديث بياناتك.</string>
+    <string name="error_fetch_profile">خطأ في جلب الملف الشخصي: %s</string>
+    <string name="error_search_accounts">خطأ في البحث عن الحسابات: %s</string>
+    <string name="error_processing_data">خطأ في معالجة البيانات: %s</string>
+
+    <string name="label_currency_with_code">عملة (%s)</string>
+    <string name="label_currency_unknown">عملة غير معروفة</string>
+
+    <string name="summary_total_debit">إجمالي ما علي: %s</string>
+    <string name="summary_total_credit">إجمالي ما لي: %s</string>
+    <string name="summary_net_balance">صافي الرصيد: %s</string>
+    <string name="summary_users_count">لديك حسابات مسجلة لدى %d شخص</string>
+
+    <string name="title_statement_with">كشف حسابي المسجل عند الأخ / %s</string>
+    <string name="subtitle_linked_account">الحساب المرتبط برقمك</string>
+
+    <string name="suffix_credit_you"> (لك)</string>
+    <string name="suffix_debit_you"> (عليك)</string>
+
+    <string name="error_prefix">خطأ: %s</string>
+    <string name="account_summary">ملخص  كشف حسابي</string>
+    <string name="verified">تحقق</string>
+    <string name="home">الرئيسية</string>
+    <string name="radio_total_balance_all">إجمالي الأرصدة</string>
+    <string name="radio_detailed_movement_all">كشوفات تفصيلية</string>
+    <string name="radio_monthly_summary_all">إجمالي المبالغ شهرياً</string>
+
+    <string name="menu_filter_hide">إخفاء الفلتر</string>
+    <string name="menu_apply_filter">استعلام</string>
+    <string name="sync_message_today">تم التحديث اليوم مسبقاً, للاستخدام اكثر من مرة يرجى الإشتراك بالنسخة الكاملة</string>
+    <string name="sync_message_never">لم تتم المزامنة بعد</string>
+    <string name="offline_last">"آخر مزامنة: "</string>
+    <string name="offline_msg">يتم عرض البيانات المخزنة محلياً</string>
+    <string name="reports">التقارير</string>
+    <string name="early_dialog_welcome_subtitle2">لذلك قمنا بتوفير ميزة التذكير الذكية يوميا الساعة 8:30 مساءً\n\n</string>
+
+    <string name="early_dialog_welcome_title">🏦 محفظتي الذكية</string>
+    <string name="early_dialog_welcome_subtitle">إدارة ذكية لمصروفاتك اليومية</string>
+    <string name="early_dialog_description">✨ مرحباً بك في تطبيقنا المحترف\n\n🔒 تطبيق آمن ومحمي 100%\n📊 تقارير مفصلة ودقيقة\n💰 إدارة ميزانية ذكية\n🎯 تذكيرات يومية ذكية\n\nجاري التحضير لتجربة مميزة...</string>
+    <string name="early_dialog_preparing">جاري التحضير...</string>
+
+    <!-- Battery Optimization Dialog -->
+    <string name="battery_dialog_title">🏆 محفظتي الذكية\n\n</string>
+    <string name="battery_dialog_importance_title">💡 هل تعلم أن تدوين مصروفاتك اليومية يقلل من إنفاقك بنسبة تصل إلى 30%؟\n</string>
+    <string name="battery_dialog_importance_list">📊 تطبيقنا يساعدك على:\n• تتبع مصروفاتك بدقة\n• إعداد ميزانية ذكية\n• تحقيق أهدافك المالية\n• تجنب الإنفاق المفرط</string>
+    <string name="battery_dialog_battery_warning">⚠️ المهمة الهامة جداً:\n\nلضمان عمل التذكيرات اليومية بكفاءة، نحتاج إيقاف تحسين البطارية للتطبيق من إعدادات هاتفك.\n\nلماذا؟ لأن Google تمنع التطبيقات من العمل في الخلفية بدون موافقة المستخدم الصريحة.\n\nبدون هذا الإعداد:\n❌ لن تصلك التذكيرات اليومية\n❌ سيتوقف التذكير عند الساعة 8:30 مساءً\n❌ ستفقد إمكانية تتبع مصروفاتك بدقة</string>
+    <string name="battery_dialog_development">💻 نسعى دائماً لتحسين تطبيقنا لتقديم أفضل تجربة لك\n\nإذا كان لديك أي اقتراحات أو ملاحظات لتطوير التطبيق، ندعوك للتواصل معنا عبر:\n\n📧 البريد الإلكتروني: wallet.app.dev@gmail.com\n📱 واتساب: +1234567890</string>
+    <string name="battery_dialog_agree_button">✅ موافق - إيقاف تحسين البطارية</string>
+    <string name="battery_dialog_decline_button">❌ لا حاجة لذلك</string>
+
+    <!-- Battery Optimization Results -->
+    <string name="battery_optimization_success_title">🎉 ممتاز!</string>
+    <string name="battery_optimization_success_message">تم بنجاح! الآن ستتلقى التذكيرات اليومية في الوقت المحدد بدون انقطاع. شكراً لتعاونك!</string>
+    <string name="battery_optimization_retry_title">💡 تذكير مهم</string>
+    <string name="battery_optimization_retry_message">لم يتم إيقاف تحسين البطارية بعد. للتأكد من عمل التذكيرات اليومية، يرجى زيارة إعدادات البطارية يدوياً وإيقاف تحسين هذا التطبيق.</string>
+    <string name="battery_optimization_light_warning_title">تذكر دائماً</string>
+    <string name="battery_optimization_light_warning_message">إذا لم تعمل التذكيرات اليومية في المستقبل، تذكر أن هذا الإعداد ضروري لضمان عمل التطبيق بكفاءة. يمكنك إعداده لاحقاً من إعدادات البطارية.</string>
+
+    <!-- Battery Optimization Handler -->
+    <string name="battery_handler_reminder_title">⚠️ تذكير مهم - تحسين البطارية</string>
+    <string name="battery_handler_reminder_message">لضمان عمل التذكيرات اليومية بشكل صحيح، يرجى التأكد من إيقاف تحسين البطارية للتطبيق من إعدادات هاتفك.\n\nالتذكيرات اليومية مهمة جداً لضمان دقة تتبع مصروفاتك المالية.</string>
+    <string name="battery_handler_open_settings">فتح الإعدادات</string>
+    <string name="battery_handler_later">لاحقاً</string>
+
+    <!-- General Text Colors and Styling References -->
+    <string name="battery_dialog_app_name">محفظتي الذكية</string>
+    <string name="battery_dialog_preparing_experience">جاري التحضير لتجربة مميزة...</string>
+    <string name="dialog_daily_reminder_message">لتضمن وصول التذكير اليومي مع الصوت في كل الظروف—يجب منح التطبيق صلاحية التذكيرات المتقدمة.\n\nيساعدك هذا في تنظيم مصروفاتك ومتابعة ميزانيتك اليومية بدقة.</string>
+    <string name="dialog_daily_reminder_title">السماح بالتذكير اليومي</string>
+    <string name="agree_now">سماح الآن</string>
+
+    <string name="back">رجوع</string>>
+    <string name="tour_skip">تخطي</string>
+    <string name="tour_next">التالي</string>
+    <string name="tut_1_title">نقطة الانطلاق</string>
+    <string name="tut_1_desc">ابدأ من هنا بإنشاء حسابك المالي الأول لتنظيم ميزانيتك بدقة.</string>
+    <string name="tut_2_title">زر السحر المالي</string>
+    <string name="tut_2_desc">سجّل نفقاتك وإيراداتك بلمسة واحدة وسرعة فائقة.</string>
+    <string name="tut_3_title">شراكاتك المالية</string>
+    <string name="tut_3_desc">تابع الديون والحسابات المشتركة مع الآخرين لحظة بلحظة.</string>
+    <string name="tut_4_title">عملات متعددة</string>
+    <string name="tut_4_desc">انقر هنا لفلترة أرصدتك واستعراضها حسب العملة المطلوبة.</string>
+    <string name="tut_5_title">تحكم بلا حدود</string>
+    <string name="tut_5_desc">اربط التطبيق بحاسوبك الشخصي لإدارة بياناتك واستعراض التقارير باحترافية.</string>
+    <string name="sync_limit_reached_title">وصلت للحد اليومي</string>
+    <string name="sync_limit_reached_msg1">لقد استهلكت عدد مرات المزامنة المجانية لهذا اليوم.\nيمكنك الحصول على المزيد من خلال مشاهدة إعلان\n للحصول على المزامنة بدون اي قيود،قم بالإشتراك بالنسخة الكاملة للتطبيق</string>
+
+    <string name="error_quota_exceeded">تم تجاوز حد الرسائل المسموح. يرجى المحاولة لاحقاً.</string>
+    <string name="error_too_many_requests">تم حظر هذا الرقم مؤقتاً لكثرة المحاولات. يرجى الانتظار قليلاً والمحاولة لاحقاً.</string>
+    <string name="error_invalid_code">رمز التحقق غير صحيح.</string>
+    <string name="error_session_expired">انتهت صلاحية الرمز. اطلب رمزاً جديداً.</string>
+    <string name="error_unknown">حدث خطأ غير متوقع. حاول مرة أخرى.</string>
+    <string name="error_app_not_authorized">التطبيق غير مصرح له. يرجى التحقق من SHA-256 و Play Integrity API في Firebase Console.</string>
+    <string name="success_title">تم بنجاح</string>
+    <string name="register_by_phone">تسجيل الدخول بالرقم</string>
+    <string name="enter_by_phone">تسجيل الدخول برقم الهاتف</string>
+
+    <string name="title_statement_phone">الهاتف:  %s</string>
+    <string name="account_summary_balance">ملخص الأرصدة بحسب العملات</string>
+
+    <string name="error_contact_permission">الإذن مطلوب لاختيار جهة اتصال</string>
+    <string name="menu_restore_data_external">إستيراد نسخة إحتياطية لتطبيقات أخرى</string>
+    <string name="activate_linked_account_title">خصائص هذه الميزة</string>
+    <string name="acc_linked_1">شفافية تامة</string>
+    <string name="acc_linked_11">شاهد كشوفات حسابك المسجلة عند التجار الآخرين لحظة بلحظة.</string>
+    <string name="acc_linked_2">خصوصية مضمونة</string>
+    <string name="xml_02">بياناتك للقراءة فقط. لا يمكن لأحد التعديل عليها سواك.</string>
+    <string name="xml_03">تحكم كامل</string>
+    <string name="xml_04">أنت صاحب القرار. يمكنك تفعيل أو إيقاف هذه الميزة متى شئت.</string>
+    <string name="xml_05">لمعرفة المزيد حول كيفية الاستخدام</string>
+    <string name="xml_06">اضغط هنا لزيارة الرابط الرسمي للميزة</string>
+    <string name="daily_notifications_set_disabled">يجب تفعيل الإشعارات العامة أولاً</string>
+    <string name="error_phone_conflict">الرقم مستخدم بالفعل</string>
+    <string name="error_phone_conflict_msg">هذا الرقم مرتبط بحساب آخر سابقاً. هل تريد استخدامه لهذا الحساب ونقل ملكيته؟\n(سيتم اعتماد البيانات الجديدة)</string>
+    <string name="warning_linked_msg">ميزة متابعة حساباتي متوقفة \nهل تريد تفعيلها</string>
+    <string name="menu_linked_accounts">متابعة حساباتي</string>
+    <string name="linked_account_edite">تعديل هاتفي (متابعة حساباتي)</string>
+    <string name="edit_data">تعديل البيانات</string>
+    <string name="tot_own_you">عليك (مدين)</string>
+    <string name="tot_for_you">لك (دائن)</string>
+    <string name="tot_balance">الصافي</string>
+    <string name="btn_query">إستعلام</string>
+    <string name="btn_retry_query">إعادة</string>
+    <string name="error_user_disabled">تم تعطيل هذا الحساب</string>
+    <string name="error_operation_not_allowe">العملية غير مسموح بها حالياً</string>
+    <string name="whatsapp_send_code_purchase_desc">تواصل مباشر مع المطور للحصول على كود</string>
+    <string name="google_play_purchase_desc">تفعيل فوري وآمن وتلقائي</string>
+    <string name="purchase_code_subtitel">اختر الطريقة المناسبة لتفعيل النسخة الكاملة</string>
+    <string name="rewarded_watch">شاهد فيديو قصير واحصل على 5 نقاط فوراً في محفظتك.</string>
+    <string name="subscribing_titel">الترقية والمكافآت</string>
+    <string name="planning_type">اختر الخطة المناسبة</string>
+    <string name="auto_renew">تجديد تلقائي</string>
+    <string name="manual_renew">التجديد اليدوي</string>
+    <string name="monthly_subscribe">اشتراك شهري</string>
+    <string name="yearly_subscribe">اشتراك سنوي (توفير كبير)</string>
+    <string name="yearly_sub_titel">تمتع بكل المميزات لمدة عام</string>
+    <string name="lifetime_subscribe">PREMIUM  ♾️مدى الحياة</string>
+    <string name="lifetime_subscribe1">PREMIUM  ♾️مدى الحياة</string>
+    <string name="lifetime_sub_titel">ادفع مرة واحدة، وامتلك التطبيق للأبد</string>
+    <string name="confirm_purchase">متابعة الشراء</string>
+    <string name="BillingManager_01">فشل الشراء: كود </string>
+    <string name="startConnection_02">فشل الاتصال بجوجل بلاي. تأكد من الحساب.</string>
+    <string name="queryProductDetails_03">لا توجد منتجات متاحة (تأكد من إعدادات Google Console)</string>
+    <string name="queryProductDetails_04">فشل الاستعلام من جوجل: </string>
+    <string name="launchPurchaseFlow_05">البيانات غير جاهزة بعد، يرجى الانتظار قليلاً.</string>
+    <string name="launchPurchaseFlow_06">العرض غير متاح حالياً.</string>
+    <string name="loadAdInternal_01">فشل تحميل الإعلان: </string>
+    <string name="showAdActual_02">فشل عرض الفيديو</string>
+    <string name="initViews_01">جاري تحميل الأسعار...</string>
+    <string name="setupListeners_02">فشل تحميل الفيديو. حاول تشغيل VPN والمحاولة مرة أخرى.</string>
+    <string name="switchTab_03">يتم خصم المبلغ تلقائياً وتجديد الاشتراك.</string>
+    <string name="switchTab_04">دفع مرة واحدة لفترة محددة (لا يتجدد).</string>
+    <string name="selectPlan_05">متابعة الشراء</string>
+    <string name="onBillingClientSetupFinished_06">متابعة الشراء</string>
+    <string name="updatePricesUI_07">شهر / </string>
+    <string name="handleSuccessfulPurchase_08">تم التفعيل بنجاح!</string>
+    <string name="handleSuccessfulPurchase_09">خطأ في الحفظ: </string>
+    <string name="updatePointsInFirestore_10">تم إضافة </string>
+    <string name="updatePointsInFirestore_11"> نقاط</string>
+    <string name="updatePointsInFirestore_12">فشل تحديث النقاط</string>
+    <string name="loadUserPoints_13"> نقطة</string>
+
+    <string name="linked_account_edite2">تعديل بيانات (متابعة حساباتي)</string>
+
+    <string name="BillingManager_11">تم إلغاء العملية من قبل المستخدم</string>
+    <string name="BillingManager_12">خطأ في الشراء: </string>
+    <string name="startConnection_13">فشل الاتصال بجوجل بلاي: </string>
+    <string name="queryProductDetails_14">لا توجد منتجات متاحة (قائمة فارغة)</string>
+    <string name="queryProductDetails_15">فشل تحميل المنتجات: </string>
+    <string name="launchBillingFlow_16">بيانات المنتج غير جاهزة</string>
+    <string name="launchBillingFlow_17">الخطة غير متاحة حالياً</string>
+    <string name="free_watch">اجمع النقاط مجاناً</string>
+    <string name="discount_ends_on">تاريخ إنتهاء العرض</string>
+    <string name="save_percentage">نسبة التوفير</string>
+    <string name="current_subscription_status">"حالة الاشتراك الحالي "</string>
+
+    <string name="prepareAndPushNotification_01">مستخدم</string>
+    <string name="prepareAndPushNotification_02">لكم</string>
+    <string name="prepareAndPushNotification_03">عليكم</string>
+    <string name="prepareAndPushNotification_04">تم تسجيل مبلغ (</string>
+    <string name="prepareAndPushNotification_05"> من قبل الأخ/ </string>
+    <string name="prepareAndPushNotification_06">إشعار تسجيل 🔔</string>
+
+    <string name="connectToGooglePlay_01">فشل الاتصال بمتجر جوجل: </string>
+    <string name="updateUIWithPrices_format_021">%.2f %s </string>
+    <string name="updateUIWithPrices_format_031">%.2f %s </string>
+    <string name="updateUIWithPrices_04">خصم </string>
+    <string name="updateSubscriptionPricesDisplay_format_051">%.2f %s </string>
+    <string name="updateSubscriptionPricesDisplay_06"> / شهر</string>
+    <string name="updateSubscriptionPricesDisplay_07"> / سنة</string>
+    <string name="startPurchaseFlow_08">الرجاء اختيار خطة</string>
+    <string name="onPurchasesUpdated_09">تم إلغاء العملية</string>
+    <string name="onPurchasesUpdated_10">أنت تمتلك هذا المنتج بالفعل! جاري التفعيل...</string>
+    <string name="onPurchasesUpdated_11">خدمة المتجر غير متوفرة حالياً، تحقق من الانترنت.</string>
+    <string name="onPurchasesUpdated_12">حدث خطأ: </string>
+    <string name="handlePurchase_13">تم الاشتراك بنجاح!</string>
+    <string name="handlePurchase_14">العملية قيد المراجعة، سيتم التفعيل تلقائياً عند الاكتمال.</string>
+    <string name="grantEntitlement_15">أنت مشترك بالفعل</string>
+    <string name="setupLifetimeDiscountLogic_16">ينتهي خلال: </string>
+    <string name="setupLifetimeDiscountLogic_17">انتهى العرض</string>
+    <string name="handleSuccessfulPurchase_18">تم تفعيل الاشتراك بنجاح!</string>
+    <string name="disableUIForActiveSubscriber_19">مشترك بالفعل </string>
+    <string name="prepareAndPushNotification_account_is_new">قام شخص ما بإضافتك ضمن قائمة حساباتة المالية\nلمعرفة من قام بإضافتك, قم بتفعيل ميزة متابعة حسابتي وتابع حساباتك عند الأخرين أولا بأول</string>
+    <string name="remind_laters">تذكيري لاحقاً</string>
+    <string name="rate_rewarded">مكافأة التميز 🎁</string>
+    <string name="rate_rewarded_message">تقديراً لثقتك بعد 100 عملية، نود منحك 20 نقطة مكافأة عند تقييمك للتطبيق.</string>
+    <string name="prepareAndPushNotification_guest">"قام شخص ما بتسجيل مبلغ وقدرة "</string>
+    <string name="processSelectedContact_01">حدث خطأ أثناء جلب الرقم</string>
+    <string name="updateLinkedAccountsMenuItem_02">ديوني المشتركة</string>
+    <string name="showExpiryWarningDialog_03">⚠️ اشتراكك ينتهي قريباً</string>
+    <string name="showExpiryWarningDialog_04">متبقي </string>
+    <string name="showExpiryWarningDialog_05"> أيام. سيتم التجديد تلقائياً إذا كانت خطتك تدعم ذلك.</string>
+    <string name="showExpiryWarningDialog_06">إدارة الاشتراك</string>
+    <string name="showExpiredDialog_07">انتهت صلاحية الاشتراك</string>
+    <string name="showExpiredDialog_08">لم نتمكن من تجديد اشتراكك. تم تحويل الحساب للنسخة المجانية.</string>
+    <string name="showExpiredDialog_09">تجديد الآن</string>
+    <string name="showExpiredDialog_10">إغلاق</string>
+    <string name="subscribing_end_titel">تنبيه انتهاء الاشتراك</string>
+    <string name="subscribing_end_message">بما أنك غير متصل بالإنترنت، لا يمكننا التحقق مما إذا كنت قد جددت الاشتراك تلقائياً.\n\nتم تحويلك للنسخة المجانية مؤقتاً. يرجى الاتصال بالإنترنت وفتح التطبيق ليتم التحقق من التجديد وتفعيل اشتراكك مرة أخرى.</string>
+    <string name="new_notifications">إشعارات جديدة</string>
+    <string name="financial_reports">التقارير المالية</string>
+    <string name="server_started">تم تشغيل الخادم</string>
+    <string name="error_server_not_running">خطأ في تشغيل الخادم</string>
+    <string name="server_was_stopped">تم إيقاف الخادم</string>
+    <string name="copied">تم النسخ</string>
+    <string name="server_online">الخادم يعمل</string>
+    <string name="web_server">خادم الويب</string>
+    <string name="notification_procedures">اتبع الخطوات التالية للوصول للتقارير:\n\n1. تأكد من اتصال الهاتف والكمبيوتر بنفس الشبكة\n\n2. افتح المتصفح واكتب عنوان IP أدناه\n\n3. اضغط  التالي لفتح الويب وتصفح التقارير</string>
+    <string name="permission_denieded">تم رفض الإذن</string>
+    <string name="error_app_check">تم رفض الاتصال لأسباب أمنية (App Check)</string>
+    <string name="must_register_debt">يجب عليك تنشيط هذه الخدمة عبر ادخال رقم هاتفك!</string>
+    <string name="must_enabled_feature">لقد قمت بإيقاف هذه الميزة!\nيرجى تفعيلها مرة أٌخرى</string>
+    <string name="premium_ads_activated">مبروك!\nتم تفعيل النسخة الإحترافية</string>
+    <string name="showCongratulationDialog_01">🎉 مبروك!</string>
+    <string name="showCongratulationDialog_02">بمناسبة عرض رمضان، حصلت على اشتراك مجاني لمدة شهرين (60 يوماً) بكامل المزايا.</string>
+    <string name="showCongratulationDialog_03">يجب عليك تسجيل الدخول للحصول على المكافئة</string>
+    <string name="must_be_user">انت حالياً تستخدم التطبيق كضيف\nللإستفادة من هذه الميزة يجب عليك تسجيل الدخول اولاً</string>
+    <string name="tut_bill_title">فواتير فورية</string>
+    <string name="tut_bill_desc">انشئ فواتير للحساب مباشرة من هنا</string>
+    <string name="tut_Pdf_title">التقارير المالية</string>
+    <string name="tut_Pdf_desc">تصفح التقارير للحساب مباشرة دون البحث عن الحساب</string>
+    <string name="showCongratulationDialog_022">"تم منحك إشتراك بكل ميزات التطبيق "</string>
+    <string name="showCongratulationDialog_033">"الإشتراك صالح حتى:  "</string>
+    <string name="report_no_data_generated">لا توجد بيانات</string>
+    <string name="balance_summary">"ملخص ارصدة الحساب "</string>
+    <string name="add_image_premium">"المعذرة, إرفاق الصور متاح فقط لمشتركي النسخة الكاملة."</string>
+    <string name="camera">الكاميرا</string>
+    <string name="gallary">معرض الصور</string>
+    <string name="show_photo">عرض الصورة</string>
+    <string name="image_attached_success">تم ارفاق الصورة بنجاح</string>
+    <string name="delete_photo">حذف الصورة</string>
+    <string name="image_deleted">تم إزالة المرفق، سيتم الحذف نهائياً عند الحفظ</string>
+    <string name="error_downloading_language1">خطا في تحميل اللغات</string>
+    <string name="error_starting_download1">"خطاء في بدء التحميل "</string>
+    <string name="app_name_report">تطبيق محفظتي الذكية</string>
+    <string name="restoreAccounts_01">خطأ في حفظ الحسابات: </string>
+    <string name="restoreAccounts_02">فشل الاتصال: </string>
+    <string name="startRestore_03">لا يوجد مستخدم مسجل حاليًا. فشلت الاستعادة.</string>
+    <string name="restoreTransactions_04">تم استعادة البيانات بنجاح (لا توجد عمليات).</string>
+    <string name="restoreTransactions_05">تم استعادة </string>
+    <string name="restoreTransactions_06"> عملية بنجاح!</string>
+    <string name="restoreTransactions_07">فشل الحفظ المحلي: </string>
+    <string name="restoreTransactions_08">فشل الاتصال: </string>
+    <string name="ensureDefaultCurrency_09">ريال يمني</string>
+    <string name="convertFirestoreBoolean_10">نعم</string>
+    <string name="restoreCurrencies_11">فشل جلب العملات: </string>
+    <string name="fetchTransactionsChunk_12">تم استيراد البيانات بنجاح</string>
+    <string name="fetchTransactionsChunk_13">تم استيراد </string>
+    <string name="fetchTransactionsChunk_14"> عملية...</string>
+    <string name="fetchTransactionsChunk_15">تم استيراد البيانات بنجاح</string>
+    <string name="fetchTransactionsChunk_16">فشل جلب العمليات: </string>
+    <string name="recurring_operations">العمليات الدورية</string>
+    <string name="add_recurring_operation">إضافة عملية دورية</string>
+    <string name="edit_recurring">تعديل عملية دورية</string>
+    <string name="recurrence_type">نوع التكرار</string>
+    <string name="daily">يومي</string>
+    <string name="weekly">أسبوعي</string>
+    <string name="monthly">شهري</string>
+    <string name="start_date">تاريخ البدء</string>
+    <string name="end_date">تاريخ الانتهاء</string>
+    <string name="recurring_added">تمت إضافة العملية الدورية بنجاح</string>
+    <string name="recurring_updated">تم تحديث العملية الدورية</string>
+    <string name="confirm_delete_recurring">هل أنت متأكد من حذف هذه العملية الدورية؟</string>
+    <string name="recurring_bubble_message">لديك عملية دورية %s بقيمة %s %s. \nهل ترغب بإضافتها اليوم؟</string>
+    <string name="add_now">إضافة الآن</string>
+    <string name="stoping_server1">السيرفر متوقف</string>
+    <string name="update">تحديث</string>
+    <string name="invalid_number">الرقم خاطئ</string>
+    <string name="account_added">تم اضافة الحساب</string>
+    <string name="ad_not_ready_message">لم يتم تهيئة الإعلان بعد، يرجى المحاولة مرة أخرى</string>
+    <string name="subscribe_now">"إشترك الأن"</string>
+    <string name="already_purchased">"أنت مشترك بالفعل"</string>
+    <string name="subscribing_already_owned">أنت مشترك بهذه الخُطة من قبل!</string>
+    <string name="success_purchased">تم الإشتراك</string>
+    <string name="subscription_expiry_message">سينتهي اشتراكك في %s</string>
+    <string name="must_verified">بريدك الإلكتروني غير مؤكد! تم إرسال رابط التفعيل إلى بريدك، يرجى تأكيده أولاً ثم سجل دخولك.</string>
+    <string name="register_message">عذراً، هذا البريد الإلكتروني غير مسجل لدينا في النظام. هل تود الانتقال لإنشاء حساب جديد به؟</string>
+    <string name="register_title_1">البريد غير مسجل</string>
+    <string name="sync_limit_reached">تنبيه: تم إيقاف المزامنة الحية لتجاوز حد 100 عملية للباقة المجانية بمتعدد الأجهزة. يرجى الترقية للعمل بلا قيود.</string>
+    <string name="startPurchaseFlow_088">حدث خطأ: لم يتم العثور على عرض مناسب للاشتراك</string>
+    <string name="owner_verification_request">أنا مالك الرقم\n %1$s \nأرجوا تزويدي بكود التحقق</string>
+    <string name="restriction_notice_title">تنويه بخصوص القيود</string>
+    <string name="restriction_notice_message">بسبب القيود المؤقتة المفروضة من شركة جوجل وإيقاف التحقق التلقائي عبر الرقم عن بلدكم، يرجى إرسال النموذج الجاهز عبر الضغط على الزر أدناه للمطور ليقوم بتزويدك بكود التفعيل يدوياً.</string>
+    <string name="send_form_whatsapp">إرسال النموذج</string>
+    <string name="google_account_required_title">حساب جوجل مطلوب</string>
+    <string name="google_account_required_message">لا يوجد حساب جوجل مفعّل على هذا الجهاز. لإتمام عملية الشراء، يرجى إضافة حساب جوجل أولاً من خلال الضغط على الزر أدناه، ثم عد إلى هذه الشاشة لاستكمال العملية.</string>
+    <string name="add_google_account">إضافة حساب جوجل</string>
+    <string name="account_picker_not_available">عذراً، لا يمكن فتح قائمة الحسابات. يرجى التأكد من وجود حساب جوجل مفعّل على الجهاز والمحاولة مرة أخرى.</string>
+    <string name="billing_unavailable_error">خدمة الدفع غير متاحة حالياً. الرجاء التأكد من تحديث تطبيق Google Play أو إضافة حساب دفع صالح والمحاولة لاحقاً.</string>
+    <string name="account_not_detected_title">لم يتم اكتشاف الحساب</string>
+    <string name="account_not_detected_message">لم نتمكن من اكتشاف حساب Google الذي أضفته. قد يحتاج النظام بعض الوقت للمزامنة. حاول مرة أخرى أو أضف الحساب مجدداً.</string>
+    <string name="add_again">إضافة حساب مرة أخرى</string>
+    <string name="error_phone_conflict_msg2">هذا الرقم مرتبط بحساب آخر سابقاً. اذا تم نقل ملكيته لك \\n(يرجى التواصل مع المطور عبر هذا الرقم الجديد لتأكيد ملكيتك للرقم )</string>
+    <string name="error_link_number">المستخدم الحالي غير مسجل رقميا</string>
+    <string name="observeViewModel_01">تم إلغاء ربط الهاتف من الحساب بنجاح</string>
+    <string name="showUnlinkConfirmationDialog_02">إلغاء ربط الحساب</string>
+    <string name="showUnlinkConfirmationDialog_03">هل أنت متأكد من رغبتك في إلغاء ربط رقم الهاتف الحالي بحسابك؟</string>
+    <string name="showUnlinkConfirmationDialog_04">نعم، إلغاء الربط</string>
+    <string name="showChangePhoneWarningDialog_05">تغيير رقم الهاتف</string>
+    <string name="showChangePhoneWarningDialog_06">هل تريد بالفعل تغيير رقم الهاتف؟ سيتم إلغاء ربط الرقم القديم من الحساب واعتماد الجديد وانتظار كود التحقق ليتم تفعيله.</string>
+    <string name="sort_by">ترتيب حسب</string>
+    <string name="sort_name_az">الإسم أ~ي</string>
+    <string name="sort_name_za">الإسم ي~أ</string>
+    <string name="sort_newest">الأحدث أولاً</string>
+    <string name="sort_oldest">الأقدم أولاً</string>
+    <string name="sort_latest_transactions">آخر حركة</string>
+    <string name="full_subscription">الإشتراك الكامل</string>
+    <string name="plan_expired_title">انتهت الخطة المجانية</string>
+    <string name="plan_expired_message">معذرة، لا يمكنك فتح التقارير بسبب انتهاء خطتك المجانية.\n\nلتصفح التقارير، ينبغي عليك:\n• الاشتراك في النسخة الكاملة للتمتع بجميع المزايا\n• أو مشاهدة إعلان\n• أو دعوة صديق للحصول على نقاط مجانية</string>
+    <string name="update_button">تحديث الآن</string>
+    <string name="update_required_message">يتوفر إصدار جديد من التطبيق! يجب عليك التحديث الآن لللإستمرار بإستخدام التطبيق.</string>
+    <string name="init_connect_internet">يرجى الاتصال بالإنترنت حتى يتم تهيئة التطبيق وربطه مع خوادم جوجل لأول مرة.</string>
+    <string name="init_connecting_google">جاري الإتصال بخوادم Google لإعداد بيانات التطبيق لأول مرة...</string>
+    <string name="init_import_failed">فشل استيراد بيانات التهيئة، يرجى المحاولة مرة أخرى.</string>
+    <string name="init_connection_error">حدث خطأ أثناء الاتصال بالخوادم: </string>
+    <string name="future_discounts">💎 تضمن لك خصومات المستقبل</string>
+    <string name="future_up_to_30">🎁 خصم يصل مستقبلاً الى 30%</string>
+    <string name="save_20_vs_monthly">وفر 20% مقارنة بالدفع الشهري!</string>
+    <string name="annual_subscription_recommended">اشتراك سنوي (الموصى به)</string>
+    <string name="all_basic_features">✓ جميع الميزات الأساسية للتطبيق</string>
+    <string name="elevate_wallet">ارتقِ بمحفظتك إلى مستوى النخبة 🌟</string>
+    <string name="budget_control_life_discount">تحكم بميزانيتك باحترافية، واضمن أسعار مخفضة مدى الحياة.</string>
+    <string name="additional_15_september">🎁 خصم 15% للمرحلة القادمة</string>
+    <string name="secure_google_payment">🔒 دفع آمن ومشفر عبر منصة GOOGLE </string>
+    <string name="limit_time">فترة محدودة ⏳</string>
+    <string name="for_ever">امتلكها للأبد</string>
+    <string name="channel_poromr_name">إشعارات العمليات</string>
+    <string name="set_separate">فصل الحسابات</string>
+    <string name="separate_accounts">عرض كل حساب على حدة</string>
+    <string name="share_png">مشاركة التقرير PNG</string>
+    <string name="sync_connection_lost">انقطع الاتصال، سيتم الإكمال لاحقاً…</string>
+    <string name="sync_already_completed">المزامنة مكتملة مسبقاً</string>
+    <string name="type_change_title">تأكيد تغيير نوع العملية</string>
+    <string name="type_change_message">نوع العملية كان \"%1$s\" وسيتم تغييره إلى \"%2$s\".\n\nهل تريد المتابعة؟</string>
+
+
+
+
+
+    <!-- استعادة كلمة المرور عبر الواتساب -->
+    <string name="forgot_password_alert_title">تنبيه</string>
+    <string name="forgot_password_confirm_send">تأكيد الإرسال</string>
+    <string name="forgot_password_other_options">خيارات أخرى</string>
+    <string name="forgot_password_other_options_title">خيارات أخرى</string>
+    <string name="forgot_password_other_options_advice">إذا لم يعد لديك وصول إلى هذا البريد الإلكتروني، فللحفاظ على خصوصية حساباتك فالأفضل أن تقوم بحذف التطبيق وتثبيته مرة أخرى والدخول بحسابك، وسيتم استيراد بياناتك وحساباتك من سحابة جوجل مباشرة.</string>
+    <string name="forgot_password_not_found">لم يتم العثور على كلمة مرور محفوظة.</string>
+
+    <!-- استعادة كلمة مرور القفل عبر البريد الإلكتروني -->
+    <string name="forgot_password_no_email_message">لا يوجد بريد إلكتروني حقيقي مسجّل في هذا الحساب. وللحفاظ على خصوصية حسابك، إذا كانت بياناتك متزامنة سحابياً فأفضل الحلول حذف التطبيق وتثبيته مرة أخرى والدخول بحسابك لاستعادة بياناتك وحساباتك مباشرة من السحابة.</string>
+    <string name="forgot_password_email_confirm_message">سيتم إرسال كلمة مرور قفل التطبيق تلقائياً إلى بريدك الإلكتروني المسجّل:\n\n%1$s</string>
+    <string name="forgot_password_sending_email">جاري إرسال كلمة المرور إلى بريدك الإلكتروني…</string>
+    <string name="forgot_password_email_sent_title">تم الإرسال بنجاح</string>
+    <string name="forgot_password_email_sent_message">تم إرسال كلمة مرور قفل التطبيق إلى بريدك الإلكتروني:\n%1$s\n\nإذا لم تجد الرسالة في البريد الوارد، يرجى مراجعة مجلد الرسائل غير المرغوب فيها (Spam).</string>
+    <string name="forgot_password_email_failed">تعذّر إرسال كلمة المرور إلى بريدك الإلكتروني. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.</string>
+    <string name="forgot_password_rate_limited">لقد تجاوزت الحد الأقصى لمحاولات الاستعادة، يرجى المحاولة مرة أخرى بعد ساعة.</string>
+    <string name="forgot_password_email_subject">استعادة كلمة مرور قفل تطبيق محفظتي الذكية</string>
+    <string name="forgot_password_email_greeting">مرحباً،</string>
+    <string name="forgot_password_email_intro">بناءً على طلبك من شاشة القفل، كلمة مرور قفل التطبيق الخاصة بك هي:</string>
+    <string name="forgot_password_email_security_note">للحفاظ على خصوصيتك، ننصح بحذف هذه الرسالة بعد فتح التطبيق. إذا لم تقم بهذا الطلب، يرجى تغيير كلمة مرور القفل فوراً.</string>
+</resources>

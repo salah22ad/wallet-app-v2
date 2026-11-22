@@ -1,0 +1,512 @@
+name: Build Signed APK & AAB With Gradle 9.5.0
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'اختر نوع الحزمة المراد بناؤها - apk أو aab أو both'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - apk
+          - aab
+          - both
+      update_branch:
+        description: 'تحديث ودمج فرع الإصدار عند وجوده مسبقاً (force push) - الافتراضي: معطّل'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      TZ: "Asia/Aden"
+      JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden"
+      EXPECTED_UPLOAD_SHA256: "1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21 with Gradle Cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Step 1 - Validate Keystore File Fingerprint (Pre-Sed)
+        run: |
+          set -e
+          rm -rf build app/build build_logs aab_diagnostics_package "${{ github.workspace }}/app/release.jks"
+          mkdir -p build_logs gradle/wrapper
+          touch build_logs/build_full.log build_logs/error_summary.log
+
+          echo "BUILD_FAILED=false" >> $GITHUB_ENV
+
+          GRADLE_APP_FILE="app/build.gradle.kts"
+          if [ ! -f "$GRADLE_APP_FILE" ] && [ -f "app/build.gradle" ]; then
+            GRADLE_APP_FILE="app/build.gradle"
+          fi
+          echo "GRADLE_APP_FILE=${GRADLE_APP_FILE}" >> $GITHUB_ENV
+
+          APP_VERSION=`grep -oP 'versionName\s*=?\s*["'\'']\K[^"'\'']+' "$GRADLE_APP_FILE" | head -n 1`
+          if [ -z "$APP_VERSION" ]; then APP_VERSION="1.0.0"; fi
+          echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
+
+          SELECTED_TYPE="${{ github.event.inputs.build_type }}"
+          if [ -z "$SELECTED_TYPE" ]; then SELECTED_TYPE="both"; fi
+          echo "SELECTED_TYPE=${SELECTED_TYPE}" >> $GITHUB_ENV
+
+          if [ -z "${{ secrets.KEYSTORE_BASE64 }}" ] || [ -z "${{ secrets.KEYSTORE_PASSWORD }}" ] || [ -z "${{ secrets.KEY_ALIAS }}" ] || [ -z "${{ secrets.KEY_PASSWORD }}" ]; then
+            echo "❌ خطأ حرج: أحد أسرار التوقيع الأربعة مفقود في GitHub Secrets!" | tee -a build_logs/build_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 1
+          fi
+
+          KEYSTORE_PATH="${{ github.workspace }}/app/release.jks"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | tr -d ' \n\r\t' | base64 --decode > "$KEYSTORE_PATH"
+
+          if ! CERT_INFO=`keytool -list -v -keystore "$KEYSTORE_PATH" -storepass "${{ secrets.KEYSTORE_PASSWORD }}" -alias "${{ secrets.KEY_ALIAS }}" 2>&1`; then
+            echo "❌ خطأ حرج: فشل فتح مفتاح التشفير!" | tee -a build_logs/build_full.log
+            echo "$CERT_INFO" | tee -a build_logs/build_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 1
+          fi
+
+          ACTUAL_KEY_SHA256=`echo "$CERT_INFO" | grep -oP 'SHA256:\s*\K[0-9A-F:]+' | head -n 1`
+          if [ "$ACTUAL_KEY_SHA256" != "$EXPECTED_UPLOAD_SHA256" ]; then
+            echo "❌ خطأ حرج: البصمة ($ACTUAL_KEY_SHA256) غير مطابقة لمفتاح التحميل!" | tee -a build_logs/build_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 1
+          fi
+          echo "✅ الفحص الأول نجح: ملف المفتاح يطابق بصمة مفتاح التحميل 100%." | tee -a build_logs/build_full.log
+
+      - name: Step 2 - Inject via sed & Verify Gradle Signing Fingerprint Before Build
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        env:
+          SIGNING_STORE_FILE: ${{ github.workspace }}/app/release.jks
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          FB_APP_ID_SECRET: ${{ secrets.FACEBOOK_APP_ID }}
+          FB_CLIENT_TOKEN_SECRET: ${{ secrets.FACEBOOK_CLIENT_TOKEN }}
+        run: |
+          set -e
+          cp -f "$GRADLE_APP_FILE" /tmp/original_build_gradle.bak
+
+          ADEN_TIME=`date '+%Y-%m-%d %H:%M:%S %Z'`
+          echo "ADEN_TIME=${ADEN_TIME}" >> $GITHUB_ENV
+
+          export ANDROID_HOME="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=${ANDROID_HOME}" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=${ANDROID_HOME}" >> $GITHUB_ENV
+
+          FB_APP_ID="$FB_APP_ID_SECRET"
+          FB_CLIENT_TOKEN="$FB_CLIENT_TOKEN_SECRET"
+
+          if [ -z "$FB_APP_ID" ] && [ -f "app/src/main/res/values/strings.xml" ]; then
+            FB_APP_ID=`grep -oP 'name="facebook_app_id"[^>]*>\K[^<]+' app/src/main/res/values/strings.xml | head -n 1`
+          fi
+          if [ -z "$FB_CLIENT_TOKEN" ] && [ -f "app/src/main/res/values/strings.xml" ]; then
+            FB_CLIENT_TOKEN=`grep -oP 'name="facebook_client_token"[^>]*>\K[^<]+' app/src/main/res/values/strings.xml | head -n 1`
+          fi
+
+          if [ -z "$FB_APP_ID" ] || [ -z "$FB_CLIENT_TOKEN" ]; then
+            echo "❌ خطأ حرج: قيم FACEBOOK_APP_ID أو FACEBOOK_CLIENT_TOKEN مفقودة!" | tee -a build_logs/build_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 1
+          fi
+
+          {
+            echo "sdk.dir=${ANDROID_HOME}"
+            echo "FACEBOOK_APP_ID=${FB_APP_ID}"
+            echo "FACEBOOK_CLIENT_TOKEN=${FB_CLIENT_TOKEN}"
+          } > local.properties
+
+          SDKMANAGER=`find "$ANDROID_HOME/cmdline-tools" -name "sdkmanager" | sort -V | tail -n 1`
+          if [ -z "$SDKMANAGER" ]; then SDKMANAGER="$ANDROID_HOME/tools/bin/sdkmanager"; fi
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+
+          sed -i 's/\r$//' gradlew gradle.properties gradle/wrapper/gradle-wrapper.properties "$GRADLE_APP_FILE" app/proguard-rules.pro 2>/dev/null || true
+
+          if grep -q '^\s*signingConfigs\s*{' "$GRADLE_APP_FILE"; then
+            sed -i 's|keyAlias\s*=\s*keystoreProperties\["RELEASE_KEY_ALIAS"\].*|keyAlias = System.getenv("SIGNING_KEY_ALIAS")|g' "$GRADLE_APP_FILE"
+            sed -i 's|keyPassword\s*=\s*keystoreProperties\["RELEASE_KEY_PASSWORD"\].*|keyPassword = System.getenv("SIGNING_KEY_PASSWORD")|g' "$GRADLE_APP_FILE"
+            sed -i 's|storeFile\s*=\s*file("F:\\\\android\\\\key3\.jks")|storeFile = file(System.getenv("SIGNING_STORE_FILE") ?: "")|g' "$GRADLE_APP_FILE"
+            sed -i 's|storeFile\s*=\s*file("D:\\\\android\\\\key3\.jks")|storeFile = file(System.getenv("SIGNING_STORE_FILE") ?: "")|g' "$GRADLE_APP_FILE"
+            sed -i 's|storePassword\s*=\s*keystoreProperties\["RELEASE_STORE_PASSWORD"\].*|storePassword = System.getenv("SIGNING_STORE_PASSWORD")|g' "$GRADLE_APP_FILE"
+          fi
+
+          sed -i '/signingConfigs\.getByName("debug")/d' "$GRADLE_APP_FILE"
+          sed -i '/signingConfig\s*=\s*signingConfigs\.getByName("release")/d' "$GRADLE_APP_FILE"
+          sed -i '/isShrinkResources\s*=\s*true/a \            signingConfig = signingConfigs.getByName("release")' "$GRADLE_APP_FILE"
+
+          sed -i '/GRADLE_USER_HOME=F:/d' gradlew
+          chmod +x gradlew
+
+          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+            sed -i '/^gradle\.user\.home=/d' gradle/wrapper/gradle-wrapper.properties
+            sed -i '/^android\.sdk\.path=/d' gradle/wrapper/gradle-wrapper.properties
+          fi
+
+          rm -f gradle/gradle-daemon-jvm.properties
+
+          if [ ! -s "gradle/wrapper/gradle-wrapper.jar" ]; then
+            curl -fsSL "https://raw.githubusercontent.com/gradle/gradle/v9.5.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
+          fi
+
+          # ضبط الذاكرة والأداء لبيئة CI فقط دون إضافة خصائص deprecated في Gradle 9 / AGP 9
+          printf "\n" >> gradle.properties
+          sed -i '/^org\.gradle\.jvmargs=/d' gradle.properties
+          sed -i '/^#.*org\.gradle\.parallel=/d' gradle.properties
+          sed -i '/^org\.gradle\.parallel=/d' gradle.properties
+          sed -i '/^org\.gradle\.workers\.max=/d' gradle.properties
+          sed -i '/^org\.gradle\.caching=/d' gradle.properties
+          sed -i '/^org\.gradle\.configuration-cache=/d' gradle.properties
+          sed -i '/^#.*android\.enableR8\.fullMode=/d' gradle.properties
+          sed -i '/^android\.enableR8\.fullMode=/d' gradle.properties
+          sed -i '/^android\.r8\.optimizedResourceShrinking=/d' gradle.properties
+          sed -i '/^android\.enableResourceOptimizations=/d' gradle.properties
+          sed -i '/^android\.r8\.strictFullModeForKeepRules=/d' gradle.properties
+
+          printf "\nandroid.r8.strictFullModeForKeepRules=true\norg.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+UseG1GC -Dkotlin.daemon.jvm.options=-Xmx2048m -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden\norg.gradle.parallel=true\norg.gradle.caching=true\norg.gradle.configuration-cache=false\norg.gradle.workers.max=2\n" >> gradle.properties
+
+          set +e
+          ./gradlew :app:signingReport --max-workers=2 2>&1 | tee /tmp/signing_report.txt | tee -a build_logs/build_full.log
+          REPORT_EXIT=${PIPESTATUS[0]}
+          set -e
+
+          if [ $REPORT_EXIT -ne 0 ]; then
+            echo "❌ فشل أمر signingReport بكود الخروج: $REPORT_EXIT" | tee -a build_logs/build_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 1
+          fi
+
+          GRADLE_RELEASE_SHA256=`grep -A 12 "Variant: release" /tmp/signing_report.txt | grep -oP 'SHA-256:\s*\K[0-9A-F:]+' | head -n 1`
+          rm -f /tmp/signing_report.txt
+
+          if [ "$GRADLE_RELEASE_SHA256" != "$EXPECTED_UPLOAD_SHA256" ]; then
+            echo "❌ خطأ حرج بعد sed: البصمة ($GRADLE_RELEASE_SHA256) لا تطابق مفتاح التحميل!" | tee -a build_logs/build_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 1
+          fi
+
+          echo "✅ الفحص الثاني نجح: Gradle مرتبط رسمياً بمفتاح التحميل الصحيح." | tee -a build_logs/build_full.log
+          ./gradlew clean --max-workers=2 --stacktrace 2>&1 | tee -a build_logs/build_full.log
+
+      - name: Build & Verify Signed Release APK
+        if: ${{ success() && env.BUILD_FAILED != 'true' && (github.event.inputs.build_type == 'apk' || github.event.inputs.build_type == 'both') }}
+        env:
+          SIGNING_STORE_FILE: ${{ github.workspace }}/app/release.jks
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set +e
+          ./gradlew assembleRelease \
+            -x lint -x lintVitalRelease \
+            -x uploadCrashlyticsMappingFileRelease \
+            --max-workers=2 --stacktrace 2>&1 | tee -a build_logs/build_full.log
+          GRADLE_EXIT=${PIPESTATUS[0]}
+          ./gradlew --stop 2>/dev/null || true
+
+          if [ $GRADLE_EXIT -ne 0 ]; then
+            echo "ERROR: فشل بناء APK بكود الخروج: $GRADLE_EXIT" | tee -a build_logs/build_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          APKSIGNER=`find "$ANDROID_HOME/build-tools" -name "apksigner" | sort -V | tail -n 1`
+          for apk in app/build/outputs/apk/release/*.apk; do
+            if [ -f "$apk" ]; then
+              APK_CERT=`"$APKSIGNER" verify --print-certs "$apk" 2>&1`
+              if ! echo "$APK_CERT" | grep -qi "1c36973851f58501a8ea6c9415511cec7a0fab1af835732a6581ba626727390d"; then
+                echo "❌ خطأ حرج: بصمة ملف APK الناتج لا تطابق مفتاح التحميل!" | tee -a build_logs/build_full.log
+                echo "BUILD_FAILED=true" >> $GITHUB_ENV
+                exit 0
+              fi
+              echo "✅ تم التأكد من توقيع ملف APK ببصمة مفتاح التحميل الصحيحة!" | tee -a build_logs/build_full.log
+            fi
+          done
+          exit 0
+
+      - name: Build & Verify Signed Release AAB & Native Debug Symbols
+        if: ${{ success() && env.BUILD_FAILED != 'true' && (github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'both') }}
+        env:
+          SIGNING_STORE_FILE: ${{ github.workspace }}/app/release.jks
+          SIGNING_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          set +e
+          ./gradlew bundleRelease mergeReleaseNativeLibs \
+            -x lint -x lintVitalRelease \
+            -x uploadCrashlyticsMappingFileRelease \
+            --max-workers=2 --stacktrace 2>&1 | tee -a build_logs/build_full.log
+          GRADLE_EXIT=${PIPESTATUS[0]}
+          ./gradlew --stop 2>/dev/null || true
+
+          if [ $GRADLE_EXIT -ne 0 ]; then
+            echo "ERROR: فشل بناء AAB بكود الخروج: $GRADLE_EXIT" | tee -a build_logs/build_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          for aab in app/build/outputs/bundle/release/*.aab; do
+            if [ -f "$aab" ]; then
+              AAB_CERT=`keytool -printcert -jarfile "$aab" 2>&1`
+              if ! echo "$AAB_CERT" | grep -qi "$EXPECTED_UPLOAD_SHA256"; then
+                echo "❌ خطأ حرج: بصمة ملف AAB الناتج لا تطابق مفتاح التحميل!" | tee -a build_logs/build_full.log
+                echo "BUILD_FAILED=true" >> $GITHUB_ENV
+                exit 0
+              fi
+              echo "✅ تم التأكد من توقيع ملف AAB ببصمة مفتاح التحميل الصحيحة!" | tee -a build_logs/build_full.log
+            fi
+          done
+          exit 0
+
+      - name: Restore Original build.gradle.kts
+        if: always()
+        run: |
+          if [ -f /tmp/original_build_gradle.bak ]; then
+            cp -f /tmp/original_build_gradle.bak "$GRADLE_APP_FILE"
+          fi
+
+      - name: Inspect AAB DEX Obfuscation & Verify Google Play Threshold
+        if: ${{ success() && env.BUILD_FAILED != 'true' && (github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'both') }}
+        run: |
+          python3 -c '
+          import zipfile, glob, os
+
+          aab_files = glob.glob("app/build/outputs/bundle/release/*.aab")
+          mapping_file = "app/build/outputs/mapping/release/mapping.txt"
+          report_file = "build_logs/dex_obfuscation_report.txt"
+          lines = []
+          def log(msg=""):
+              print(msg)
+              lines.append(msg)
+
+          log("==================================================================")
+          log("   تقرير فحص تشفير وتمويه DEX لحزمة AAB - Google Play DEX Check")
+          log("==================================================================")
+
+          if aab_files:
+              aab_path = aab_files[0]
+              log(f"ملف الحزمة المفحوص : {aab_path}")
+              total_dex_uncompressed = 0
+              dex_count = 0
+              with zipfile.ZipFile(aab_path, "r") as z:
+                  for info in z.infolist():
+                      if info.filename.startswith("base/dex/") and info.filename.endswith(".dex"):
+                          dex_count += 1
+                          total_dex_uncompressed += info.file_size
+                          log(f" - {info.filename}: {info.file_size / (1024*1024):.2f} MB")
+              log(f"إجمالي عدد ملفات DEX : {dex_count}")
+              log(f"إجمالي حجم DEX غير المضغوط : {total_dex_uncompressed / (1024 * 1024):.2f} MB")
+
+          if os.path.exists(mapping_file):
+              total_classes = obf_classes = repackaged_classes = total_methods = obf_methods = total_fields = obf_fields = 0
+              with open(mapping_file, "r", encoding="utf-8", errors="ignore") as f:
+                  for raw_line in f:
+                      line = raw_line.rstrip("\r\n")
+                      if not line or line.startswith("#"): continue
+                      if not line[0].isspace() and " -> " in line and line.endswith(":"):
+                          parts = line[:-1].split(" -> ")
+                          if len(parts) == 2:
+                              orig_cls, obf_cls = parts[0].strip(), parts[1].strip()
+                              total_classes += 1
+                              if orig_cls != obf_cls:
+                                  obf_classes += 1
+                                  if obf_cls.startswith("c.h.d."): repackaged_classes += 1
+                      elif line[0].isspace() and " -> " in line:
+                          left, obf_name = line.strip().split(" -> ", 1)
+                          obf_name = obf_name.strip()
+                          if "(" in left and ")" in left:
+                              before_paren = left.split("(", 1)[0].strip()
+                              orig_name = before_paren.split()[-1] if " " in before_paren else before_paren
+                              if orig_name not in ("<init>", "<clinit>"):
+                                  total_methods += 1
+                                  if orig_name != obf_name: obf_methods += 1
+                          else:
+                              tokens = left.split()
+                              if len(tokens) >= 2:
+                                  total_fields += 1
+                                  if tokens[-1] != obf_name: obf_fields += 1
+
+              cls_pct = (obf_classes / total_classes * 100) if total_classes else 0
+              mtd_pct = (obf_methods / total_methods * 100) if total_methods else 0
+              fld_pct = (obf_fields / total_fields * 100) if total_fields else 0
+              total_items = total_classes + total_methods + total_fields
+              overall_pct = ((obf_classes + obf_methods + obf_fields) / total_items * 100) if total_items else 0
+
+              log("------------------------------------------------------------------")
+              log(f"الكلاسات المموهة Classes  : {obf_classes} / {total_classes} - {cls_pct:.2f}%")
+              log(f"الكلاسات المدمجة في c.h.d : {repackaged_classes}")
+              log(f"الدوال المموهة Methods    : {obf_methods} / {total_methods} - {mtd_pct:.2f}%")
+              log(f"الحقول المموهة Fields     : {obf_fields} / {total_fields} - {fld_pct:.2f}%")
+              log("------------------------------------------------------------------")
+              log(f"النسبة الإجمالية لتمويه DEX : {overall_pct:.2f}% - الحد الأدنى المطلوب: 25%")
+
+          log("==================================================================")
+          with open(report_file, "w", encoding="utf-8") as out:
+              out.write("\n".join(lines) + "\n")
+          ' 2>&1 | tee -a build_logs/build_full.log
+
+      - name: Package Merged Native Libs & Collect AAB Diagnostics
+        if: always()
+        run: |
+          mkdir -p build_logs aab_diagnostics_package
+          touch build_logs/build_full.log
+
+          {
+            echo "===================================================="
+            echo "ملخص الأخطاء والاستثناءات Error Summary"
+            echo "===================================================="
+            grep -i -E "FAILURE:|What went wrong:|Execution failed|Exception|Error:|Caused by:|Missing classes|Failed to|cannot find symbol|error:|exit code|خطأ|تم إيقاف" -C 15 build_logs/build_full.log || true
+            echo "===================================================="
+            echo "آخر 200 سطر من سجل البناء الكامل:"
+            echo "===================================================="
+            tail -n 200 build_logs/build_full.log
+          } > build_logs/error_summary.log
+
+          TARGET_NATIVE_PATH="app/build/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib"
+          if [ -d "$TARGET_NATIVE_PATH" ]; then
+            cd "$TARGET_NATIVE_PATH"
+            zip -r "${{ github.workspace }}/build_logs/native-debug-symbols-${APP_VERSION}.zip" . || true
+            cd "${{ github.workspace }}"
+            mkdir -p aab_diagnostics_package/merged_native_libs
+            cp -r "$TARGET_NATIVE_PATH"/* aab_diagnostics_package/merged_native_libs/ 2>/dev/null || true
+          fi
+
+          if [ -d "app/build/outputs/mapping/release" ]; then
+            cp -r app/build/outputs/mapping/release aab_diagnostics_package/r8_mapping_and_seeds
+          fi
+          if [ -d "app/build/outputs/native-debug-symbols/release" ]; then
+            cp -r app/build/outputs/native-debug-symbols/release aab_diagnostics_package/native_debug_symbols
+          fi
+          if [ -d "app/build/reports" ]; then
+            cp -r app/build/reports aab_diagnostics_package/app_error_reports
+          fi
+
+          cp -r build_logs aab_diagnostics_package/logs
+          zip -r "build_logs/my-smart-wallet-aab-diagnostics-${APP_VERSION}-${{ github.run_number }}.zip" aab_diagnostics_package/ || true
+
+      - name: Upload Error Logs on Failure
+        if: ${{ env.BUILD_FAILED == 'true' || failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-smart-wallet-${{ env.SELECTED_TYPE }}-errors-${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: |
+            build_logs/error_summary.log
+            build_logs/build_full.log
+            build_logs/my-smart-wallet-aab-diagnostics-${{ env.APP_VERSION }}-${{ github.run_number }}.zip
+            app/build/outputs/mapping/release/*
+            app/build/reports/**
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Fail Job After Uploading Logs
+        if: ${{ env.BUILD_FAILED == 'true' }}
+        run: |
+          echo "⛔ تم إيقاف الوركفلو بسبب عدم تطابق بصمة مفتاح التحميل أو فشل البناء."
+          exit 1
+
+      - name: Upload Release APK Artifact
+        if: ${{ success() && (github.event.inputs.build_type == 'apk' || github.event.inputs.build_type == 'both') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-smart-wallet-apk-${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: |
+            app/build/outputs/apk/release/*.apk
+            build_logs/build_full.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Release AAB & Diagnostics Artifact
+        if: ${{ success() && (github.event.inputs.build_type == 'aab' || github.event.inputs.build_type == 'both') }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-smart-wallet-aab-${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: |
+            app/build/outputs/bundle/release/*.aab
+            build_logs/native-debug-symbols-${{ env.APP_VERSION }}.zip
+            build_logs/dex_obfuscation_report.txt
+            build_logs/build_full.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Create or Update Version Branch
+        if: ${{ success() && github.event.inputs.update_branch == 'true' }}
+        run: |
+          set -e
+          mkdir -p /tmp/new_release_files
+
+          DIAG_ZIP="build_logs/my-smart-wallet-aab-diagnostics-${APP_VERSION}-${{ github.run_number }}.zip"
+          if [ -f "$DIAG_ZIP" ]; then
+            mkdir -p /tmp/diagnostics_extracted
+            unzip -o "$DIAG_ZIP" -d /tmp/diagnostics_extracted > /dev/null 2>&1 || true
+            if [ -d "/tmp/diagnostics_extracted/aab_diagnostics_package" ]; then
+              cp -rf /tmp/diagnostics_extracted/aab_diagnostics_package/* /tmp/new_release_files/ 2>/dev/null || true
+            fi
+          fi
+
+          for f in app/build/outputs/apk/release/*.apk; do
+            [ -f "$f" ] && cp -f "$f" /tmp/new_release_files/
+          done
+          for f in app/build/outputs/bundle/release/*.aab; do
+            [ -f "$f" ] && cp -f "$f" "/tmp/new_release_files/MySmartWallet-v${APP_VERSION}.aab"
+          done
+          [ -f "build_logs/native-debug-symbols-${APP_VERSION}.zip" ] && cp -f "build_logs/native-debug-symbols-${APP_VERSION}.zip" "/tmp/new_release_files/native-debug-symbols-${APP_VERSION}.zip"
+          [ -f "app/build/outputs/mapping/release/mapping.txt" ] && cp -f app/build/outputs/mapping/release/mapping.txt /tmp/new_release_files/mapping.txt
+          [ -f "build_logs/dex_obfuscation_report.txt" ] && cp -f build_logs/dex_obfuscation_report.txt /tmp/new_release_files/dex_obfuscation_report.txt
+
+          rm -f "${{ github.workspace }}/app/release.jks" local.properties
+          rm -rf build app/build build_logs aab_diagnostics_package /tmp/diagnostics_extracted
+
+          cp -f /tmp/original_build_gradle.bak "$GRADLE_APP_FILE" 2>/dev/null || true
+          git checkout -- gradlew gradle/wrapper/gradle-wrapper.properties gradle.properties "$GRADLE_APP_FILE" app/proguard-rules.pro 2>/dev/null || true
+          rm -f gradle/wrapper/gradle-wrapper.jar 2>/dev/null || true
+          git checkout -- gradle/wrapper/gradle-wrapper.jar 2>/dev/null || true
+
+          git config user.name "Eng. Salah Build Bot"
+          git config user.email "salah22ad@users.noreply.github.com"
+
+          mkdir -p release_builds
+          if git ls-remote --exit-code --heads origin "${APP_VERSION}" >/dev/null 2>&1; then
+            git fetch origin "${APP_VERSION}"
+            git checkout "origin/${APP_VERSION}" -- release_builds 2>/dev/null || true
+          fi
+
+          for f in /tmp/new_release_files/*.apk; do [ -f "$f" ] && rm -f release_builds/*.apk; done
+          for f in /tmp/new_release_files/*.aab; do [ -f "$f" ] && rm -f release_builds/*.aab; done
+
+          cp -rf /tmp/new_release_files/. release_builds/ 2>/dev/null || true
+
+          export TZ="Asia/Aden"
+          ADEN_COMMIT_TIME=`date '+%Y-%m-%d %I:%M:%S %p'`
+          ADEN_ISO_DATE=`date '+%Y-%m-%dT%H:%M:%S+03:00'`
+          export GIT_AUTHOR_DATE="${ADEN_ISO_DATE}"
+          export GIT_COMMITTER_DATE="${ADEN_ISO_DATE}"
+
+          git add -A
+          git add -f release_builds/*
+          git commit -m "Release v${APP_VERSION} [${SELECTED_TYPE}] - ${ADEN_COMMIT_TIME} Aden Time - Run #${{ github.run_number }}" || echo "No changes to commit"
+          git push origin "HEAD:refs/heads/${APP_VERSION}" --force
+
+      - name: Skip Version Branch Update (update_branch = false)
+        if: ${{ success() && github.event.inputs.update_branch != 'true' }}
+        run: |
+          echo "ℹ️ تم تخطي قسم إنشاء/تحديث فرع الإصدار لأن خيار update_branch غير مفعّل."
+
+      - name: Clean Up Keystore
+        if: always()
+        run: rm -f "${{ github.workspace }}/app/release.jks" local.properties /tmp/new_release_files/* /tmp/original_build_gradle.bak 2>/dev/null || true

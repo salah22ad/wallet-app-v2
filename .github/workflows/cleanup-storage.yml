@@ -1,0 +1,71 @@
+name: 🧹 Clean GitHub Actions Storage
+
+on:
+  # 1. السماح بتشغيله يدوياً في أي وقت
+  workflow_dispatch:
+  
+  # 2. جدولته ليعمل تلقائياً كل يوم أحد لتجنب تراكم الملفات مستقبلاً
+ # schedule:
+  #  - cron: '0 2 * * 0' # الساعة 2 صباحاً كل يوم أحد
+
+permissions:
+  actions: write  # صلاحية حذف الـ Artifacts والـ Caches
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🗑️ Delete Old Artifacts (Keep Latest 3 Runs)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "🔍 جلب أرقام آخر 3 عمليات بناء (Runs) للاحتفاظ بها..."
+          LATEST_RUNS=$(gh run list --repo "$REPO" --limit 3 --json databaseId --jq '.[].databaseId')
+          echo "سيتم الاحتفاظ بآخر 3 عمليات بناء ذات الأرقام:"
+          echo "$LATEST_RUNS"
+
+          echo "جاري البحث عن الـ Artifacts وحذف القديم منها..."
+          gh api --paginate "/repos/$REPO/actions/artifacts?per_page=100" \
+            --jq '.artifacts[] | [.id, .workflow_run.id, .name] | @tsv' | \
+          while IFS=$'\t' read -r art_id run_id art_name; do
+            if echo "$LATEST_RUNS" | grep -q "^${run_id}$"; then
+              echo "⏭️ الاحتفاظ بالـ Artifact: $art_name (مرتبط ببناء حديث)"
+            else
+              echo "🗑️ حذف الـ Artifact: $art_name (ID: $art_id)"
+              gh api --method DELETE "/repos/$REPO/actions/artifacts/$art_id" || true
+            fi
+          done
+
+      - name: 🧹 Delete All Caches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "جاري البحث عن الـ Caches وحذفها (لأنها تُستهلك مساحة كبيرة)..."
+          gh cache list --repo "$REPO" --limit 1000 --json id,key --jq '.[] | [.id, .key] | @tsv' | \
+          while IFS=$'\t' read -r id key; do
+            echo "🗑️ حذف الـ Cache: $key (ID: $id)"
+            gh cache delete "$id" --repo "$REPO" --confirm || true
+          done
+
+      - name: 🗑️ Delete Old Workflow Runs (Keep Latest 3)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          echo "جاري حذف سجلات التشغيل القديمة (مع الاحتفاظ بآخر 3)..."
+          # tail -n +4 يتخطى أول 3 عناصر (وهي الأحدث) ويطبع الباقي لحذفه
+          gh run list --repo "$REPO" --limit 1000 --json databaseId --jq '.[].databaseId' | tail -n +4 | \
+          while read -r run_id; do
+            echo "🗑️ حذف التشغيل رقم: $run_id"
+            gh run delete "$run_id" --repo "$REPO" || true
+          done
+
+      - name: ✅ Summary
+        run: |
+          echo "### ✅ تم تنظيف مساحة GitHub Actions بنجاح!" >> $GITHUB_STEP_SUMMARY
+          echo "تم الاحتفاظ بآخر 3 عمليات بناء (Runs) مع الـ Artifacts الخاصة بها." >> $GITHUB_STEP_SUMMARY
+          echo "تم حذف جميع الـ Caches وسجلات التشغيل الأقدم." >> $GITHUB_STEP_SUMMARY
+          echo "يمكنك الآن إعادة تشغيل وركفلو البناء الخاص بك." >> $GITHUB_STEP_SUMMARY

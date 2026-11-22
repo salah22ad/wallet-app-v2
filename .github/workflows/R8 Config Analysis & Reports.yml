@@ -1,0 +1,834 @@
+name: R8 Config Analysis & Reports
+
+on:
+  workflow_dispatch:
+    inputs:
+      analysis_mode:
+        description: 'وضع الفحص: analyzer = المهمة المستقلة فقط / full = بناء AAB كامل مع r8.json وتفكيك DEX / both = الاثنان'
+        required: true
+        default: 'both'
+        type: choice
+        options:
+          - analyzer
+          - full
+          - both
+      toolchain:
+        description: 'الأداة: agp-9.3 = AGP 9.3.3 وGradle 9.5.0 / r8-override = حقن R8 حديث'
+        required: true
+        default: 'agp-9.3'
+        type: choice
+        options:
+          - agp-9.3
+          - r8-override
+      fail_below_25:
+        description: 'فشل الوركفلو إذا كانت نسبة تمويه DEX أقل من 25% - الافتراضي: معطّل'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    env:
+      TZ: "Asia/Aden"
+      JAVA_TOOL_OPTIONS: "-Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden"
+      AGP_TARGET_VERSION: "9.3.3"
+      GRADLE_TARGET_VERSION: "9.5.0"
+      R8_OVERRIDE_VERSION: "9.4.14"
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up JDK 21 with Gradle Cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Step 1 - Prepare Analysis Environment (No Signing Needed)
+        run: |
+          set -e
+          rm -rf build app/build build_logs
+          mkdir -p build_logs/r8_reports gradle/wrapper
+          touch build_logs/analysis_full.log build_logs/error_summary.log
+          echo "BUILD_FAILED=false" >> $GITHUB_ENV
+
+          GRADLE_APP_FILE="app/build.gradle.kts"
+          if [ ! -f "$GRADLE_APP_FILE" ] && [ -f "app/build.gradle" ]; then
+            GRADLE_APP_FILE="app/build.gradle"
+          fi
+          echo "GRADLE_APP_FILE=${GRADLE_APP_FILE}" >> $GITHUB_ENV
+
+          APP_VERSION=`grep -oP 'versionName\s*=?\s*["'\'']\K[^"'\'']+' "$GRADLE_APP_FILE" | head -n 1`
+          if [ -z "$APP_VERSION" ]; then APP_VERSION="1.0.0"; fi
+          echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
+
+          SELECTED_MODE="${{ github.event.inputs.analysis_mode }}"
+          if [ -z "$SELECTED_MODE" ]; then SELECTED_MODE="both"; fi
+          echo "SELECTED_MODE=${SELECTED_MODE}" >> $GITHUB_ENV
+
+          SELECTED_TOOLCHAIN="${{ github.event.inputs.toolchain }}"
+          if [ -z "$SELECTED_TOOLCHAIN" ]; then SELECTED_TOOLCHAIN="agp-9.3"; fi
+          echo "SELECTED_TOOLCHAIN=${SELECTED_TOOLCHAIN}" >> $GITHUB_ENV
+
+          export ANDROID_HOME="${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}"
+          echo "ANDROID_HOME=${ANDROID_HOME}" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=${ANDROID_HOME}" >> $GITHUB_ENV
+          echo "sdk.dir=${ANDROID_HOME}" > local.properties
+
+          SDKMANAGER=`find "$ANDROID_HOME/cmdline-tools" -name "sdkmanager" | sort -V | tail -n 1`
+          if [ -z "$SDKMANAGER" ]; then SDKMANAGER="$ANDROID_HOME/tools/bin/sdkmanager"; fi
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+
+          sed -i 's/\r$//' gradlew gradle.properties gradle/wrapper/gradle-wrapper.properties "$GRADLE_APP_FILE" app/proguard-rules.pro settings.gradle.kts gradle/libs.versions.toml 2>/dev/null || true
+          sed -i '/GRADLE_USER_HOME=F:/d' gradlew
+          chmod +x gradlew
+          rm -f gradle/gradle-daemon-jvm.properties
+
+          if [ -f "gradle/wrapper/gradle-wrapper.properties" ]; then
+            sed -i '/^gradle\.user\.home=/d' gradle/wrapper/gradle-wrapper.properties
+            sed -i '/^android\.sdk\.path=/d' gradle/wrapper/gradle-wrapper.properties
+          fi
+
+          if [ ! -s "gradle/wrapper/gradle-wrapper.jar" ]; then
+            curl -fsSL "https://raw.githubusercontent.com/gradle/gradle/v9.5.0/gradle/wrapper/gradle-wrapper.jar" -o gradle/wrapper/gradle-wrapper.jar
+          fi
+
+          cp -f "$GRADLE_APP_FILE" /tmp/original_build_gradle.bak
+          cp -f gradle.properties /tmp/original_gradle_properties.bak
+          cp -f settings.gradle.kts /tmp/original_settings.bak
+          cp -f gradle/libs.versions.toml /tmp/original_versions.bak
+          cp -f gradle/wrapper/gradle-wrapper.properties /tmp/original_wrapper.bak
+
+          sed -i '/signingConfig\s*=\s*signingConfigs\.getByName("release")/d' "$GRADLE_APP_FILE"
+          sed -i 's|storeFile\s*=\s*file("F:\\\\android\\\\key3\.jks")|storeFile = null|g' "$GRADLE_APP_FILE"
+          sed -i 's|storeFile\s*=\s*file("D:\\\\android\\\\key3\.jks")|storeFile = null|g' "$GRADLE_APP_FILE"
+
+          printf "\n" >> gradle.properties
+          sed -i '/^org\.gradle\.jvmargs=/d' gradle.properties
+          sed -i '/^org\.gradle\.parallel=/d' gradle.properties
+          sed -i '/^#.*org\.gradle\.parallel=/d' gradle.properties
+          sed -i '/^org\.gradle\.workers\.max=/d' gradle.properties
+          sed -i '/^org\.gradle\.caching=/d' gradle.properties
+          sed -i '/^org\.gradle\.configuration-cache=/d' gradle.properties
+          sed -i '/^android\.enableR8\.fullMode=/d' gradle.properties
+          sed -i '/^#.*android\.enableR8\.fullMode=/d' gradle.properties
+          sed -i '/^android\.r8\.strictFullModeForKeepRules=/d' gradle.properties
+          sed -i '/^android\.r8\.optimizedResourceShrinking=/d' gradle.properties
+          sed -i '/^android\.enableResourceOptimizations=/d' gradle.properties
+
+          printf "\nandroid.r8.strictFullModeForKeepRules=true\norg.gradle.jvmargs=-Xmx6144m -XX:MaxMetaspaceSize=1024m -XX:+UseG1GC -Dkotlin.daemon.jvm.options=-Xmx2048m -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden\norg.gradle.parallel=true\norg.gradle.caching=true\norg.gradle.configuration-cache=false\norg.gradle.workers.max=2\n" >> gradle.properties
+
+          echo "==================================================================" | tee -a build_logs/analysis_full.log
+          echo "🧪 بيئة الفحص جاهزة - الوضع: $SELECTED_MODE - الأداة: $SELECTED_TOOLCHAIN" | tee -a build_logs/analysis_full.log
+          echo "==================================================================" | tee -a build_logs/analysis_full.log
+
+      - name: Step 2 - Select Toolchain (AGP 9.3 Upgrade or R8 Override)
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        run: |
+          set -e
+          if [ "$SELECTED_TOOLCHAIN" = "agp-9.3" ]; then
+            sed -i "s/^agp = .*/agp = \"$AGP_TARGET_VERSION\"/" gradle/libs.versions.toml
+            sed -i "s|gradle-[0-9][0-9.]*-bin.zip|gradle-$GRADLE_TARGET_VERSION-bin.zip|" gradle/wrapper/gradle-wrapper.properties
+            sed -i "s|gradle-[0-9][0-9.]*-all.zip|gradle-$GRADLE_TARGET_VERSION-bin.zip|" gradle/wrapper/gradle-wrapper.properties
+            grep -n "^agp" gradle/libs.versions.toml | tee -a build_logs/analysis_full.log
+            grep -n "distributionUrl" gradle/wrapper/gradle-wrapper.properties | tee -a build_logs/analysis_full.log
+          else
+            python3 - <<'PYEOF'
+          import os
+          path = "settings.gradle.kts"
+          src = open(path, encoding="utf-8").read()
+          ver = os.environ.get("R8_OVERRIDE_VERSION", "9.4.14")
+          block = (
+              "pluginManagement {\n"
+              "    buildscript {\n"
+              "        dependencies {\n"
+              "            classpath(\"com.android.tools:r8:" + ver + "\")\n"
+              "        }\n"
+              "    }\n"
+          )
+          if "com.android.tools:r8" not in src:
+              src = src.replace("pluginManagement {", block, 1)
+              open(path, "w", encoding="utf-8").write(src)
+          PYEOF
+          fi
+
+      - name: Step 3 - Run :app:analyzeReleaseR8Config (Standalone Analyzer)
+        if: ${{ success() && env.BUILD_FAILED != 'true' && env.SELECTED_TOOLCHAIN == 'agp-9.3' && (github.event.inputs.analysis_mode == 'analyzer' || github.event.inputs.analysis_mode == 'both') }}
+        run: |
+          set +e
+          echo "=== تشغيل مهمة الفحص المستقلة :app:analyzeReleaseR8Config ===" | tee -a build_logs/analysis_full.log
+          ./gradlew :app:analyzeReleaseR8Config --max-workers=2 --stacktrace 2>&1 | tee -a build_logs/analysis_full.log
+          GRADLE_EXIT=${PIPESTATUS[0]}
+          ./gradlew --stop 2>/dev/null || true
+
+          if [ $GRADLE_EXIT -ne 0 ]; then
+            echo "ERROR: فشل analyzeReleaseR8Config بكود الخروج: $GRADLE_EXIT" | tee -a build_logs/analysis_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          mkdir -p build_logs/r8_reports/html
+          if [ -f "app/build/reports/r8/r8-config-analyzer-release.html" ]; then
+            cp -f app/build/reports/r8/r8-config-analyzer-release.html build_logs/r8_reports/html/
+          fi
+          exit 0
+
+      - name: Step 4 - Build Release AAB for Exact r8.json & Complete R8 Reports
+        if: ${{ success() && env.BUILD_FAILED != 'true' && (github.event.inputs.analysis_mode == 'full' || github.event.inputs.analysis_mode == 'both' || env.SELECTED_TOOLCHAIN == 'r8-override') }}
+        run: |
+          set +e
+          EXTRA_ARGS=""
+          if [ "$SELECTED_TOOLCHAIN" = "r8-override" ]; then
+            mkdir -p build_logs/r8_reports/html/keep-radius
+            EXTRA_ARGS="-Dcom.android.tools.r8.dumpkeepradiushtmltodirectory=${{ github.workspace }}/build_logs/r8_reports/html/keep-radius"
+          fi
+
+          echo "=== بناء Release AAB لتوليد r8.json الرسمي وتقارير R8 الكاملة ===" | tee -a build_logs/analysis_full.log
+          ./gradlew bundleRelease \
+            -x lint -x lintVitalRelease \
+            -x uploadCrashlyticsMappingFileRelease \
+            $EXTRA_ARGS \
+            --max-workers=2 --stacktrace 2>&1 | tee -a build_logs/analysis_full.log
+          GRADLE_EXIT=${PIPESTATUS[0]}
+          ./gradlew --stop 2>/dev/null || true
+
+          if [ $GRADLE_EXIT -ne 0 ]; then
+            echo "ERROR: فشل بناء Release AAB للفحص بكود الخروج: $GRADLE_EXIT" | tee -a build_logs/analysis_full.log
+            echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            exit 0
+          fi
+
+          mkdir -p build_logs/r8_reports/html build_logs/r8_reports/rules build_logs/r8_reports/mapping build_logs/r8_reports/summaries
+          for f in usage.txt seeds.txt configuration.txt resources.txt; do
+            if [ -f "app/build/outputs/mapping/release/$f" ]; then
+              cp -f "app/build/outputs/mapping/release/$f" build_logs/r8_reports/rules/
+            fi
+          done
+          if [ -f "app/build/outputs/mapping/release/mapping.txt" ]; then
+            cp -f app/build/outputs/mapping/release/mapping.txt build_logs/r8_reports/mapping/
+          fi
+          if [ -f "app/build/outputs/mapping/release/configanalyzer.html" ]; then
+            cp -f app/build/outputs/mapping/release/configanalyzer.html build_logs/r8_reports/html/
+          fi
+          if [ -f "app/build/reports/r8/r8-config-analyzer-release.html" ]; then
+            cp -f app/build/reports/r8/r8-config-analyzer-release.html build_logs/r8_reports/html/
+          fi
+          exit 0
+
+      - name: Step 5 - Deep DEX Breakdown, Real r8.json Scores & Keep-Rules Audit
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        run: |
+          set +e
+          ARTIFACT_PATH=`ls app/build/outputs/bundle/release/*.aab app/build/outputs/apk/release/*.apk 2>/dev/null | head -n 1`
+          if [ -z "$ARTIFACT_PATH" ]; then
+            echo "ℹ️ لا توجد حزمة AAB/APK (وضع analyzer فقط) - تم تخطي فحص DEX" | tee -a build_logs/analysis_full.log
+            exit 0
+          fi
+
+          mkdir -p build_logs/r8_reports/summaries
+          python3 - "$ARTIFACT_PATH" <<'PYEOF'
+          import zipfile, glob, os, sys, json, struct, collections
+
+          artifact_path = sys.argv[1]
+          mapping_file = "app/build/outputs/mapping/release/mapping.txt"
+          config_file = "app/build/outputs/mapping/release/configuration.txt"
+          seeds_file = "app/build/outputs/mapping/release/seeds.txt"
+          out_dir = "build_logs/r8_reports/summaries"
+          report_file = f"{out_dir}/dex_obfuscation_report.txt"
+          r8_json_report = f"{out_dir}/r8_json_summary.txt"
+          breakdown_report = f"{out_dir}/dex_breakdown_report.txt"
+
+          def uleb128(buf, off):
+              result = 0; shift = 0
+              while True:
+                  b = buf[off]; off += 1
+                  result |= (b & 0x7f) << shift
+                  if not (b & 0x80): break
+                  shift += 7
+              return result, off
+
+          def pkg_bucket(cls_name):
+              parts = cls_name.split(".")
+              if len(parts) <= 1:
+                  return "(default)"
+              if parts[0] == "com" and len(parts) >= 4:
+                  if parts[1] == "google" and parts[2] == "android" and parts[3] == "gms":
+                      if len(parts) >= 6 and parts[4] == "internal":
+                          return ".".join(parts[:6])
+                      return ".".join(parts[:5]) if len(parts) >= 5 else ".".join(parts[:4])
+                  if parts[1] == "google" and parts[2] in ("firebase", "api", "crypto", "common"):
+                      return ".".join(parts[:4])
+                  if parts[1] == "hpp" and parts[2] == "daftree":
+                      return "com.hpp.daftree"
+                  return ".".join(parts[:3])
+              return ".".join(parts[:3]) if len(parts) >= 3 else ".".join(parts[:2])
+
+          # 1) استخراج r8.json الرسمي من الحزمة (نفس الأرقام التي يقرأها Google Play Console)
+          r8_lines = []
+          r8_json_data = None
+          with zipfile.ZipFile(artifact_path, "r") as z:
+              for name in z.namelist():
+                  if name.endswith("r8.json"):
+                      raw = z.read(name).decode("utf-8", errors="replace")
+                      with open(f"{out_dir}/r8.json", "w", encoding="utf-8") as rf:
+                          rf.write(raw)
+                      r8_lines.append(f"مصدر الملف: {artifact_path} -> {name}")
+                      try:
+                          r8_json_data = json.loads(raw)
+                      except Exception as e:
+                          r8_lines.append(f"تعذر تحليل JSON: {e}\n{raw[:1500]}")
+                      break
+
+          if r8_json_data is None:
+              for p in glob.glob("app/build/**/r8.json", recursive=True):
+                  raw = open(p, encoding="utf-8", errors="replace").read()
+                  with open(f"{out_dir}/r8.json", "w", encoding="utf-8") as rf:
+                      rf.write(raw)
+                  r8_lines.append(f"مصدر الملف: {p}")
+                  try:
+                      r8_json_data = json.loads(raw)
+                  except Exception:
+                      pass
+                  break
+
+          if r8_json_data is not None:
+              r8_lines.append(json.dumps(r8_json_data, indent=2, ensure_ascii=False))
+          else:
+              r8_lines.append("لم يُعثر على r8.json داخل الحزمة — افتح r8-config-analyzer-release.html في المتصفح.")
+
+          with open(r8_json_report, "w", encoding="utf-8") as out:
+              out.write("\n".join(r8_lines) + "\n")
+
+          # 2) فحص DEX الأساسي + قراءة mapping.txt
+          lines = []
+          def log(msg=""):
+              print(msg)
+              lines.append(msg)
+
+          log("==================================================================")
+          log("   تقرير فحص تشفير وتمويه DEX - Google Play DEX Check")
+          log("==================================================================")
+          log(f"ملف الحزمة المفحوص : {artifact_path}")
+          total_dex_uncompressed = 0
+          dex_count = 0
+          dex_blobs = []
+          with zipfile.ZipFile(artifact_path, "r") as z:
+              for info in z.infolist():
+                  if info.filename.endswith(".dex"):
+                      dex_count += 1
+                      total_dex_uncompressed += info.file_size
+                      dex_blobs.append((info.filename, z.read(info.filename)))
+                      log(f" - {info.filename}: {info.file_size / (1024*1024):.2f} MB")
+          log(f"إجمالي عدد ملفات DEX : {dex_count}")
+          log(f"إجمالي حجم DEX غير المضغوط : {total_dex_uncompressed / (1024*1024):.2f} MB")
+
+          obf_to_orig = {}
+          kept_pkg_counter = collections.Counter()
+          orig_pkg_classes = collections.Counter()
+          overall_pct = 0.0
+
+          if os.path.exists(mapping_file):
+              total_classes = obf_classes = repackaged_classes = total_methods = obf_methods = total_fields = obf_fields = 0
+              with open(mapping_file, "r", encoding="utf-8", errors="ignore") as f:
+                  for raw_line in f:
+                      line = raw_line.rstrip("\r\n")
+                      if not line or line.startswith("#"): continue
+                      if not line[0].isspace() and " -> " in line and line.endswith(":"):
+                          parts = line[:-1].split(" -> ")
+                          if len(parts) == 2:
+                              orig_cls, obf_cls = parts[0].strip(), parts[1].strip()
+                              obf_to_orig.setdefault(obf_cls, orig_cls)
+                              orig_pkg_classes[pkg_bucket(orig_cls)] += 1
+                              total_classes += 1
+                              if orig_cls != obf_cls:
+                                  obf_classes += 1
+                                  if obf_cls.startswith("c.h.d."): repackaged_classes += 1
+                              else:
+                                  kept_pkg_counter[pkg_bucket(orig_cls)] += 1
+                      elif line[0].isspace() and " -> " in line:
+                          left, obf_name = line.strip().split(" -> ", 1)
+                          obf_name = obf_name.strip()
+                          if "(" in left and ")" in left:
+                              before_paren = left.split("(", 1)[0].strip()
+                              orig_name = before_paren.split()[-1] if " " in before_paren else before_paren
+                              if orig_name not in ("<init>", "<clinit>"):
+                                  total_methods += 1
+                                  if orig_name != obf_name: obf_methods += 1
+                          else:
+                              tokens = left.split()
+                              if len(tokens) >= 2:
+                                  total_fields += 1
+                                  if tokens[-1] != obf_name: obf_fields += 1
+
+              cls_pct = (obf_classes / total_classes * 100) if total_classes else 0
+              mtd_pct = (obf_methods / total_methods * 100) if total_methods else 0
+              fld_pct = (obf_fields / total_fields * 100) if total_fields else 0
+              total_items = total_classes + total_methods + total_fields
+              overall_pct = ((obf_classes + obf_methods + obf_fields) / total_items * 100) if total_items else 0
+
+              log("------------------------------------------------------------------")
+              log(f"الكلاسات المموهة Classes  : {obf_classes} / {total_classes} - {cls_pct:.2f}%")
+              log(f"الكلاسات المدمجة في c.h.d : {repackaged_classes}")
+              log(f"الدوال المموهة Methods    : {obf_methods} / {total_methods} - {mtd_pct:.2f}%")
+              log(f"الحقول المموهة Fields     : {obf_fields} / {total_fields} - {fld_pct:.2f}%")
+              log("------------------------------------------------------------------")
+              log(f"النسبة الإجمالية لتمويه DEX (mapping): {overall_pct:.2f}%")
+
+          if os.path.exists(seeds_file):
+              log(f"حجم ملف seeds.txt : {os.path.getsize(seeds_file)/(1024*1024):.2f} MB")
+
+          with open(report_file, "w", encoding="utf-8") as out:
+              out.write("\n".join(lines) + "\n")
+          with open("build_logs/dex_overall_pct.txt", "w") as out:
+              out.write(f"{overall_pct:.2f}")
+
+          # 3) تفكيك حجم البايت-كود حسب الحزمة الأصلية (Top 25 Packages)
+          pkg_code_bytes = collections.Counter()
+          pkg_dex_classes = collections.Counter()
+          pkg_dex_methods = collections.Counter()
+          total_code_bytes = 0
+
+          for dex_name, d in dex_blobs:
+              try:
+                  s_size, s_off = struct.unpack_from("<II", d, 56)
+                  t_size, t_off = struct.unpack_from("<II", d, 64)
+                  c_size, c_off = struct.unpack_from("<II", d, 96)
+                  strings_cache = {}
+                  def get_str(idx):
+                      if idx in strings_cache: return strings_cache[idx]
+                      off = struct.unpack_from("<I", d, s_off + 4 * idx)[0]
+                      _, off = uleb128(d, off)
+                      end = d.index(b"\x00", off)
+                      s = d[off:end].decode("utf-8", errors="replace")
+                      strings_cache[idx] = s
+                      return s
+                  for i in range(c_size):
+                      base = c_off + 32 * i
+                      cls_idx, _, _, _, _, _, class_data_off, _ = struct.unpack_from("<8I", d, base)
+                      sidx = struct.unpack_from("<I", d, t_off + 4 * cls_idx)[0]
+                      desc = get_str(sidx)
+                      obf_name = desc[1:-1].replace("/", ".") if desc.startswith("L") and desc.endswith(";") else desc
+                      orig_name = obf_to_orig.get(obf_name, obf_name)
+                      bucket = pkg_bucket(orig_name)
+                      pkg_dex_classes[bucket] += 1
+                      if class_data_off:
+                          off = class_data_off
+                          sf, off = uleb128(d, off)
+                          inf, off = uleb128(d, off)
+                          dm, off = uleb128(d, off)
+                          vm, off = uleb128(d, off)
+                          for _ in range(sf + inf):
+                              _, off = uleb128(d, off)
+                              _, off = uleb128(d, off)
+                          for count in (dm, vm):
+                              for _ in range(count):
+                                  _, off = uleb128(d, off)
+                                  _, off = uleb128(d, off)
+                                  code_off, off = uleb128(d, off)
+                                  pkg_dex_methods[bucket] += 1
+                                  if code_off:
+                                      insns_size = struct.unpack_from("<I", d, code_off + 12)[0]
+                                      b_len = 16 + insns_size * 2
+                                      pkg_code_bytes[bucket] += b_len
+                                      total_code_bytes += b_len
+              except Exception as ex:
+                  print(f"DEX parse warning ({dex_name}): {ex}")
+
+          blines = []
+          blines.append("==================================================================")
+          blines.append("  أثقل 25 مكتبة/حزمة داخل DEX (مرتبة حسب حجم البايت-كود المقدر)")
+          blines.append("==================================================================")
+          blines.append(f"{'Package':<45} {'Est.MB':>7} {'Share':>6} {'Classes':>8} {'Methods':>8}")
+          blines.append("-" * 78)
+          total_dex_mb = total_dex_uncompressed / (1024 * 1024)
+          for pkg, cbytes in pkg_code_bytes.most_common(25):
+              share = (cbytes / total_code_bytes) if total_code_bytes else 0
+              est_mb = share * total_dex_mb
+              blines.append(f"{pkg:<45} {est_mb:7.2f} {share*100:5.1f}% {pkg_dex_classes[pkg]:8d} {pkg_dex_methods[pkg]:8d}")
+
+          blines.append("\n==================================================================")
+          blines.append("  أكبر 20 حزمة تحتوي على كلاسات غير مموهة (Kept Un-obfuscated)")
+          blines.append("==================================================================")
+          for pkg, cnt in kept_pkg_counter.most_common(20):
+              tot = orig_pkg_classes[pkg]
+              blines.append(f" - {pkg:<48} : {cnt:5d} kept / {tot:5d} total")
+
+          # 4) كشف قواعد -keep العريضة في configuration.txt مع اسم المكتبة المصدر
+          if os.path.exists(config_file):
+              blines.append("\n==================================================================")
+              blines.append("  قواعد -keep العريضة داخل configuration.txt (من المكتبات أو التطبيق)")
+              blines.append("==================================================================")
+              src_label = "unknown"
+              wide_rules = []
+              buf_rule = []
+              in_keep = False
+              with open(config_file, "r", encoding="utf-8", errors="ignore") as cf:
+                  for raw in cf:
+                      s = raw.strip()
+                      if s.startswith("# The proguard configuration file for the following section is "):
+                          p = s.split(" is ", 1)[1].strip()
+                          src_label = "/".join(p.split("/")[-3:])
+                          continue
+                      if s.startswith("-keep") and not s.startswith("-keepattributes"):
+                          in_keep = True
+                          buf_rule = [s]
+                          if "{" not in s or "}" in s:
+                              rule_txt = " ".join(buf_rule)
+                              if "**" in rule_txt or "class *" in rule_txt:
+                                  wide_rules.append((src_label, rule_txt[:160]))
+                              in_keep = False
+                      elif in_keep:
+                          buf_rule.append(s)
+                          if "}" in s:
+                              rule_txt = " ".join(buf_rule)
+                              if "**" in rule_txt or "class *" in rule_txt:
+                                  wide_rules.append((src_label, rule_txt[:160]))
+                              in_keep = False
+              for src_l, r_txt in wide_rules[:40]:
+                  blines.append(f"[{src_l}]\n   {r_txt}")
+              blines.append(f"\nإجمالي القواعد العريضة المكتشفة: {len(wide_rules)}")
+
+          with open(breakdown_report, "w", encoding="utf-8") as out:
+              out.write("\n".join(blines) + "\n")
+          print("\n".join(blines[:60]))
+          PYEOF
+
+          if [ "${{ github.event.inputs.fail_below_25 }}" = "true" ] && [ -f build_logs/dex_overall_pct.txt ]; then
+            PCT=`cat build_logs/dex_overall_pct.txt`
+            python3 -c "import sys; sys.exit(0 if float('$PCT') >= 25 else 1)"
+            if [ $? -ne 0 ]; then
+              echo "❌ نسبة التمويه الإجمالية ($PCT%) أقل من 25%" | tee -a build_logs/analysis_full.log
+              echo "BUILD_FAILED=true" >> $GITHUB_ENV
+            fi
+          fi
+          exit 0
+
+      - name: Step 6 - Forensic Scan of Deprecated Edge-to-Edge APIs in DEX
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        run: |
+          set +e
+          ARTIFACT_PATH=`ls app/build/outputs/bundle/release/*.aab app/build/outputs/apk/release/*.apk 2>/dev/null | head -n 1`
+          if [ -z "$ARTIFACT_PATH" ]; then
+            echo "ℹ️ لا توجد حزمة AAB/APK - تم تخطي فحص واجهات الحافة" | tee -a build_logs/analysis_full.log
+            exit 0
+          fi
+
+          if [ -f "tools/dex_edge_scan.py" ]; then
+            cp -f tools/dex_edge_scan.py /tmp/dex_edge_scan.py
+          else
+            cat > /tmp/dex_edge_scan.py <<'PYEOF'
+          #!/usr/bin/env python3
+          import zipfile, struct, sys, collections, os
+
+          def uleb128(buf, off):
+              result = 0; shift = 0
+              while True:
+                  b = buf[off]; off += 1
+                  result |= (b & 0x7f) << shift
+                  if not (b & 0x80): break
+                  shift += 7
+              return result, off
+
+          class Dex:
+              def __init__(self, data):
+                  self.d = data
+                  (self.string_ids_size, self.string_ids_off) = struct.unpack_from('<II', data, 56)
+                  (self.type_ids_size, self.type_ids_off) = struct.unpack_from('<II', data, 64)
+                  (self.proto_ids_size, self.proto_ids_off) = struct.unpack_from('<II', data, 72)
+                  (self.field_ids_size, self.field_ids_off) = struct.unpack_from('<II', data, 80)
+                  (self.method_ids_size, self.method_ids_off) = struct.unpack_from('<II', data, 88)
+                  (self.class_defs_size, self.class_defs_off) = struct.unpack_from('<II', data, 96)
+                  self._strings = {}
+
+              def string(self, idx):
+                  if idx in self._strings: return self._strings[idx]
+                  off = struct.unpack_from('<I', self.d, self.string_ids_off + 4*idx)[0]
+                  n, off = uleb128(self.d, off)
+                  end = self.d.index(b'\x00', off)
+                  s = self.d[off:end].decode('utf-8', errors='replace')
+                  self._strings[idx] = s
+                  return s
+
+              def type_str(self, idx):
+                  sidx = struct.unpack_from('<I', self.d, self.type_ids_off + 4*idx)[0]
+                  return self.string(sidx)
+
+              def method(self, idx):
+                  cls_idx, proto_idx, name_idx = struct.unpack_from('<HHI', self.d, self.method_ids_off + 8*idx)
+                  return self.type_str(cls_idx), self.string(name_idx)
+
+              def field(self, idx):
+                  cls_idx, type_idx, name_idx = struct.unpack_from('<HHI', self.d, self.field_ids_off + 8*idx)
+                  return self.type_str(cls_idx), self.string(name_idx)
+
+              def classes(self):
+                  for i in range(self.class_defs_size):
+                      base = self.class_defs_off + 32*i
+                      (cls_idx, access, super_idx, iface_off, src_idx, ann_off,
+                       class_data_off, static_off) = struct.unpack_from('<8I', self.d, base)
+                      yield self.type_str(cls_idx), class_data_off
+
+              def method_code_offsets(self, class_data_off):
+                  if class_data_off == 0: return
+                  off = class_data_off
+                  sf, off = uleb128(self.d, off)
+                  inf, off = uleb128(self.d, off)
+                  dm, off = uleb128(self.d, off)
+                  vm, off = uleb128(self.d, off)
+                  for _ in range(sf + inf):
+                      _, off = uleb128(self.d, off)
+                      _, off = uleb128(self.d, off)
+                  idx = 0
+                  for count in (dm, vm):
+                      for _ in range(count):
+                          delta, off = uleb128(self.d, off)
+                          idx += delta
+                          _, off = uleb128(self.d, off)
+                          code_off, off = uleb128(self.d, off)
+                          if code_off:
+                              yield idx, code_off
+
+              def scan_code(self, code_off, want_methods, want_fields):
+                  insns_size = struct.unpack_from('<I', self.d, code_off + 12)[0]
+                  pos = code_off + 16
+                  end = pos + insns_size*2
+                  hits = set()
+                  while pos < end:
+                      op = self.d[pos]
+                      if op == 0x00:
+                          ident = self.d[pos+1]
+                          if ident == 0x01:
+                              size = struct.unpack_from('<H', self.d, pos+2)[0]
+                              pos += (size*2 + 4)*2; continue
+                          elif ident == 0x02:
+                              size = struct.unpack_from('<H', self.d, pos+2)[0]
+                              pos += (size*4 + 2)*2; continue
+                          elif ident == 0x03:
+                              ew = struct.unpack_from('<H', self.d, pos+2)[0]
+                              size = struct.unpack_from('<I', self.d, pos+4)[0]
+                              pos += ((size*ew + 1)//2 + 4)*2; continue
+                          pos += 2; continue
+                      if 0x6e <= op <= 0x72 or 0x74 <= op <= 0x78:
+                          midx = struct.unpack_from('<H', self.d, pos+2)[0]
+                          if midx in want_methods: hits.add(('M', midx))
+                          pos += 6; continue
+                      if op in (0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f, 0x60, 0x61, 0x62):
+                          fidx = struct.unpack_from('<H', self.d, pos+2)[0]
+                          if fidx in want_fields: hits.add(('F', fidx))
+                          pos += 4; continue
+                      pos += 2*insn_len(op)
+                  return hits
+
+          def insn_len(op):
+              table1 = {0x01:1,0x02:2,0x03:3,0x04:1,0x05:2,0x06:3,0x07:1,0x08:2,0x09:3,
+                        0x0a:1,0x0b:1,0x0c:1,0x0d:1,0x0e:1,0x0f:1,0x10:1,0x11:1,0x12:1,
+                        0x13:2,0x14:3,0x15:2,0x16:2,0x17:3,0x18:5,0x19:3,0x1a:2,0x1b:3,
+                        0x1c:2,0x1d:1,0x1e:1,0x1f:2,0x20:2,0x21:1,0x22:2,0x23:2,0x24:3,
+                        0x25:3,0x26:3,0x27:1,0x28:1,0x29:2,0x2a:3,0x2b:3,0x2c:3,0x2d:2,
+                        0x2e:2,0x2f:2,0x30:2,0x31:2,0x32:2,0x33:2,0x34:2,0x35:3,0x36:3,
+                        0x37:3,0x38:2,0x39:2,0x3a:2,0x3b:2,0x3c:2,0x3d:2}
+              if op in table1: return table1[op]
+              if 0x44 <= op <= 0x6d: return 2
+              if 0x7b <= op <= 0x8f: return 1
+              if 0x90 <= op <= 0xaf: return 2
+              if 0xb0 <= op <= 0xcf: return 1
+              if 0xd0 <= op <= 0xe2: return 2
+              if 0xfa <= op <= 0xfd: return 4
+              if 0xfe <= op <= 0xff: return 2
+              return 1
+
+          def load_mapping(mapping_path):
+              result = collections.defaultdict(list)
+              if not mapping_path or not os.path.exists(mapping_path): return result
+              with open(mapping_path, 'r', encoding='utf-8', errors='ignore') as f:
+                  for line in f:
+                      if not line or line[0].isspace() or line.startswith('#'): continue
+                      line = line.rstrip('\r\n')
+                      if line.endswith(':') and ' -> ' in line:
+                          orig, obf = line[:-1].split(' -> ', 1)
+                          result[obf.strip()].append(orig.strip())
+              return result
+
+          def pretty(cls, mapping):
+              name = cls[1:-1].replace('/', '.') if cls.startswith('L') else cls
+              origs = mapping.get(name)
+              if origs:
+                  return f"{name}  =>  " + " | ".join(origs[:4]) + (" ..." if len(origs) > 4 else "")
+              return name
+
+          def main(artifact_path, mapping_path=None, report_path=None):
+              target_methods = {
+                  ('Landroid/view/Window;', 'setStatusBarColor'),
+                  ('Landroid/view/Window;', 'setNavigationBarColor'),
+                  ('Landroid/view/Window;', 'setDecorFitsSystemWindows'),
+                  ('Landroid/view/Window;', 'setStatusBarContrastEnforced'),
+                  ('Landroid/view/Window;', 'setNavigationBarContrastEnforced'),
+                  ('Landroid/view/Window;', 'setFlags'),
+              }
+              target_fields = {('Landroid/view/WindowManager$LayoutParams;', 'layoutInDisplayCutoutMode')}
+              z = zipfile.ZipFile(artifact_path)
+              dexnames = [n for n in z.namelist() if n.endswith('.dex')]
+              callers = collections.defaultdict(set)
+              for dn in dexnames:
+                  dex = Dex(z.read(dn))
+                  want_m = {i: f'{c}.{n}' for i in range(dex.method_ids_size) for c, n in [dex.method(i)] if (c, n) in target_methods}
+                  want_f = {i: f'{c}.{n}' for i in range(dex.field_ids_size) for c, n in [dex.field(i)] if (c, n) in target_fields}
+                  if not want_m and not want_f: continue
+                  for cls, cdo in dex.classes():
+                      for midx, code_off in dex.method_code_offsets(cdo):
+                          try:
+                              for kind, idx in dex.scan_code(code_off, want_m, want_f):
+                                  callers[want_m[idx] if kind == 'M' else want_f[idx]].add(cls)
+                          except Exception:
+                              continue
+              out_lines = [
+                  '==================================================================',
+                  '  Edge-to-Edge Deprecated API Scan (DEX-level forensic report)',
+                  f'  Artifact: {artifact_path}',
+                  '==================================================================',
+              ]
+              mapping = load_mapping(mapping_path)
+              for label in sorted(callers):
+                  out_lines.append(f'\n=== {label} ===')
+                  for cls in sorted(callers[label]):
+                      out_lines.append('    ' + pretty(cls, mapping))
+              if not callers:
+                  out_lines.append('\nNo references to the scanned deprecated APIs were found.')
+              if report_path:
+                  with open(report_path, 'w', encoding='utf-8') as f:
+                      f.write('\n'.join(out_lines) + '\n')
+
+          if __name__ == '__main__':
+              main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None, sys.argv[3] if len(sys.argv) > 3 else None)
+          PYEOF
+          fi
+
+          mkdir -p build_logs/r8_reports/summaries
+          python3 /tmp/dex_edge_scan.py "$ARTIFACT_PATH" "app/build/outputs/mapping/release/mapping.txt" build_logs/r8_reports/summaries/edge_to_edge_api_report.txt 2>&1 | tee -a build_logs/analysis_full.log
+          exit 0
+
+      - name: Step 7 - Publish Job Summary
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        run: |
+          set +e
+          python3 - <<'PYEOF'
+          import os
+
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          out = ["# 🧪 تقرير فحص R8 الرسمي وتفكيك DEX وواجهات الحافة\n"]
+
+          for rpt, title in (
+              ("build_logs/r8_reports/summaries/r8_json_summary.txt", "نسب R8 الرسمية من r8.json (معيار Google Play Console)"),
+              ("build_logs/r8_reports/summaries/dex_obfuscation_report.txt", "تقرير تمويه وحجم DEX"),
+              ("build_logs/r8_reports/summaries/dex_breakdown_report.txt", "تفكيك حجم DEX حسب المكتبات + القواعد العريضة"),
+              ("build_logs/r8_reports/summaries/edge_to_edge_api_report.txt", "تقرير واجهات الحافة المتوقفة في DEX"),
+          ):
+              if os.path.exists(rpt):
+                  content = open(rpt, encoding="utf-8", errors="ignore").read()
+                  out.append(f"\n## {title}\n\n```\n{content[:18000]}\n```")
+
+          text = "\n".join(out) + "\n"
+          if summary_path:
+              with open(summary_path, "a", encoding="utf-8") as f:
+                  f.write(text)
+          print(text[:4000])
+          PYEOF
+          exit 0
+
+      - name: Step 8 - Collect Logs & Error Summary
+        if: always()
+        run: |
+          mkdir -p build_logs/r8_reports/logs
+          touch build_logs/analysis_full.log
+          {
+            echo "===================================================="
+            echo "ملخص الأخطاء والاستثناءات Error Summary"
+            echo "===================================================="
+            grep -i -E "FAILURE:|What went wrong:|Execution failed|Exception|Error:|Caused by:|Missing classes|Failed to|cannot find symbol|error:|exit code|خطأ|فشل" -C 15 build_logs/analysis_full.log || true
+            echo "===================================================="
+            echo "آخر 200 سطر من سجل الفحص الكامل:"
+            echo "===================================================="
+            tail -n 200 build_logs/analysis_full.log
+          } > build_logs/r8_reports/logs/error_summary.log
+          cp -f build_logs/analysis_full.log build_logs/r8_reports/logs/ 2>/dev/null || true
+
+      # ---------------------------------------------------------------
+      # رفع كل قسم كـ Artifact منفصل ومضغوط بأقصى درجة (compression-level: 9)
+      # لتنزيل كل قسم بحجمه الصغير المستقل دون تجميعها في ملف واحد ضخم
+      # ---------------------------------------------------------------
+      - name: Upload Artifact 1 - Summaries & r8.json (Tiny)
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: 01-r8-summaries-${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: build_logs/r8_reports/summaries/**
+          compression-level: 9
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Artifact 2 - R8 Analyzer HTML
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: 02-r8-analyzer-html-${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: build_logs/r8_reports/html/**
+          compression-level: 9
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Artifact 3 - Seeds, Usage & Configuration
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: 03-r8-seeds-usage-config-${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: build_logs/r8_reports/rules/**
+          compression-level: 9
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Artifact 4 - Mapping Only (Compressed Separately)
+        if: ${{ success() && env.BUILD_FAILED != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: 04-r8-mapping-${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: build_logs/r8_reports/mapping/mapping.txt
+          compression-level: 9
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload Artifact 5 - Build Logs & Errors
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: 05-r8-build-logs-${{ env.APP_VERSION }}-${{ github.run_number }}
+          path: build_logs/r8_reports/logs/**
+          compression-level: 9
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Fail Job After Uploading Reports
+        if: ${{ env.BUILD_FAILED == 'true' }}
+        run: |
+          echo "⛔ فشل الفحص. راجع ملف 05-r8-build-logs في Artifacts."
+          exit 1
+
+      - name: Step 9 - Restore Original Project Files
+        if: always()
+        run: |
+          if [ -f /tmp/original_build_gradle.bak ]; then cp -f /tmp/original_build_gradle.bak "$GRADLE_APP_FILE"; fi
+          if [ -f /tmp/original_gradle_properties.bak ]; then cp -f /tmp/original_gradle_properties.bak gradle.properties; fi
+          if [ -f /tmp/original_settings.bak ]; then cp -f /tmp/original_settings.bak settings.gradle.kts; fi
+          if [ -f /tmp/original_versions.bak ]; then cp -f /tmp/original_versions.bak gradle/libs.versions.toml; fi
+          if [ -f /tmp/original_wrapper.bak ]; then cp -f /tmp/original_wrapper.bak gradle/wrapper/gradle-wrapper.properties; fi
+          rm -f local.properties /tmp/dex_edge_scan.py /tmp/original_*.bak 2>/dev/null || true
+          git checkout -- gradlew gradle/wrapper/gradle-wrapper.jar 2>/dev/null || true
+          echo "تم استرجاع ملفات المشروع إلى حالتها الأصلية."

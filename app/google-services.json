@@ -1,0 +1,88 @@
+{
+  "project_info": {
+    "project_number": "140194602441",
+    "project_id": "hpp-daftree",
+    "storage_bucket": "hpp-daftree.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140194602441:android:f18026fa3af1cc5049dc18",
+        "android_client_info": {
+          "package_name": "com.hpp.daftree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "140194602441-5ofq29hrvnatvkqmdmf11pjnvkuq1rsv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hpp.daftree",
+            "certificate_hash": "1f94f6dd5c3b4b97f075b2fec1c1c98a4119ee40"
+          }
+        },
+        {
+          "client_id": "140194602441-b8r1fa9nk6104dai84cgl8sgsgmtqvtc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hpp.daftree",
+            "certificate_hash": "6b8935bdfe309fe89e9562b77435d1e5b273d2c9"
+          }
+        },
+        {
+          "client_id": "140194602441-gj8pjd7jdsjgcrg94jo22j66n8aajr7d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hpp.daftree",
+            "certificate_hash": "94c7d1ebbd6117336e4b4cdc36b53a545e08ab68"
+          }
+        },
+        {
+          "client_id": "140194602441-k567ngl7ih38kfldoodrjiibu0tc7trl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hpp.daftree",
+            "certificate_hash": "9af4f3cb8114825d69a689464a04cd5279813b26"
+          }
+        },
+        {
+          "client_id": "140194602441-uohgc4pecrbjg96t8jotlrn6gksudagu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hpp.daftree",
+            "certificate_hash": "cf09247ed81b67ed0eed0c880660bc0862db387d"
+          }
+        },
+        {
+          "client_id": "140194602441-vc40cnj9457k6fh19rq99dp13g2bk897.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hpp.daftree",
+            "certificate_hash": "6d596259abfe68cc90ff90edf30873246de6a894"
+          }
+        },
+        {
+          "client_id": "140194602441-i39urncib38d8bv5f0r5udmonnkbt4fq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkBoQSj7jI55VQyKFgwF60lJtBloRKVWE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "140194602441-i39urncib38d8bv5f0r5udmonnkbt4fq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-2600356094241738~3320952771"
+    }
+  ],
+  "configuration_version": "1"
+}
