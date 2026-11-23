@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "## ❌ أخطاء بناء Debug" >> $GITHUB_STEP_SUMMARY
           echo '```text' >> $GITHUB_STEP_SUMMARY
-          grep -i -E "error:|FAILURE:|What went wrong:|Execution failed|cannot find symbol|Caused by:" -C 3 build_logs/debug_build.log | head -n 120 >> $GITHUB_STEP_SUMMARY \vert{}\vert{} tail -n 60 build_logs/debug_build.log >>$GITHUB_STEP_SUMMARY
+          grep -E "error:|FAILURE:|What went wrong:|Execution failed|cannot find symbol|Caused by:" -A 2 -B 1 build_logs/debug_build.log | tail -n 120 >> $GITHUB_STEP_SUMMARY \vert{}\vert{} tail -n 60 build_logs/debug_build.log >>$GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       - name: Upload Debug APK

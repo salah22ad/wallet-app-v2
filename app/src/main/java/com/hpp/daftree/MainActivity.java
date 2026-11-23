@@ -5845,7 +5845,7 @@ private void handlePurchaseApp() {
     }
 
     private void updateBottomNavSelectionUi() {
-        int activeColor = resolveThemeColor(com.google.android.material.R.attr.colorPrimary, R.color.budget_primary);
+        int activeColor = resolveThemeColor(androidx.appcompat.R.attr.colorPrimary, R.color.budget_primary);
         int inactiveColor = resolveThemeColor(com.google.android.material.R.attr.colorOnSurfaceVariant, R.color.budget_text_secondary);
 
         int homeColor = isBudgetTabActive ? inactiveColor : activeColor;
