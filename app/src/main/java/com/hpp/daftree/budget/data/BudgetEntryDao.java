@@ -27,6 +27,9 @@ public interface BudgetEntryDao {
     @Query("UPDATE budget_entries SET isDeleted = 1, syncStatus = 'DELETED', deleteDate = :now, lastModified = :now WHERE id = :id")
     void softDeleteById(int id, long now);
 
+    @Query("UPDATE budget_entries SET isDeleted = 1, syncStatus = 'DELETED', deleteDate = :now, deletedBy = :deletedBy, lastModified = :now WHERE id = :id")
+    void softDeleteByIdWithUser(int id, long now, String deletedBy);
+
     @Query("SELECT e.id AS id, e.firestoreId AS firestoreId, e.categoryId AS categoryId, " +
             "e.currencyId AS currencyId, e.type AS type, e.amount AS amount, e.note AS note, " +
             "e.entryDate AS entryDate, e.yearMonth AS yearMonth, " +
@@ -85,6 +88,16 @@ public interface BudgetEntryDao {
 
     @Query("SELECT * FROM budget_entries WHERE syncStatus != 'SYNCED'")
     List<BudgetEntry> getUnsyncedEntriesSync();
+
+    @Query("SELECT COUNT(*) FROM budget_entries WHERE syncStatus != 'SYNCED'")
+    int getUnsyncedCount();
+
     @Query("SELECT COUNT(*) FROM budget_entries WHERE isDeleted = 0")
     int getTotalActiveEntryCountSync();
+
+    @Query("DELETE FROM budget_entries WHERE firestoreId = :firestoreId")
+    void deleteByFirestoreId(String firestoreId);
+
+    @Query("SELECT * FROM budget_entries WHERE isDeleted = 1 AND deleteDate > 0 AND deleteDate <= :threshold")
+    List<BudgetEntry> getOldDeletedEntries(long threshold);
 }

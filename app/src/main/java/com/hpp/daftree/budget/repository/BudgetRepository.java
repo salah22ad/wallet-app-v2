@@ -7,6 +7,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.lifecycle.LiveData;
+import androidx.work.Constraints;
+import androidx.work.ExistingWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.hpp.daftree.R;
@@ -22,7 +27,10 @@ import com.hpp.daftree.budget.data.MonthlyBudgetLimitDao;
 import com.hpp.daftree.budget.data.MonthlyTotals;
 import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.database.AppDatabase;
+import com.hpp.daftree.database.User;
+import com.hpp.daftree.models.AppAuth;
 import com.hpp.daftree.models.UUIDGenerator;
+import com.hpp.daftree.syncmanagers.SyncWorker;
 import com.hpp.daftree.utils.SecureLicenseManager;
 
 import java.util.ArrayList;
@@ -30,21 +38,68 @@ import java.util.List;
 
 public class BudgetRepository {
 
+    private final Context appContext;
+    private final AppDatabase db;
     private final BudgetCategoryDao categoryDao;
     private final BudgetEntryDao entryDao;
     private final MonthlyBudgetLimitDao limitDao;
 
     public BudgetRepository(Context context) {
-        AppDatabase db = AppDatabase.getDatabase(context.getApplicationContext());
+        this.appContext = context.getApplicationContext();
+        this.db = AppDatabase.getDatabase(this.appContext);
         this.categoryDao = db.budgetCategoryDao();
         this.entryDao = db.budgetEntryDao();
         this.limitDao = db.monthlyBudgetLimitDao();
         ensureDefaultCategories();
     }
 
-    private String getCurrentUid() {
-        String uid = FirebaseAuth.getInstance().getUid();
-        return uid != null ? uid : "";
+    private static String resolveOwnerUid(Context ctx) {
+        try {
+            SecureLicenseManager slm = SecureLicenseManager.getInstance(ctx);
+            if (slm.isGuest()) {
+                return slm.guestUID() != null ? slm.guestUID() : "";
+            }
+            String uid = AppAuth.getUserID(ctx);
+            if (uid != null && !uid.trim().isEmpty()) return uid;
+        } catch (Exception ignored) {
+        }
+        String fbUid = FirebaseAuth.getInstance().getUid();
+        return fbUid != null ? fbUid : "";
+    }
+
+    private static String resolveCurrentUserName(AppDatabase db) {
+        try {
+            User u = db.userDao().getUserProfileBlocking();
+            if (u != null && u.getName() != null && !u.getName().trim().isEmpty()) {
+                return u.getName().trim();
+            }
+        } catch (Exception ignored) {
+        }
+        if (FirebaseAuth.getInstance().getCurrentUser() != null
+                && FirebaseAuth.getInstance().getCurrentUser().getDisplayName() != null) {
+            return FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        }
+        return "";
+    }
+
+    public static void triggerBudgetSync(Context ctx) {
+        try {
+            Context appCtx = ctx.getApplicationContext();
+            if (SecureLicenseManager.getInstance(appCtx).isGuest()) return;
+            Constraints constraints = new Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build();
+            OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
+                    .setConstraints(constraints)
+                    .build();
+            WorkManager.getInstance(appCtx).beginUniqueWork(
+                    "UNIQUE_SYNC_WORK",
+                    ExistingWorkPolicy.REPLACE,
+                    syncRequest
+            ).enqueue();
+        } catch (Exception e) {
+            Log.e("BudgetRepository", "Error triggering budget sync", e);
+        }
     }
 
     private void ensureDefaultCategories() {
@@ -54,36 +109,33 @@ public class BudgetRepository {
                 categoryDao.migrateDefaultCategoryCode("apps", "investments", "investments");
                 return;
             }
+            String uid = resolveOwnerUid(appContext);
+            long now = System.currentTimeMillis();
             List<BudgetCategory> defaults = new ArrayList<>();
-            defaults.add(buildDefaultCat("bills", BudgetCategory.TYPE_EXPENSE, "bills", "#F59E0B", 1));
-            defaults.add(buildDefaultCat("housing", BudgetCategory.TYPE_EXPENSE, "housing", "#22C55E", 2));
-            defaults.add(buildDefaultCat("food", BudgetCategory.TYPE_EXPENSE, "food", "#F97316", 3));
-            defaults.add(buildDefaultCat("transport", BudgetCategory.TYPE_EXPENSE, "transport", "#3B82F6", 4));
-            defaults.add(buildDefaultCat("health", BudgetCategory.TYPE_EXPENSE, "health", "#A855F7", 5));
-            defaults.add(buildDefaultCat("other", BudgetCategory.TYPE_EXPENSE, "other", "#06B6D4", 6));
-            defaults.add(buildDefaultCat("salary", BudgetCategory.TYPE_INCOME, "salary", "#10B981", 1));
-            defaults.add(buildDefaultCat("freelance", BudgetCategory.TYPE_INCOME, "freelance", "#0EA5E9", 2));
-            defaults.add(buildDefaultCat("investments", BudgetCategory.TYPE_INCOME, "investments", "#6366F1", 3));
-            defaults.add(buildDefaultCat("income_other", BudgetCategory.TYPE_INCOME, "income_other", "#EAB308", 4));
+            defaults.add(makeSeed(uid, "bills", BudgetCategory.TYPE_EXPENSE, "bills", "#F59E0B", 1, now));
+            defaults.add(makeSeed(uid, "housing", BudgetCategory.TYPE_EXPENSE, "housing", "#22C55E", 2, now));
+            defaults.add(makeSeed(uid, "food", BudgetCategory.TYPE_EXPENSE, "food", "#F97316", 3, now));
+            defaults.add(makeSeed(uid, "transport", BudgetCategory.TYPE_EXPENSE, "transport", "#3B82F6", 4, now));
+            defaults.add(makeSeed(uid, "health", BudgetCategory.TYPE_EXPENSE, "health", "#A855F7", 5, now));
+            defaults.add(makeSeed(uid, "other", BudgetCategory.TYPE_EXPENSE, "other", "#06B6D4", 6, now));
+            defaults.add(makeSeed(uid, "salary", BudgetCategory.TYPE_INCOME, "salary", "#10B981", 1, now));
+            defaults.add(makeSeed(uid, "freelance", BudgetCategory.TYPE_INCOME, "freelance", "#0EA5E9", 2, now));
+            defaults.add(makeSeed(uid, "investments", BudgetCategory.TYPE_INCOME, "investments", "#6366F1", 3, now));
+            defaults.add(makeSeed(uid, "income_other", BudgetCategory.TYPE_INCOME, "income_other", "#EAB308", 4, now));
             categoryDao.insertAll(defaults);
         });
-    }
-
-    private BudgetCategory buildDefaultCat(String code, String type, String icon, String color, int order) {
-        BudgetCategory cat = new BudgetCategory(code, "", type, icon, color, true, order);
-        cat.firestoreId = UUIDGenerator.generateSequentialUUID();
-        cat.ownerUID = getCurrentUid();
-        return cat;
     }
 
     public void addCustomCategory(String name, String type, String iconKey, String colorHex, Runnable onDone) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             BudgetCategory cat = new BudgetCategory("", name != null ? name.trim() : "", type, iconKey, colorHex, false, 100);
-            cat.firestoreId = UUIDGenerator.generateSequentialUUID();
-            cat.ownerUID = getCurrentUid();
-            cat.syncStatus = "NEW";
-            cat.lastModified = System.currentTimeMillis();
+            cat.setFirestoreId(UUIDGenerator.generateSequentialUUID());
+            cat.setOwnerUID(resolveOwnerUid(appContext));
+            cat.setSyncStatus("NEW");
+            cat.setLastModified(System.currentTimeMillis());
+            cat.setLastSyncDate(0L);
             categoryDao.insert(cat);
+            triggerBudgetSync(appContext);
             if (onDone != null) onDone.run();
         });
     }
@@ -117,24 +169,30 @@ public class BudgetRepository {
                          String type, double amount, String note, long entryDate, Runnable onDone) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             long now = System.currentTimeMillis();
-            BudgetEntry entry = new BudgetEntry();
-            entry.firestoreId = UUIDGenerator.generateSequentialUUID();
-            entry.ownerUID = getCurrentUid();
-            entry.categoryId = categoryId;
             String catFsId = categoryDao.getCategoryFirestoreIdSync(categoryId);
-            entry.categoryFirestoreId = catFsId != null ? catFsId : "";
-            entry.currencyId = currencyId;
-            entry.currencyFirestoreId = currencyFirestoreId != null ? currencyFirestoreId : "";
-            entry.type = type;
-            entry.amount = amount;
-            entry.note = note != null ? note.trim() : "";
-            entry.entryDate = entryDate;
-            entry.yearMonth = BudgetUtils.toYearMonth(entryDate);
-            entry.syncStatus = "NEW";
-            entry.lastModified = now;
-            entry.lastSyncDate = 0L;
-            entry.isDeleted = false;
+            String curFsId = currencyFirestoreId;
+            if (curFsId == null || curFsId.isEmpty()) {
+                curFsId = db.currencyDao().getCurrencyFirestoreId(currencyId);
+            }
+
+            BudgetEntry entry = new BudgetEntry();
+            entry.setFirestoreId(UUIDGenerator.generateSequentialUUID());
+            entry.setOwnerUID(resolveOwnerUid(appContext));
+            entry.setCategoryId(categoryId);
+            entry.setCategoryFirestoreId(catFsId != null ? catFsId : "");
+            entry.setCurrencyId(currencyId);
+            entry.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+            entry.setType(type);
+            entry.setAmount(amount);
+            entry.setNote(note != null ? note.trim() : "");
+            entry.setEntryDate(entryDate);
+            entry.setYearMonth(BudgetUtils.toYearMonth(entryDate));
+            entry.setSyncStatus("NEW");
+            entry.setLastModified(now);
+            entry.setLastSyncDate(0L);
+            entry.setDeleted(false);
             entryDao.insert(entry);
+            triggerBudgetSync(appContext);
             if (onDone != null) onDone.run();
         });
     }
@@ -144,18 +202,19 @@ public class BudgetRepository {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             BudgetEntry existing = entryDao.getByIdSync(entryId);
             if (existing != null) {
-                existing.categoryId = categoryId;
                 String catFsId = categoryDao.getCategoryFirestoreIdSync(categoryId);
-                existing.categoryFirestoreId = catFsId != null ? catFsId : "";
-                existing.amount = amount;
-                existing.note = note != null ? note.trim() : "";
-                existing.entryDate = entryDate;
-                existing.yearMonth = BudgetUtils.toYearMonth(entryDate);
-                existing.lastModified = System.currentTimeMillis();
-                if (!"NEW".equals(existing.syncStatus)) {
-                    existing.syncStatus = "EDITED";
+                existing.setCategoryId(categoryId);
+                existing.setCategoryFirestoreId(catFsId != null ? catFsId : "");
+                existing.setAmount(amount);
+                existing.setNote(note != null ? note.trim() : "");
+                existing.setEntryDate(entryDate);
+                existing.setYearMonth(BudgetUtils.toYearMonth(entryDate));
+                existing.setLastModified(System.currentTimeMillis());
+                if (!"NEW".equals(existing.getSyncStatus())) {
+                    existing.setSyncStatus("EDITED");
                 }
                 entryDao.update(existing);
+                triggerBudgetSync(appContext);
             }
             if (onDone != null) onDone.run();
         });
@@ -163,7 +222,9 @@ public class BudgetRepository {
 
     public void deleteEntry(int entryId, Runnable onDone) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
-            entryDao.softDeleteById(entryId, System.currentTimeMillis());
+            String deletedBy = resolveCurrentUserName(db);
+            entryDao.softDeleteByIdWithUser(entryId, System.currentTimeMillis(), deletedBy);
+            triggerBudgetSync(appContext);
             if (onDone != null) onDone.run();
         });
     }
@@ -172,29 +233,35 @@ public class BudgetRepository {
                                  double limitAmount, Runnable onDone) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             long now = System.currentTimeMillis();
+            String curFsId = currencyFirestoreId;
+            if (curFsId == null || curFsId.isEmpty()) {
+                curFsId = db.currencyDao().getCurrencyFirestoreId(currencyId);
+            }
             MonthlyBudgetLimit existing = limitDao.getExactLimitSync(yearMonth, currencyId);
             if (existing != null) {
-                existing.limitAmount = limitAmount;
-                existing.isDeleted = false;
-                existing.lastModified = now;
-                if (!"NEW".equals(existing.syncStatus)) {
-                    existing.syncStatus = "EDITED";
+                existing.setLimitAmount(limitAmount);
+                existing.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                existing.setDeleted(false);
+                existing.setLastModified(now);
+                if (!"NEW".equals(existing.getSyncStatus())) {
+                    existing.setSyncStatus("EDITED");
                 }
                 limitDao.update(existing);
             } else {
                 MonthlyBudgetLimit limit = new MonthlyBudgetLimit();
-                limit.firestoreId = UUIDGenerator.generateSequentialUUID();
-                limit.ownerUID = getCurrentUid();
-                limit.currencyId = currencyId;
-                limit.currencyFirestoreId = currencyFirestoreId != null ? currencyFirestoreId : "";
-                limit.yearMonth = yearMonth;
-                limit.limitAmount = limitAmount;
-                limit.syncStatus = "NEW";
-                limit.lastModified = now;
-                limit.lastSyncDate = 0L;
-                limit.isDeleted = false;
+                limit.setFirestoreId(UUIDGenerator.generateSequentialUUID());
+                limit.setOwnerUID(resolveOwnerUid(appContext));
+                limit.setCurrencyId(currencyId);
+                limit.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                limit.setYearMonth(yearMonth);
+                limit.setLimitAmount(limitAmount);
+                limit.setSyncStatus("NEW");
+                limit.setLastModified(now);
+                limit.setLastSyncDate(0L);
+                limit.setDeleted(false);
                 limitDao.insert(limit);
             }
+            triggerBudgetSync(appContext);
             if (onDone != null) onDone.run();
         });
     }
@@ -233,16 +300,7 @@ public class BudgetRepository {
                     return;
                 }
 
-                String uid = "";
-                try {
-                    SecureLicenseManager slm = SecureLicenseManager.getInstance(appCtx);
-                    if (slm.isGuest()) {
-                        uid = slm.guestUID() != null ? slm.guestUID() : "";
-                    } else if (FirebaseAuth.getInstance().getUid() != null) {
-                        uid = FirebaseAuth.getInstance().getUid();
-                    }
-                } catch (Exception ignored) {
-                }
+                String uid = resolveOwnerUid(appCtx);
 
                 if (catDao.getCountSync() == 0) {
                     long seedNow = System.currentTimeMillis();
@@ -260,8 +318,6 @@ public class BudgetRepository {
                     catDao.insertAll(defaults);
                 }
 
-                // debtTxType == -1 (له / دائن) -> دخل آخر (income_other)
-                // debtTxType == 1 (عليه / مدين) -> مصروف أخرى (other)
                 boolean isCredit = (debtTxType == -1);
                 String budgetType = isCredit ? BudgetEntry.TYPE_INCOME : BudgetEntry.TYPE_EXPENSE;
                 String targetCode = isCredit ? "income_other" : "other";
@@ -274,6 +330,7 @@ public class BudgetRepository {
                     catId = (int) insertedCatId;
                 }
 
+                String catFsId = catDao.getCategoryFirestoreIdSync(catId);
                 String currencyFsId = "";
                 try {
                     String fetched = db.currencyDao().getCurrencyFirestoreId(resolvedCurrencyId);
@@ -285,29 +342,25 @@ public class BudgetRepository {
                 long now = System.currentTimeMillis();
 
                 BudgetEntry entry = new BudgetEntry();
-                entry.firestoreId = UUIDGenerator.generateSequentialUUID();
-                entry.ownerUID = uid;
-                entry.categoryId = catId;
-                String linkedCatFsId = catDao.getCategoryFirestoreIdSync(catId);
-                entry.categoryFirestoreId = linkedCatFsId != null ? linkedCatFsId : "";
-                entry.currencyId = resolvedCurrencyId;
-                entry.currencyFirestoreId = currencyFsId;
-                entry.type = budgetType;
-                entry.amount = amount;
-                entry.note = linkedNote;
-                entry.entryDate = safeDate;
-                entry.yearMonth = BudgetUtils.toYearMonth(safeDate);
-                entry.syncStatus = "NEW";
-                entry.lastModified = now;
-                entry.lastSyncDate = 0L;
-                entry.isDeleted = false;
+                entry.setFirestoreId(UUIDGenerator.generateSequentialUUID());
+                entry.setOwnerUID(uid);
+                entry.setCategoryId(catId);
+                entry.setCategoryFirestoreId(catFsId != null ? catFsId : "");
+                entry.setCurrencyId(resolvedCurrencyId);
+                entry.setCurrencyFirestoreId(currencyFsId);
+                entry.setType(budgetType);
+                entry.setAmount(amount);
+                entry.setNote(linkedNote);
+                entry.setEntryDate(safeDate);
+                entry.setYearMonth(BudgetUtils.toYearMonth(safeDate));
+                entry.setSyncStatus("NEW");
+                entry.setLastModified(now);
+                entry.setLastSyncDate(0L);
+                entry.setDeleted(false);
 
                 long insertedId = eDao.insert(entry);
-                Log.i("BudgetLink", "Inserted linked budget entry id=" + insertedId
-                        + " type=" + budgetType + " amount=" + amount
-                        + " currencyId=" + resolvedCurrencyId + " ym=" + entry.yearMonth);
-
                 if (insertedId > 0) {
+                    triggerBudgetSync(appCtx);
                     new Handler(Looper.getMainLooper()).post(() ->
                             Toast.makeText(appCtx, toastMsg, Toast.LENGTH_SHORT).show());
                 }
@@ -320,9 +373,9 @@ public class BudgetRepository {
     private static BudgetCategory makeSeed(String uid, String code, String type,
                                            String icon, String color, int order, long now) {
         BudgetCategory cat = new BudgetCategory(code, "", type, icon, color, true, order);
-        cat.firestoreId = UUIDGenerator.generateSequentialUUID();
-        cat.ownerUID = uid;
-        cat.lastModified = now;
+        cat.setFirestoreId(UUIDGenerator.generateSequentialUUID());
+        cat.setOwnerUID(uid);
+        cat.setLastModified(now);
         return cat;
     }
 }

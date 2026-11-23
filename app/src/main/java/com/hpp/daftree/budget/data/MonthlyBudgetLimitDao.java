@@ -21,6 +21,9 @@ public interface MonthlyBudgetLimitDao {
     @Query("SELECT * FROM monthly_budget_limits WHERE yearMonth = :yearMonth AND currencyId = :currencyId LIMIT 1")
     MonthlyBudgetLimit getExactLimitSync(String yearMonth, int currencyId);
 
+    @Query("SELECT * FROM monthly_budget_limits WHERE firestoreId = :firestoreId LIMIT 1")
+    MonthlyBudgetLimit getByFirestoreIdSync(String firestoreId);
+
     @Query("SELECT limitAmount FROM monthly_budget_limits " +
             "WHERE currencyId = :currencyId AND yearMonth <= :yearMonth AND isDeleted = 0 " +
             "ORDER BY yearMonth DESC LIMIT 1")
@@ -33,6 +36,16 @@ public interface MonthlyBudgetLimitDao {
 
     @Query("SELECT * FROM monthly_budget_limits WHERE syncStatus != 'SYNCED'")
     List<MonthlyBudgetLimit> getUnsyncedLimitsSync();
+
+    @Query("SELECT COUNT(*) FROM monthly_budget_limits WHERE syncStatus != 'SYNCED'")
+    int getUnsyncedCount();
+
     @Query("SELECT COUNT(*) FROM monthly_budget_limits WHERE isDeleted = 0 AND limitAmount > 0")
     int getTotalActiveLimitCountSync();
+
+    @Query("DELETE FROM monthly_budget_limits WHERE firestoreId = :firestoreId")
+    void deleteByFirestoreId(String firestoreId);
+
+    @Query("SELECT * FROM monthly_budget_limits WHERE isDeleted = 1 AND deleteDate > 0 AND deleteDate <= :threshold")
+    List<MonthlyBudgetLimit> getOldDeletedLimits(long threshold);
 }

@@ -102,6 +102,9 @@ public class SecureLicenseManager {
     private static final String KEY_SYNC_TRANSACTIONS = "sync_last_time_transactions";
     private static final String KEY_SYNC_CURRENCIES = "sync_last_time_currencies";
     private static final String KEY_SYNC_ACCOUNT_TYPES = "sync_last_time_account_types";
+    private static final String KEY_SYNC_BUDGET_CATEGORIES = "sync_last_time_budget_categories";
+    private static final String KEY_SYNC_BUDGET_LIMITS = "sync_last_time_budget_limits";
+    private static final String KEY_SYNC_BUDGET_ENTRIES = "sync_last_time_budget_entries";
     // قيم مشوشة
     private static final int OBFUSCATED_FREE_LIMIT = SecurityUtils.ObfuscationHelper.obfuscateInt(100, 0);
     private static final int OBFUSCATED_MAX_DEVICES = SecurityUtils.ObfuscationHelper.obfuscateInt(2, 1);
@@ -180,6 +183,9 @@ public class SecureLicenseManager {
     public static String getTransactionKey() { return KEY_SYNC_TRANSACTIONS; }
     public static String getCurrencyKey() { return KEY_SYNC_CURRENCIES; }
     public static String getAccountTypeKey() { return KEY_SYNC_ACCOUNT_TYPES; }
+    public static String getBudgetCategoryKey() { return KEY_SYNC_BUDGET_CATEGORIES; }
+    public static String getBudgetLimitKey() { return KEY_SYNC_BUDGET_LIMITS; }
+    public static String getBudgetEntryKey() { return KEY_SYNC_BUDGET_ENTRIES; }
     /**
      * دالة لاسترجاع معرف المستخدم المخزن محلياً في حال انقطاع الاتصال
      * @param context سياق التطبيق للوصول للبيانات المخزنة

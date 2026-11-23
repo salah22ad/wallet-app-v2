@@ -62,10 +62,13 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <FrameLayout
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/main_content_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/floating_toolbar_card"
         app:layout_constraintBottom_toBottomOf="parent">
         <LinearLayout
@@ -352,7 +355,7 @@
                 app:rippleColor="#1FFF0000" />
         </LinearLayout>
 
-    </FrameLayout>
+    </androidx.core.widget.NestedScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

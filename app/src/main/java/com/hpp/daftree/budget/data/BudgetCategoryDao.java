@@ -21,8 +21,14 @@ public interface BudgetCategoryDao {
     @Query("SELECT * FROM budget_categories WHERE isDeleted = 0 ORDER BY type ASC, sortOrder ASC, id ASC")
     LiveData<List<BudgetCategory>> getAllActiveCategories();
 
+    @Query("SELECT * FROM budget_categories WHERE isDeleted = 0 ORDER BY type ASC, sortOrder ASC, id ASC")
+    List<BudgetCategory> getAllActiveCategoriesSync();
+
     @Query("SELECT COUNT(*) FROM budget_categories")
     int getCountSync();
+
+    @Query("SELECT COUNT(*) FROM budget_categories WHERE syncStatus != 'SYNCED' AND isDefault = 0")
+    int getUnsyncedCount();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(BudgetCategory category);
@@ -32,17 +38,31 @@ public interface BudgetCategoryDao {
 
     @Update
     void update(BudgetCategory category);
+
     @Query("UPDATE budget_categories SET code = :newCode, iconKey = :newIcon WHERE code = :oldCode AND isDefault = 1")
     void migrateDefaultCategoryCode(String oldCode, String newCode, String newIcon);
 
     @Query("SELECT id FROM budget_categories WHERE code = :code AND isDeleted = 0 LIMIT 1")
     Integer getCategoryIdByCodeSync(String code);
+
+    @Query("SELECT * FROM budget_categories WHERE code = :code AND isDeleted = 0 LIMIT 1")
+    BudgetCategory getByCodeSync(String code);
+
     @Query("SELECT firestoreId FROM budget_categories WHERE id = :categoryId LIMIT 1")
     String getCategoryFirestoreIdSync(int categoryId);
+
+    @Query("SELECT * FROM budget_categories WHERE id = :id LIMIT 1")
+    BudgetCategory getByIdSync(int id);
 
     @Query("SELECT * FROM budget_categories WHERE firestoreId = :firestoreId LIMIT 1")
     BudgetCategory getByFirestoreIdSync(String firestoreId);
 
-    @Query("SELECT * FROM budget_categories WHERE syncStatus != 'SYNCED'")
+    @Query("SELECT * FROM budget_categories WHERE syncStatus != 'SYNCED' AND isDefault = 0")
     List<BudgetCategory> getUnsyncedCategoriesSync();
+
+    @Query("DELETE FROM budget_categories WHERE firestoreId = :firestoreId")
+    void deleteByFirestoreId(String firestoreId);
+
+    @Query("SELECT * FROM budget_categories WHERE isDeleted = 1 AND deleteDate > 0 AND deleteDate <= :threshold")
+    List<BudgetCategory> getOldDeletedCategories(long threshold);
 }
