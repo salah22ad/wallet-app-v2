@@ -206,6 +206,16 @@ import io.michaelrocks.libphonenumber.android.Phonenumber;
 import com.google.android.play.core.review.ReviewInfo;
 import com.google.android.play.core.review.ReviewManager;
 import com.google.android.play.core.review.ReviewManagerFactory;
+import android.content.res.ColorStateList;
+import android.util.TypedValue;
+
+import com.hpp.daftree.budget.data.BudgetEntry;
+import com.hpp.daftree.budget.data.BudgetEntryWithCategory;
+import com.hpp.daftree.budget.ui.AddBudgetEntryBottomSheet;
+import com.hpp.daftree.budget.ui.BudgetContainerFragment;
+import com.hpp.daftree.budget.ui.EditBudgetLimitDialog;
+import com.hpp.daftree.budget.ui.QuickAddBottomSheet;
+import com.hpp.daftree.budget.viewmodel.BudgetViewModel;
 import com.hpp.daftree.viewmodels.ProfileViewModel;
 
 import android.webkit.WebView;
@@ -216,9 +226,14 @@ public class MainActivity extends BaseActivity implements
         AccountsAdapter.OnAccountInteractionListener,
         NavigationView.OnNavigationItemSelectedListener, LicenseManager.AuthStateListener,
         ReferralRewardDialog.OnReferralActionListener,
-        LanguageSelectionDialog.LanguageSelectionListener {
+        LanguageSelectionDialog.LanguageSelectionListener,
+        BudgetContainerFragment.BudgetHostListener,
+        QuickAddBottomSheet.QuickAddListener {
 
     private ActivityMainBinding binding;
+    private boolean isBudgetTabActive = false;
+    private BudgetContainerFragment budgetContainerFragment;
+    private BudgetViewModel budgetViewModel;
     private TransactionUploadController transactionController;
     private boolean isSearchMode = false;
     private AlertDialog progressDialog;
@@ -406,6 +421,14 @@ public class MainActivity extends BaseActivity implements
         firestore = FirebaseFirestore.getInstance();
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         lockManager = new AppLockManager(this);
+        budgetViewModel = new ViewModelProvider(this).get(BudgetViewModel.class);
+        Fragment existingBudgetFrag = getSupportFragmentManager().findFragmentByTag("BudgetContainerFragment");
+        if (existingBudgetFrag instanceof BudgetContainerFragment) {
+            budgetContainerFragment = (BudgetContainerFragment) existingBudgetFrag;
+        }
+        if (savedInstanceState != null && savedInstanceState.getBoolean("is_budget_tab_active", false)) {
+            isBudgetTabActive = true;
+        }
         profileViewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         repository = new DaftreeRepository(getApplication());
@@ -434,6 +457,8 @@ public class MainActivity extends BaseActivity implements
                     toggleSearchMode(false);
                 } else if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     binding.drawerLayout.closeDrawer(GravityCompat.START);
+                } else if (isBudgetTabActive) {
+                    switchMainTab(false);
                 } else {
                     finish();
                 }
@@ -1227,6 +1252,19 @@ public class MainActivity extends BaseActivity implements
                 return windowInsets;
             });
         }
+        if (binding.budgetFragmentContainer != null) {
+            ViewGroup.MarginLayoutParams budgetLp =
+                    (ViewGroup.MarginLayoutParams) binding.budgetFragmentContainer.getLayoutParams();
+            int originalBudgetBottomMargin = budgetLp.bottomMargin;
+            ViewCompat.setOnApplyWindowInsetsListener(binding.budgetFragmentContainer, (view, windowInsets) -> {
+                Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                view.setPadding(view.getPaddingLeft(), systemBars.top, view.getPaddingRight(), view.getPaddingBottom());
+                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+                params.bottomMargin = originalBudgetBottomMargin + systemBars.bottom;
+                view.setLayoutParams(params);
+                return windowInsets;
+            });
+        }
         ViewCompat.setOnApplyWindowInsetsListener(binding.drawerLayout, (v, windowInsets) -> {
             // الحصول على أبعاد أشرطة النظام (شريط الحالة وشريط التنقل)
             Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -1772,7 +1810,7 @@ public class MainActivity extends BaseActivity implements
     private void setupEventListeners() {
         setupAddTransactionButtonGlow();
         setupCurrencyTextViewColorTransition();
-        binding.navItemAddAccount.setOnClickListener(v -> addNewAccout(null, true));
+        binding.navItemBudget.setOnClickListener(v -> switchMainTab(true));
         binding.navItemReports.setOnClickListener(v -> {
             if (!licenseManager.canCreateTransaction() && !licenceData.isPremium()) {
                 showExpiryDialog(getString(R.string.plan_expired_title), getString(R.string.plan_expired_message));
@@ -1781,8 +1819,12 @@ public class MainActivity extends BaseActivity implements
             showReportsDialogFromToolbar();
         });
         binding.navItemHome.setOnClickListener(v -> {
+            switchMainTab(false);
             binding.viewPager.setCurrentItem(1, false);
         });
+        if (isBudgetTabActive) {
+            switchMainTab(true);
+        }
         binding.navItemLinkedAccounts.setOnClickListener(v -> {
             if (!isUserAdded) {
 //                DialogHelper.show(this,getString(R.string.login_1), DialogHelper.FeedbackType.WARNING, null);
@@ -1822,17 +1864,7 @@ public class MainActivity extends BaseActivity implements
 
         });
 
-        binding.addTransactionButton.setOnClickListener(v -> {
-            // **تصحيح: التأكد من أن القائمة ليست فارغة قبل محاولة الوصول إليها**
-            if (availableCurrencies.isEmpty() || currentCurrencyIndex >= availableCurrencies.size()) {
-                Toast.makeText(this, getString(R.string.setupEventListeners_14), Toast.LENGTH_SHORT).show();
-                return;
-            }
-            Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
-            // **تصحيح: إرسال اسم العملة من القائمة الديناميكية**
-            intent.putExtra("CURRENCY", availableCurrencies.get(currentCurrencyIndex).name);
-            startActivity(intent);
-        });
+        binding.addTransactionButton.setOnClickListener(v -> showQuickAddBottomSheet());
         binding.currencyTextView.setOnClickListener(v -> cycleCurrency());
         openDocumentLauncher = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
             if (uri != null) {
@@ -2445,9 +2477,11 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
         if (availableCurrencies.isEmpty() || currentCurrencyIndex >= availableCurrencies.size())
             return;
 
-        String selectedCurrencyName = availableCurrencies.get(currentCurrencyIndex).name;
+        Currency selectedCurrency = availableCurrencies.get(currentCurrencyIndex);
+        String selectedCurrencyName = selectedCurrency.name;
         binding.currencyTextView.setText(selectedCurrencyName);
         mainViewModel.setCurrency(selectedCurrencyName);
+        syncSelectedCurrencyToBudget(selectedCurrency);
     }
 
     private void setupBiometricAuthentication() {
@@ -4909,15 +4943,8 @@ private void handlePurchaseApp() {
                     if (!db.isOpen()) {
                         db = AppDatabase.getDatabase(MainActivity.this);
                     }
-                    // تنفيذ الوظيفة الأساسية للزر
-                    if (availableCurrencies.isEmpty() || currentCurrencyIndex >= availableCurrencies.size()) {
-                        addDefaultCurrencyAndProceed();
-                        return;
-                    }
-
-                    Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
-                    intent.putExtra("CURRENCY", availableCurrencies.get(currentCurrencyIndex).name);
-                    startActivity(intent);
+                    // تنفيذ الوظيفة الأساسية للزر الموحد
+                    showQuickAddBottomSheet();
                 });
 
                 // إيقاف التوهج بعد 10 ثوان إذا لم يتم النقر
@@ -5776,6 +5803,180 @@ private void handlePurchaseApp() {
         });
     }
 
+
+
+    // ==================== وحدة الميزانية والشريط السفلي الموحد ====================
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("is_budget_tab_active", isBudgetTabActive);
+    }
+
+    private void switchMainTab(boolean showBudget) {
+        isBudgetTabActive = showBudget;
+        if (showBudget) {
+            if (isSearchMode) {
+                toggleSearchMode(false);
+            }
+            binding.mainContent.setVisibility(View.GONE);
+            binding.budgetFragmentContainer.setVisibility(View.VISIBLE);
+
+            if (budgetContainerFragment == null) {
+                Fragment existing = getSupportFragmentManager().findFragmentByTag("BudgetContainerFragment");
+                if (existing instanceof BudgetContainerFragment) {
+                    budgetContainerFragment = (BudgetContainerFragment) existing;
+                } else {
+                    budgetContainerFragment = new BudgetContainerFragment();
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.budget_fragment_container, budgetContainerFragment, "BudgetContainerFragment")
+                            .commitNowAllowingStateLoss();
+                }
+            }
+            if (!availableCurrencies.isEmpty() && currentCurrencyIndex < availableCurrencies.size()) {
+                syncSelectedCurrencyToBudget(availableCurrencies.get(currentCurrencyIndex));
+            }
+        } else {
+            binding.budgetFragmentContainer.setVisibility(View.GONE);
+            binding.mainContent.setVisibility(View.VISIBLE);
+        }
+        updateBottomNavSelectionUi();
+    }
+
+    private void updateBottomNavSelectionUi() {
+        int activeColor = resolveThemeColor(com.google.android.material.R.attr.colorPrimary, R.color.budget_primary);
+        int inactiveColor = resolveThemeColor(com.google.android.material.R.attr.colorOnSurfaceVariant, R.color.budget_text_secondary);
+
+        int homeColor = isBudgetTabActive ? inactiveColor : activeColor;
+        int budgetColor = isBudgetTabActive ? activeColor : inactiveColor;
+
+        binding.navIconHome.setImageTintList(ColorStateList.valueOf(homeColor));
+        binding.navTextHome.setTextColor(homeColor);
+
+        binding.navIconBudget.setImageTintList(ColorStateList.valueOf(budgetColor));
+        binding.navTextBudget.setTextColor(budgetColor);
+    }
+
+    private int resolveThemeColor(int attrRes, int fallbackColorRes) {
+        TypedValue tv = new TypedValue();
+        if (getTheme().resolveAttribute(attrRes, tv, true)) {
+            if (tv.resourceId != 0) {
+                return ContextCompat.getColor(this, tv.resourceId);
+            }
+            return tv.data;
+        }
+        return ContextCompat.getColor(this, fallbackColorRes);
+    }
+
+    private void syncSelectedCurrencyToBudget(@Nullable Currency currency) {
+        if (currency == null) return;
+        if (budgetContainerFragment != null && budgetContainerFragment.isAdded()) {
+            budgetContainerFragment.syncCurrencyFromHost(currency);
+        } else if (budgetViewModel != null) {
+            String sym = currency.getSymbol() != null ? currency.getSymbol().trim() : "";
+            String code = currency.getCode() != null ? currency.getCode().trim() : "";
+            String name = currency.getName() != null ? currency.getName().trim() : "";
+            String shortLabel = (!sym.isEmpty() && !"﷼".equals(sym)) ? sym : (!code.isEmpty() ? code : name);
+            budgetViewModel.setSelectedCurrency(currency.getId(), name, shortLabel, currency.getFirestoreId());
+        }
+    }
+
+    private void ensureBudgetCurrencyReady() {
+        if (budgetViewModel != null
+                && budgetViewModel.getCurrentCurrencySymbolValue().isEmpty()
+                && !availableCurrencies.isEmpty()
+                && currentCurrencyIndex < availableCurrencies.size()) {
+            syncSelectedCurrencyToBudget(availableCurrencies.get(currentCurrencyIndex));
+        }
+    }
+
+    private void showQuickAddBottomSheet() {
+        if (isFinishing() || isDestroyed()) return;
+        if (getSupportFragmentManager().findFragmentByTag("QuickAddBottomSheet") != null) return;
+        QuickAddBottomSheet.newInstance().show(getSupportFragmentManager(), "QuickAddBottomSheet");
+    }
+
+    private void openAddDebtTransactionActivity() {
+        if (!db.isOpen()) {
+            db = AppDatabase.getDatabase(MainActivity.this);
+        }
+        if (availableCurrencies.isEmpty() || currentCurrencyIndex >= availableCurrencies.size()) {
+            addDefaultCurrencyAndProceed();
+            return;
+        }
+        Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
+        intent.putExtra("CURRENCY", availableCurrencies.get(currentCurrencyIndex).name);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onBudgetOpenDrawer() {
+        if (binding != null && binding.drawerLayout != null) {
+            binding.drawerLayout.openDrawer(GravityCompat.START);
+        }
+    }
+
+    @Override
+    public void onBudgetRequestAddEntry(String entryType) {
+        if (isFinishing() || isDestroyed()) return;
+        if (getSupportFragmentManager().findFragmentByTag("AddBudgetEntryBottomSheet") != null) return;
+        ensureBudgetCurrencyReady();
+        AddBudgetEntryBottomSheet.newInstanceForAdd(entryType)
+                .show(getSupportFragmentManager(), "AddBudgetEntryBottomSheet");
+    }
+
+    @Override
+    public void onBudgetRequestEditEntry(BudgetEntryWithCategory entry) {
+        if (isFinishing() || isDestroyed() || entry == null) return;
+        if (getSupportFragmentManager().findFragmentByTag("EditBudgetEntryBottomSheet") != null) return;
+        ensureBudgetCurrencyReady();
+        AddBudgetEntryBottomSheet.newInstanceForEdit(entry)
+                .show(getSupportFragmentManager(), "EditBudgetEntryBottomSheet");
+    }
+
+    @Override
+    public void onBudgetRequestEditLimit(double currentLimit) {
+        if (isFinishing() || isDestroyed()) return;
+        if (getSupportFragmentManager().findFragmentByTag("EditBudgetLimitDialog") != null) return;
+        ensureBudgetCurrencyReady();
+        EditBudgetLimitDialog.newInstance(currentLimit)
+                .show(getSupportFragmentManager(), "EditBudgetLimitDialog");
+    }
+
+    @Override
+    public void onBudgetCurrencyChanged(Currency currency) {
+        if (currency == null || availableCurrencies.isEmpty()) return;
+        for (int i = 0; i < availableCurrencies.size(); i++) {
+            if (availableCurrencies.get(i).getId() == currency.getId()) {
+                currentCurrencyIndex = i;
+                String name = availableCurrencies.get(i).name;
+                binding.currencyTextView.setText(name);
+                mainViewModel.setCurrency(name);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onQuickAddExpense() {
+        onBudgetRequestAddEntry(BudgetEntry.TYPE_EXPENSE);
+    }
+
+    @Override
+    public void onQuickAddIncome() {
+        onBudgetRequestAddEntry(BudgetEntry.TYPE_INCOME);
+    }
+
+    @Override
+    public void onQuickAddDebtTransaction() {
+        openAddDebtTransactionActivity();
+    }
+
+    @Override
+    public void onQuickAddAccount() {
+        addNewAccout(null, true);
+    }
 
     // واجهة مبسطة للاستدعاء
     public interface OnCompleteListener<T> {
