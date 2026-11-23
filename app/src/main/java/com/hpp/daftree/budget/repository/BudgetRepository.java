@@ -188,7 +188,14 @@ public class BudgetRepository {
                 limit.syncStatus = "NEW";
                 limit.lastModified = now;
                 limit.lastSyncDate = 0L;
-      public static void recordLinkedDebtTransaction(Context context, String accountName,
+                limit.isDeleted = false;
+                limitDao.insert(limit);
+            }
+            if (onDone != null) onDone.run();
+        });
+    }
+
+    public static void recordLinkedDebtTransaction(Context context, String accountName,
                                                    double amount, int debtTxType,
                                                    int currencyId, long entryDateMillis) {
         if (context == null || amount <= 0) {
