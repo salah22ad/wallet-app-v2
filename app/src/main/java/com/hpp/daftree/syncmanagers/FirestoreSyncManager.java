@@ -50,13 +50,13 @@ public class FirestoreSyncManager {
     private final Map<String, Boolean> processedNotifs = new HashMap<>();
     private final Handler handler = new Handler(Looper.getMainLooper());
 
-    private List> pendingAccountChanges = new ArrayList<>();
-    private List> pendingTransactionChanges = new ArrayList<>();
-    private List> pendingCurrencyChanges = new ArrayList<>();
-    private List> pendingAccountTypeChanges = new ArrayList<>();
-    private List> pendingBudgetCategoryChanges = new ArrayList<>();
-    private List> pendingBudgetLimitChanges = new ArrayList<>();
-    private List> pendingBudgetEntryChanges = new ArrayList<>();
+    private List<Map<String, Object>> pendingAccountChanges = new ArrayList<>();
+    private List<Map<String, Object>> pendingTransactionChanges = new ArrayList<>();
+    private List<Map<String, Object>> pendingCurrencyChanges = new ArrayList<>();
+    private List<Map<String, Object>> pendingAccountTypeChanges = new ArrayList<>();
+    private List<Map<String, Object>> pendingBudgetCategoryChanges = new ArrayList<>();
+    private List<Map<String, Object>> pendingBudgetLimitChanges = new ArrayList<>();
+    private List<Map<String, Object>> pendingBudgetEntryChanges = new ArrayList<>();
 
     public static volatile boolean isSyncWorkerRunning = false;
 
@@ -310,7 +310,7 @@ public class FirestoreSyncManager {
                             onComplete.run();
                             return;
                         }
-                        List> batch = new ArrayList<>();
+                        List<Map<String, Object>> batch = new ArrayList<>();
                         long maxTs = lastSync;
                         for (DocumentSnapshot doc : task.getResult()) {
                             Map<String, Object> data = doc.getData();
@@ -349,7 +349,7 @@ public class FirestoreSyncManager {
                             onComplete.run();
                             return;
                         }
-                        List> accountsBatch = new ArrayList<>();
+                        List<Map<String, Object>> accountsBatch = new ArrayList<>();
                         long maxTs = lastSync;
                         for (DocumentSnapshot doc : task.getResult()) {
                             Map<String, Object> data = doc.getData();
@@ -388,7 +388,7 @@ public class FirestoreSyncManager {
                             onComplete.run();
                             return;
                         }
-                        List> currencyBatch = new ArrayList<>();
+                        List<Map<String, Object>> currencyBatch = new ArrayList<>();
                         long maxTs = lastSync;
                         for (DocumentSnapshot doc : task.getResult()) {
                             Map<String, Object> data = doc.getData();
@@ -427,7 +427,7 @@ public class FirestoreSyncManager {
                             onComplete.run();
                             return;
                         }
-                        List> txBatch = new ArrayList<>();
+                        List<Map<String, Object>> txBatch = new ArrayList<>();
                         long maxTs = lastSync;
                         for (DocumentSnapshot doc : task.getResult()) {
                             Map<String, Object> data = doc.getData();
@@ -462,7 +462,7 @@ public class FirestoreSyncManager {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        List> batch = new ArrayList<>();
+                        List<Map<String, Object>> batch = new ArrayList<>();
                         long maxTs = lastSync;
                         for (DocumentSnapshot doc : task.getResult()) {
                             Map<String, Object> data = doc.getData();
@@ -497,7 +497,7 @@ public class FirestoreSyncManager {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        List> batch = new ArrayList<>();
+                        List<Map<String, Object>> batch = new ArrayList<>();
                         long maxTs = lastSync;
                         for (DocumentSnapshot doc : task.getResult()) {
                             Map<String, Object> data = doc.getData();
@@ -536,7 +536,7 @@ public class FirestoreSyncManager {
                             onComplete.run();
                             return;
                         }
-                        List> batch = new ArrayList<>();
+                        List<Map<String, Object>> batch = new ArrayList<>();
                         long maxTs = lastSync;
                         for (DocumentSnapshot doc : task.getResult()) {
                             Map<String, Object> data = doc.getData();
@@ -593,7 +593,7 @@ public class FirestoreSyncManager {
 
     private final Runnable processAccountChanges = () -> {
         if (pendingAccountChanges.isEmpty()) return;
-        List> batch = new ArrayList<>(pendingAccountChanges);
+        List<Map<String, Object>> batch = new ArrayList<>(pendingAccountChanges);
         pendingAccountChanges = new ArrayList<>();
         repository.batchUpsertAccounts(batch);
     };
@@ -632,7 +632,7 @@ public class FirestoreSyncManager {
 
     private final Runnable processTransactionChanges = () -> {
         if (pendingTransactionChanges.isEmpty()) return;
-        List> batch = new ArrayList<>(pendingTransactionChanges);
+        List<Map<String, Object>> batch = new ArrayList<>(pendingTransactionChanges);
         pendingTransactionChanges = new ArrayList<>();
         repository.batchUpsertTransactions(batch);
     };
@@ -668,7 +668,7 @@ public class FirestoreSyncManager {
 
     private final Runnable processCurrencyChanges = () -> {
         if (pendingCurrencyChanges.isEmpty()) return;
-        List> batch = new ArrayList<>(pendingCurrencyChanges);
+        List<Map<String, Object>> batch = new ArrayList<>(pendingCurrencyChanges);
         pendingCurrencyChanges = new ArrayList<>();
         repository.batchUpsertCurrencies(batch);
     };
@@ -704,7 +704,7 @@ public class FirestoreSyncManager {
 
     private final Runnable processAccountTypeChanges = () -> {
         if (pendingAccountTypeChanges.isEmpty()) return;
-        List> batch = new ArrayList<>(pendingAccountTypeChanges);
+        List<Map<String, Object>> batch = new ArrayList<>(pendingAccountTypeChanges);
         pendingAccountTypeChanges = new ArrayList<>();
         repository.batchUpsertAccountTypes(batch);
     };
@@ -740,7 +740,7 @@ public class FirestoreSyncManager {
 
     private final Runnable processBudgetCategoryChanges = () -> {
         if (pendingBudgetCategoryChanges.isEmpty()) return;
-        List> batch = new ArrayList<>(pendingBudgetCategoryChanges);
+        List<Map<String, Object>> batch = new ArrayList<>(pendingBudgetCategoryChanges);
         pendingBudgetCategoryChanges = new ArrayList<>();
         repository.batchUpsertBudgetCategories(batch);
     };
@@ -776,7 +776,7 @@ public class FirestoreSyncManager {
 
     private final Runnable processBudgetLimitChanges = () -> {
         if (pendingBudgetLimitChanges.isEmpty()) return;
-        List> batch = new ArrayList<>(pendingBudgetLimitChanges);
+        List<Map<String, Object>> batch = new ArrayList<>(pendingBudgetLimitChanges);
         pendingBudgetLimitChanges = new ArrayList<>();
         repository.batchUpsertBudgetLimits(batch);
     };
@@ -815,7 +815,7 @@ public class FirestoreSyncManager {
 
     private final Runnable processBudgetEntryChanges = () -> {
         if (pendingBudgetEntryChanges.isEmpty()) return;
-        List> batch = new ArrayList<>(pendingBudgetEntryChanges);
+        List<Map<String, Object>> batch = new ArrayList<>(pendingBudgetEntryChanges);
         pendingBudgetEntryChanges = new ArrayList<>();
         repository.batchUpsertBudgetEntries(batch);
     };
