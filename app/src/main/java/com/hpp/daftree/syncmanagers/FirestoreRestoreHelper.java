@@ -24,6 +24,10 @@ import com.hpp.daftree.models.AppAuth;
 import com.hpp.daftree.MyApplication;
 import com.hpp.daftree.R;
 import com.hpp.daftree.models.UUIDGenerator;
+import com.hpp.daftree.budget.data.BudgetCategory;
+import com.hpp.daftree.budget.data.BudgetEntry;
+import com.hpp.daftree.budget.data.MonthlyBudgetLimit;
+import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.database.Account;
 import com.hpp.daftree.database.AccountType;
 import com.hpp.daftree.database.AppDatabase;
@@ -200,10 +204,7 @@ public class FirestoreRestoreHelper {
                                         try {
                                             // تجاهل المحذوف
 
-                                            boolean isDel = doc.contains("isDeleted") && Boolean.TRUE.equals(doc.getBoolean("isDeleted"));
-                                            if (doc.contains("isDeleted")) {
-                                                if (isDel) continue;
-                                            }
+                                            if (isDocumentDeleted(doc)) continue;
 
 
                                             // إنشاء الكائن يدوياً بدلاً من toObject لضمان البيانات
@@ -217,7 +218,8 @@ public class FirestoreRestoreHelper {
                                             if (name == null)
                                                 name = doc.getString("name"); // محاولة اسم بديل
                                             account.setAccountName(name != null ? name : "Unknown Account");
-                                            account.setLastModified((long) doc.get("lastModified"));
+                                            long safeAccMod = readDocLong(doc, "lastModified", System.currentTimeMillis());
+                                            account.setLastModified(safeAccMod);
 
                                             // العملة
                                             String ownerUID = doc.getString("ownerUID");
@@ -228,7 +230,8 @@ public class FirestoreRestoreHelper {
 
                                             // رقم الهاتف والبريد
                                             account.setFirestoreId(doc.getId());
-                                            account.setAcTypeFirestoreId(Objects.requireNonNull(doc.getString("acTypeFirestoreId")));
+                                            String rawAcTypeFsId = doc.getString("acTypeFirestoreId");
+                                            account.setAcTypeFirestoreId(rawAcTypeFsId != null ? rawAcTypeFsId : "");
 
                                             // التواريخ (إذا كانت موجودة كنصوص أو TimeStamp)
                                             account.setDeletedBy(doc.getString("deletedBy"));
@@ -757,7 +760,7 @@ public class FirestoreRestoreHelper {
                                                 isDefault = convertFirestoreBoolean(doc.get("isDefault"));
                                             }
                                             existing.setDefault(isDefault);
-                                            existing.setLastModified((long) doc.get("lastModified"));
+                                            existing.setLastModified(lastModified);
                                             existing.setLastSyncDate(lastSyncDate);
                                             processedTypeNames.add(name);
                                             appDb.accountTypeDao().update(existing);
@@ -770,7 +773,7 @@ public class FirestoreRestoreHelper {
                                             newType.setFirestoreId(firestoreId);
                                             newType.setOwnerUID(currentUserId);
                                             newType.setSyncStatus("SYNCED");
-                                            newType.setLastModified((long) doc.get("lastModified"));
+                                            newType.setLastModified(lastModified);
                                             newType.setLastSyncDate(lastSyncDate);
                                             if (isDefault != null)
                                                 newType.setDefault(isDefault);
@@ -1855,7 +1858,7 @@ public class FirestoreRestoreHelper {
                         if (task.isSuccessful()) {
                             QuerySnapshot snapshot = task.getResult();
                             if (snapshot == null || snapshot.isEmpty()) {
-                                handler.post(() -> listener.onComplete(context.getString(R.string.fetchTransactionsChunk_12)));
+                                handler.post(() -> restoreBudgetCategories(listener));
                                 return;
                             }
 
@@ -1941,7 +1944,7 @@ public class FirestoreRestoreHelper {
                                 DocumentSnapshot lastDoc = snapshot.getDocuments().get(snapshot.size() - 1);
                                 fetchTransactionsChunk(listener, accountMap, currFirestoreToLocal, currLocalToFirestore, allCurrencies, lastDoc, newTotal);
                             } else {
-                                handler.post(() -> listener.onComplete(context.getString(R.string.fetchTransactionsChunk_15)));
+                                handler.post(() -> restoreBudgetCategories(listener));
                             }
 
                         } else {
@@ -2021,6 +2024,293 @@ public class FirestoreRestoreHelper {
 
             }
 
+        });
+    }
+
+    private boolean isDocumentDeleted(DocumentSnapshot doc) {
+        if (doc == null) return false;
+        if (doc.contains("isDeleted") && convertFirestoreBoolean(doc.get("isDeleted"))) return true;
+        if (doc.contains("isDeleted()") && convertFirestoreBoolean(doc.get("isDeleted()"))) return true;
+        return false;
+    }
+
+    private long readDocLong(DocumentSnapshot doc, String field, long fallback) {
+        if (doc == null || !doc.contains(field)) return fallback;
+        Object val = doc.get(field);
+        if (val instanceof Number) return ((Number) val).longValue();
+        try {
+            return val != null ? Long.parseLong(val.toString()) : fallback;
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    private double readDocDouble(DocumentSnapshot doc, String field, double fallback) {
+        if (doc == null || !doc.contains(field)) return fallback;
+        Object val = doc.get(field);
+        if (val instanceof Number) return ((Number) val).doubleValue();
+        try {
+            return val != null ? Double.parseDouble(val.toString()) : fallback;
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    private void restoreBudgetCategories(RestoreListener listener) {
+        firestore.collection("budget_categories")
+                .whereEqualTo("ownerUID", currentUserId)
+                .get()
+                .addOnCompleteListener(task -> executor.execute(() -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        appDb.runInTransaction(() -> {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                if (isDocumentDeleted(doc)) continue;
+                                String fsId = doc.getId();
+                                String code = doc.getString("code");
+                                boolean isDef = doc.contains("isDefault") && convertFirestoreBoolean(doc.get("isDefault"));
+                                long lastMod = readDocLong(doc, "lastModified", System.currentTimeMillis());
+                                long lastSync = readDocLong(doc, "lastSyncDate", lastMod);
+                                secureManager.updateLastSyncTime(SecureLicenseManager.getBudgetCategoryKey(), lastSync);
+
+                                BudgetCategory existing = appDb.budgetCategoryDao().getByFirestoreIdSync(fsId);
+                                if (existing == null && isDef && code != null && !code.isEmpty()) {
+                                    existing = appDb.budgetCategoryDao().getByCodeSync(code);
+                                }
+
+                                if (existing != null) {
+                                    existing.setFirestoreId(fsId);
+                                    existing.setOwnerUID(currentUserId);
+                                    if (code != null) existing.setCode(code);
+                                    if (doc.getString("name") != null) existing.setName(doc.getString("name"));
+                                    if (doc.getString("type") != null) existing.setType(doc.getString("type"));
+                                    if (doc.getString("iconKey") != null) existing.setIconKey(doc.getString("iconKey"));
+                                    if (doc.getString("colorHex") != null) existing.setColorHex(doc.getString("colorHex"));
+                                    existing.setDefault(isDef);
+                                    existing.setSortOrder((int) readDocLong(doc, "sortOrder", existing.getSortOrder()));
+                                    existing.setDeleted(false);
+                                    existing.setLastModified(lastMod);
+                                    existing.setLastSyncDate(lastSync);
+                                    existing.setSyncStatus("SYNCED");
+                                    appDb.budgetCategoryDao().update(existing);
+                                } else {
+                                    BudgetCategory cat = new BudgetCategory();
+                                    cat.setFirestoreId(fsId);
+                                    cat.setOwnerUID(currentUserId);
+                                    cat.setCode(code != null ? code : "");
+                                    cat.setName(doc.getString("name") != null ? doc.getString("name") : "");
+                                    cat.setType(doc.getString("type") != null ? doc.getString("type") : BudgetCategory.TYPE_EXPENSE);
+                                    cat.setIconKey(doc.getString("iconKey") != null ? doc.getString("iconKey") : "other");
+                                    cat.setColorHex(doc.getString("colorHex") != null ? doc.getString("colorHex") : "#06B6D4");
+                                    cat.setDefault(isDef);
+                                    cat.setSortOrder((int) readDocLong(doc, "sortOrder", 100));
+                                    cat.setDeleted(false);
+                                    cat.setLastModified(lastMod);
+                                    cat.setLastSyncDate(lastSync);
+                                    cat.setSyncStatus("SYNCED");
+                                    appDb.budgetCategoryDao().insert(cat);
+                                }
+                            }
+                        });
+                    } else {
+                        Log.w(TAG, "Skipping budget_categories restore or empty", task.getException());
+                    }
+                    handler.post(() -> restoreBudgetLimits(listener));
+                }))
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Budget categories restore failed, continuing", e);
+                    handler.post(() -> restoreBudgetLimits(listener));
+                });
+    }
+
+    private void restoreBudgetLimits(RestoreListener listener) {
+        firestore.collection("monthly_budget_limits")
+                .whereEqualTo("ownerUID", currentUserId)
+                .get()
+                .addOnCompleteListener(task -> executor.execute(() -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<Currency> localCurrencies = appDb.currencyDao().getAllCurrenciesBlocking();
+                        Map<String, Integer> curFsMap = new HashMap<>();
+                        for (Currency c : localCurrencies) {
+                            if (c.getFirestoreId() != null) curFsMap.put(c.getFirestoreId(), c.getId());
+                        }
+                        int defaultCurId = !localCurrencies.isEmpty() ? localCurrencies.get(0).getId() : 1;
+
+                        appDb.runInTransaction(() -> {
+                            for (QueryDocumentSnapshot doc : task.getResult()) {
+                                if (isDocumentDeleted(doc)) continue;
+                                String fsId = doc.getId();
+                                String yearMonth = doc.getString("yearMonth");
+                                if (yearMonth == null || yearMonth.isEmpty()) continue;
+
+                                String curFsId = doc.getString("currencyFirestoreId");
+                                int curId = (curFsId != null && curFsMap.containsKey(curFsId))
+                                        ? curFsMap.get(curFsId)
+                                        : (int) readDocLong(doc, "currencyId", defaultCurId);
+                                if (curId <= 0) curId = defaultCurId;
+
+                                long lastMod = readDocLong(doc, "lastModified", System.currentTimeMillis());
+                                long lastSync = readDocLong(doc, "lastSyncDate", lastMod);
+                                secureManager.updateLastSyncTime(SecureLicenseManager.getBudgetLimitKey(), lastSync);
+
+                                MonthlyBudgetLimit existing = appDb.monthlyBudgetLimitDao().getByFirestoreIdSync(fsId);
+                                if (existing == null) {
+                                    existing = appDb.monthlyBudgetLimitDao().getExactLimitSync(yearMonth, curId);
+                                }
+                                if (existing != null) {
+                                    existing.setFirestoreId(fsId);
+                                    existing.setOwnerUID(currentUserId);
+                                    existing.setCurrencyId(curId);
+                                    existing.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                                    existing.setYearMonth(yearMonth);
+                                    existing.setLimitAmount(readDocDouble(doc, "limitAmount", existing.getLimitAmount()));
+                                    existing.setDeleted(false);
+                                    existing.setLastModified(lastMod);
+                                    existing.setLastSyncDate(lastSync);
+                                    existing.setSyncStatus("SYNCED");
+                                    appDb.monthlyBudgetLimitDao().update(existing);
+                                } else {
+                                    MonthlyBudgetLimit limit = new MonthlyBudgetLimit();
+                                    limit.setFirestoreId(fsId);
+                                    limit.setOwnerUID(currentUserId);
+                                    limit.setCurrencyId(curId);
+                                    limit.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                                    limit.setYearMonth(yearMonth);
+                                    limit.setLimitAmount(readDocDouble(doc, "limitAmount", 0.0));
+                                    limit.setDeleted(false);
+                                    limit.setLastModified(lastMod);
+                                    limit.setLastSyncDate(lastSync);
+                                    limit.setSyncStatus("SYNCED");
+                                    appDb.monthlyBudgetLimitDao().insert(limit);
+                                }
+                            }
+                        });
+                    }
+                    handler.post(() -> restoreBudgetEntriesChunk(listener, null, 0));
+                }))
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Budget limits restore failed, continuing", e);
+                    handler.post(() -> restoreBudgetEntriesChunk(listener, null, 0));
+                });
+    }
+
+    private void restoreBudgetEntriesChunk(RestoreListener listener, DocumentSnapshot lastVisible, int totalImported) {
+        Query query = firestore.collection("budget_entries")
+                .whereEqualTo("ownerUID", currentUserId)
+                .limit(500);
+        if (lastVisible != null) {
+            query = query.startAfter(lastVisible);
+        }
+
+        query.get().addOnCompleteListener(task -> executor.execute(() -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                QuerySnapshot snapshot = task.getResult();
+                if (snapshot.isEmpty()) {
+                    handler.post(() -> listener.onComplete(context.getString(R.string.fetchTransactionsChunk_15)));
+                    return;
+                }
+
+                List<Currency> localCurrencies = appDb.currencyDao().getAllCurrenciesBlocking();
+                Map<String, Integer> curFsMap = new HashMap<>();
+                for (Currency c : localCurrencies) {
+                    if (c.getFirestoreId() != null) curFsMap.put(c.getFirestoreId(), c.getId());
+                }
+                int defaultCurId = !localCurrencies.isEmpty() ? localCurrencies.get(0).getId() : 1;
+
+                List<BudgetCategory> localCats = appDb.budgetCategoryDao().getAllActiveCategoriesSync();
+                Map<String, Integer> catFsMap = new HashMap<>();
+                Map<String, Integer> catCodeMap = new HashMap<>();
+                for (BudgetCategory c : localCats) {
+                    if (c.getFirestoreId() != null && !c.getFirestoreId().isEmpty()) {
+                        catFsMap.put(c.getFirestoreId(), c.getId());
+                    }
+                    if (c.getCode() != null && !c.getCode().isEmpty()) {
+                        catCodeMap.put(c.getCode(), c.getId());
+                    }
+                }
+
+                appDb.runInTransaction(() -> {
+                    for (QueryDocumentSnapshot doc : snapshot) {
+                        if (isDocumentDeleted(doc)) continue;
+                        String fsId = doc.getId();
+                        String type = doc.getString("type") != null ? doc.getString("type") : BudgetEntry.TYPE_EXPENSE;
+
+                        String curFsId = doc.getString("currencyFirestoreId");
+                        int curId = (curFsId != null && curFsMap.containsKey(curFsId))
+                                ? curFsMap.get(curFsId)
+                                : (int) readDocLong(doc, "currencyId", defaultCurId);
+                        if (curId <= 0) curId = defaultCurId;
+
+                        String catFsId = doc.getString("categoryFirestoreId");
+                        String catCode = doc.getString("categoryCode");
+                        int catId = 0;
+                        if (catFsId != null && catFsMap.containsKey(catFsId)) {
+                            catId = catFsMap.get(catFsId);
+                        } else if (catCode != null && catCodeMap.containsKey(catCode)) {
+                            catId = catCodeMap.get(catCode);
+                        } else {
+                            String fallback = BudgetEntry.TYPE_INCOME.equals(type) ? "income_other" : "other";
+                            Integer fbId = catCodeMap.get(fallback);
+                            catId = fbId != null ? fbId : (int) readDocLong(doc, "categoryId", 1);
+                        }
+
+                        long lastMod = readDocLong(doc, "lastModified", System.currentTimeMillis());
+                        long lastSync = readDocLong(doc, "lastSyncDate", lastMod);
+                        long entryDate = readDocLong(doc, "entryDate", lastMod);
+                        String ym = doc.getString("yearMonth") != null
+                                ? doc.getString("yearMonth") : BudgetUtils.toYearMonth(entryDate);
+                        secureManager.updateLastSyncTime(SecureLicenseManager.getBudgetEntryKey(), lastSync);
+
+                        BudgetEntry existing = appDb.budgetEntryDao().getByFirestoreIdSync(fsId);
+                        if (existing != null) {
+                            existing.setCategoryId(catId);
+                            existing.setCategoryFirestoreId(catFsId != null ? catFsId : "");
+                            existing.setCurrencyId(curId);
+                            existing.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                            existing.setType(type);
+                            existing.setAmount(readDocDouble(doc, "amount", existing.getAmount()));
+                            existing.setNote(doc.getString("note") != null ? doc.getString("note") : "");
+                            existing.setEntryDate(entryDate);
+                            existing.setYearMonth(ym);
+                            existing.setDeleted(false);
+                            existing.setLastModified(lastMod);
+                            existing.setLastSyncDate(lastSync);
+                            existing.setSyncStatus("SYNCED");
+                            appDb.budgetEntryDao().update(existing);
+                        } else {
+                            BudgetEntry entry = new BudgetEntry();
+                            entry.setFirestoreId(fsId);
+                            entry.setOwnerUID(currentUserId);
+                            entry.setCategoryId(catId);
+                            entry.setCategoryFirestoreId(catFsId != null ? catFsId : "");
+                            entry.setCurrencyId(curId);
+                            entry.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                            entry.setType(type);
+                            entry.setAmount(readDocDouble(doc, "amount", 0.0));
+                            entry.setNote(doc.getString("note") != null ? doc.getString("note") : "");
+                            entry.setEntryDate(entryDate);
+                            entry.setYearMonth(ym);
+                            entry.setDeleted(false);
+                            entry.setLastModified(lastMod);
+                            entry.setLastSyncDate(lastSync);
+                            entry.setSyncStatus("SYNCED");
+                            appDb.budgetEntryDao().insert(entry);
+                        }
+                    }
+                });
+
+                int newTotal = totalImported + snapshot.size();
+                if (snapshot.size() == 500) {
+                    DocumentSnapshot lastDoc = snapshot.getDocuments().get(snapshot.size() - 1);
+                    restoreBudgetEntriesChunk(listener, lastDoc, newTotal);
+                } else {
+                    handler.post(() -> listener.onComplete(context.getString(R.string.fetchTransactionsChunk_15)));
+                }
+            } else {
+                handler.post(() -> listener.onComplete(context.getString(R.string.fetchTransactionsChunk_15)));
+            }
+        })).addOnFailureListener(e -> {
+            Log.w(TAG, "Budget entries restore failed, completing restore", e);
+            handler.post(() -> listener.onComplete(context.getString(R.string.fetchTransactionsChunk_15)));
         });
     }
 }
