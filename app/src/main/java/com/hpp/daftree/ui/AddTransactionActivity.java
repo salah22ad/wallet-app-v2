@@ -67,6 +67,7 @@ import com.hpp.daftree.databinding.DialogEditAccountBinding;
 import com.hpp.daftree.databinding.DialogShareOptionsBinding;
 import com.hpp.daftree.dialogs.CalculatorDialog;
 import com.hpp.daftree.models.AutoResizeTextHelper;
+import com.hpp.daftree.budget.repository.BudgetRepository;
 import com.hpp.daftree.models.DaftreeRepository;
 import com.hpp.daftree.models.FormatingAmount;
 import com.hpp.daftree.notifications.TransactionNotificationManager;
@@ -248,8 +249,10 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
         handleIntentExtras();
         setupModernImageLaunchers();
 
-        // ربط زر الكاميرا (بناءً على التعديل في XML الذي اقترحته سابقاً)
+        // ربط زر الكاميرا وبطاقة الربط الاختياري بالميزانية
         binding.btnAttachImage.setOnClickListener(v -> onImageIconClicked());
+        binding.cardLinkToBudget.setOnClickListener(v ->
+                binding.switchLinkToBudget.setChecked(!binding.switchLinkToBudget.isChecked()));
     }
 
     private void processAndSetImage(Bitmap bitmap) {
@@ -807,6 +810,10 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
 //        newTransaction.setTimestamp(selectedDate.getTime());
         newTransaction.setTimestamp(transactionDate);
         viewModel.addTransaction(newTransaction);
+        if (binding.switchLinkToBudget.isChecked()) {
+            BudgetRepository.recordLinkedDebtTransaction(
+                    this, accountName, amount, type, currencyId, transactionDate.getTime());
+        }
         this.lastSavedTransaction = newTransaction;
         onTransactionSaved(amount * type);
         resetFieldsForNewEntry(accountName, accountId);
@@ -825,6 +832,7 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
     private void resetFieldsForNewEntry(String accountName, int accountId) {
         binding.amountEditText.setText("");
         binding.detailsEditText.setText("");
+        binding.switchLinkToBudget.setChecked(false);
         binding.accountNameAutoComplete.setText(accountName);
         binding.accountNameAutoComplete.dismissDropDown();
         viewModel.setSelectedAccount(accountId);

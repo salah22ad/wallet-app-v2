@@ -77,4 +77,6 @@
     <string name="budget_clear_limit">Remove Limit</string>
     <string name="budget_tour_limit_title">Set Your Monthly Budget Limit</string>
     <string name="budget_tour_limit_desc">Tap here to enter your monthly spending target so you can track usage percentage and remaining budget automatically.</string>
+    <string name="budget_link_debt_title">Optional link: Also record this transaction in Monthly Budget</string>
+    <string name="budget_linked_account_note">Linked to account %1$s</string>
 </resources>

@@ -232,6 +232,43 @@
                     android:src="@drawable/ic_camera"
                     app:tint="?attr/colorPrimary" />
             </LinearLayout>
+            <!-- خيار الربط الاختياري بالميزانية الشهرية -->
+            <LinearLayout
+                android:id="@+id/cardLinkToBudget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/budget_bg_input_field"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_budget_tab"
+                    app:tint="@color/budget_primary" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/budget_link_debt_title"
+                    android:textColor="@color/budget_text_primary"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchLinkToBudget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/actionButtonsLayout"
                 android:layout_width="match_parent"

@@ -77,4 +77,6 @@
     <string name="budget_clear_limit">إزالة الحد</string>
     <string name="budget_tour_limit_title">حدد سقف ميزانيتك الشهرية</string>
     <string name="budget_tour_limit_desc">اضغط هنا لإدخال حد الميزانية الشهري لمتابعة نسبة الاستهلاك والمبلغ المتبقي تلقائياً عند كل عملية.</string>
+    <string name="budget_link_debt_title">ربط اختياري: تسجيل هذه العملية أيضاً في الميزانية الشهرية</string>
+    <string name="budget_linked_account_note">مرتبط بحساب %1$s</string>
 </resources>
