@@ -38,7 +38,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:hint="@string/amount_hint"
-        app:startIconDrawable="@drawable/ic_calculator">
+        app:startIconDrawable="@drawable/ic_modern_calculator"
+    app:startIconTint="@null">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/amountEditText"
@@ -128,8 +129,9 @@
             android:layout_weight="1"
             android:hint="@string/start_date"
             app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_calendar_today"
-            app:endIconContentDescription="@string/start_date">
+            app:endIconDrawable="@drawable/ic_modern_calendar"
+            app:endIconContentDescription="@string/start_date"
+    app:endIconTint="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/startDateEditText"
@@ -150,8 +152,9 @@
             android:layout_weight="1"
             android:hint="@string/end_date"
             app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_calendar_today"
-            app:endIconContentDescription="@string/end_date">
+            app:endIconDrawable="@drawable/ic_modern_calendar"
+            app:endIconContentDescription="@string/end_date"
+    app:endIconTint="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/endDateEditText"
