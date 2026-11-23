@@ -318,7 +318,7 @@ public class DaftreeRepository {
         return false;
     }
 
-    public void batchUpsertAccounts(List> changesBatch) {
+    public void batchUpsertAccounts(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
                 String changeType = (String) change.get("type");
@@ -379,7 +379,7 @@ public class DaftreeRepository {
         });
     }
 
-    public void batchUpsertTransactions(List> changesBatch) {
+    public void batchUpsertTransactions(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
                 String changeType = (String) change.get("type");
@@ -492,7 +492,7 @@ public class DaftreeRepository {
         });
     }
 
-    public void batchUpsertCurrencies(List> changesBatch) {
+    public void batchUpsertCurrencies(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
                 String changeType = (String) change.get("type");
@@ -551,7 +551,7 @@ public class DaftreeRepository {
         });
     }
 
-    public void batchUpsertAccountTypes(List> changesBatch) {
+    public void batchUpsertAccountTypes(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
                 String changeType = (String) change.get("type");
@@ -606,7 +606,7 @@ public class DaftreeRepository {
         });
     }
 
-    public void batchUpsertBudgetCategories(List> changesBatch) {
+    public void batchUpsertBudgetCategories(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
                 String changeType = (String) change.get("type");
@@ -675,7 +675,7 @@ public class DaftreeRepository {
         });
     }
 
-    public void batchUpsertBudgetLimits(List> changesBatch) {
+    public void batchUpsertBudgetLimits(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
                 String changeType = (String) change.get("type");
@@ -747,7 +747,7 @@ public class DaftreeRepository {
         });
     }
 
-    public void batchUpsertBudgetEntries(List> changesBatch) {
+    public void batchUpsertBudgetEntries(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
                 String changeType = (String) change.get("type");

@@ -330,7 +330,7 @@ public class DebtActivationActivity extends BaseActivity {
 
     private void applyValidatedPhoneHint(String rawHint) {
         if (TextUtils.isEmpty(rawHint)) return;
-        String trimmed = rawHint.trim().replaceAll("[\s\-()]", "");
+        String trimmed = rawHint.trim().replaceAll("[\\s\\-()]", "");
         String digitsOnly = trimmed.replaceAll("[^0-9]", "");
         String detectedIso = detectBestCountryIso();
 
