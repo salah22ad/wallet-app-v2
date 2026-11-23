@@ -14,7 +14,9 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.hpp.daftree.MyApplication;
 import com.hpp.daftree.R;
+import com.hpp.daftree.models.FormatingAmount;
 import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.budget.viewmodel.BudgetViewModel;
 import com.hpp.daftree.databinding.DialogBudgetEditLimitBinding;
@@ -71,12 +73,14 @@ public class EditBudgetLimitDialog extends BottomSheetDialogFragment {
 
         double currentLimit = getArguments() != null ? getArguments().getDouble(ARG_CURRENT_LIMIT, 0.0) : 0.0;
         if (currentLimit > 0) {
-            binding.etBudgetLimitAmount.setText(BudgetUtils.formatAmount(currentLimit).replace(",", ""));
+            binding.etBudgetLimitAmount.setText(BudgetUtils.formatAmount(currentLimit));
             binding.btnClearBudgetLimit.setVisibility(View.VISIBLE);
         } else {
             binding.btnClearBudgetLimit.setVisibility(View.GONE);
         }
 
+        MyApplication.applyGlobalTextWatcher(binding.getRoot());
+        FormatingAmount.applyTo(binding.etBudgetLimitAmount);
         binding.btnCloseLimit.setOnClickListener(v -> dismiss());
 
         binding.btnClearBudgetLimit.setOnClickListener(v -> saveLimitValue(0.0));

@@ -43,7 +43,11 @@ public class BudgetRepository {
 
     private void ensureDefaultCategories() {
         AppDatabase.databaseWriteExecutor.execute(() -> {
-            if (categoryDao.getCountSync() > 0) return;
+            if (categoryDao.getCountSync() > 0) {
+                categoryDao.migrateDefaultCategoryCode("network", "freelance", "freelance");
+                categoryDao.migrateDefaultCategoryCode("apps", "investments", "investments");
+                return;
+            }
             List<BudgetCategory> defaults = new ArrayList<>();
             defaults.add(buildDefaultCat("bills", BudgetCategory.TYPE_EXPENSE, "bills", "#F59E0B", 1));
             defaults.add(buildDefaultCat("housing", BudgetCategory.TYPE_EXPENSE, "housing", "#22C55E", 2));
@@ -52,8 +56,8 @@ public class BudgetRepository {
             defaults.add(buildDefaultCat("health", BudgetCategory.TYPE_EXPENSE, "health", "#A855F7", 5));
             defaults.add(buildDefaultCat("other", BudgetCategory.TYPE_EXPENSE, "other", "#06B6D4", 6));
             defaults.add(buildDefaultCat("salary", BudgetCategory.TYPE_INCOME, "salary", "#10B981", 1));
-            defaults.add(buildDefaultCat("network", BudgetCategory.TYPE_INCOME, "network", "#0EA5E9", 2));
-            defaults.add(buildDefaultCat("apps", BudgetCategory.TYPE_INCOME, "apps", "#6366F1", 3));
+            defaults.add(buildDefaultCat("freelance", BudgetCategory.TYPE_INCOME, "freelance", "#0EA5E9", 2));
+            defaults.add(buildDefaultCat("investments", BudgetCategory.TYPE_INCOME, "investments", "#6366F1", 3));
             defaults.add(buildDefaultCat("income_other", BudgetCategory.TYPE_INCOME, "income_other", "#EAB308", 4));
             categoryDao.insertAll(defaults);
         });

@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hpp.daftree.R;
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.budget.data.BudgetCategory;
 import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.databinding.ItemBudgetCategoryChipBinding;
@@ -52,6 +53,7 @@ public class BudgetCategoryGridAdapter extends RecyclerView.Adapter<BudgetCatego
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemBudgetCategoryChipBinding binding = ItemBudgetCategoryChipBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
+        AppFontHelper.applyFontToViewTree(parent.getContext(), binding.getRoot());
         return new ViewHolder(binding);
     }
 

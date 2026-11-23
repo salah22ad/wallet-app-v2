@@ -1,6 +1,7 @@
 package com.hpp.daftree.budget.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -35,7 +36,10 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetView;
 import com.hpp.daftree.R;
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.budget.adapter.BudgetEntryAdapter;
 import com.hpp.daftree.budget.adapter.CategoryDistributionAdapter;
 import com.hpp.daftree.budget.data.BudgetEntry;
@@ -82,6 +86,9 @@ public class BudgetContainerFragment extends Fragment {
     private Double latestLimit;
     private boolean showingSummaryTab = true;
     private boolean currencyInitialized = false;
+    private boolean summaryLoaded = false;
+    private boolean limitLoaded = false;
+    private boolean limitTourScheduled = false;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -110,10 +117,7 @@ public class BudgetContainerFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         viewModel = new ViewModelProvider(requireActivity()).get(BudgetViewModel.class);
-        try {
-            cairoTypeface = ResourcesCompat.getFont(requireContext(), R.font.cairo_font_family);
-        } catch (Exception ignored) {
-        }
+        cairoTypeface = AppFontHelper.getAppTypeface(requireContext());
 
         setupRecyclerViews();
         setupCharts();
@@ -260,6 +264,9 @@ public class BudgetContainerFragment extends Fragment {
         viewModel.getSelectedYearMonth().observe(getViewLifecycleOwner(), ym -> {
             if (ym != null) {
                 binding.tvBudgetMonthTitle.setText(BudgetUtils.formatYearMonthDisplay(ym, requireContext()));
+                boolean atMaxMonth = BudgetUtils.isAtOrAfterCurrentMonth(ym);
+                binding.btnNextMonth.setEnabled(!atMaxMonth);
+                binding.btnNextMonth.setAlpha(atMaxMonth ? 0.28f : 1.0f);
                 renderBarChart();
             }
         });
@@ -273,12 +280,16 @@ public class BudgetContainerFragment extends Fragment {
 
         viewModel.getMonthSummary().observe(getViewLifecycleOwner(), summary -> {
             latestSummary = summary;
+            summaryLoaded = true;
             renderSummaryCard();
+            maybeShowFirstTimeBudgetLimitTour();
         });
 
         viewModel.getEffectiveBudgetLimit().observe(getViewLifecycleOwner(), limit -> {
             latestLimit = limit;
+            limitLoaded = true;
             renderSummaryCard();
+            maybeShowFirstTimeBudgetLimitTour();
         });
 
         viewModel.getExpenseDistribution().observe(getViewLifecycleOwner(), list -> {
@@ -653,6 +664,90 @@ public class BudgetContainerFragment extends Fragment {
                 }))
                 .setNegativeButton(R.string.budget_cancel, null)
                 .show();
+    }
+
+
+    private void maybeShowFirstTimeBudgetLimitTour() {
+        if (limitTourScheduled || !summaryLoaded || !limitLoaded || !showingSummaryTab) return;
+        if (!isAdded() || binding == null) return;
+        if (latestLimit != null && latestLimit > 0) return;
+        if (latestSummary != null && latestSummary.entryCount > 0) return;
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+        if (prefs.getBoolean("budget_limit_tour_shown", false)) {
+            limitTourScheduled = true;
+            return;
+        }
+
+        limitTourScheduled = true;
+        AppDatabase db = AppDatabase.getDatabase(requireContext());
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            int totalEntries = db.budgetEntryDao().getTotalActiveEntryCountSync();
+            int totalLimits = db.monthlyBudgetLimitDao().getTotalActiveLimitCountSync();
+            if (totalEntries > 0 || totalLimits > 0) {
+                prefs.edit().putBoolean("budget_limit_tour_shown", true).apply();
+                return;
+            }
+            if (!isAdded()) return;
+            requireActivity().runOnUiThread(() -> {
+                if (!isAdded() || binding == null || !showingSummaryTab) return;
+                binding.layoutEditBudgetLimit.postDelayed(() -> {
+                    if (!isAdded() || binding == null || !binding.layoutEditBudgetLimit.isShown()) {
+                        limitTourScheduled = false;
+                        return;
+                    }
+                    showBudgetLimitSpotlight(prefs);
+                }, 450);
+            });
+        });
+    }
+
+    private void showBudgetLimitSpotlight(SharedPreferences prefs) {
+        try {
+            TapTarget target = TapTarget.forView(
+                            binding.layoutEditBudgetLimit,
+                            getString(R.string.budget_tour_limit_title),
+                            getString(R.string.budget_tour_limit_desc))
+                    .outerCircleColor(R.color.budget_primary)
+                    .outerCircleAlpha(0.95f)
+                    .targetCircleColor(android.R.color.white)
+                    .titleTextSize(19)
+                    .titleTextColor(android.R.color.white)
+                    .descriptionTextSize(14)
+                    .descriptionTextColor(android.R.color.white)
+                    .drawShadow(true)
+                    .cancelable(true)
+                    .tintTarget(false)
+                    .transparentTarget(true)
+                    .targetRadius(54);
+
+            if (cairoTypeface != null) {
+                target.textTypeface(cairoTypeface);
+            }
+
+            TapTargetView.showFor(requireActivity(), target, new TapTargetView.Listener() {
+                @Override
+                public void onTargetClick(TapTargetView view) {
+                    super.onTargetClick(view);
+                    prefs.edit().putBoolean("budget_limit_tour_shown", true).apply();
+                    if (hostListener != null) {
+                        hostListener.onBudgetRequestEditLimit(0.0);
+                    }
+                }
+
+                @Override
+                public void onTargetCancel(TapTargetView view) {
+                    super.onTargetCancel(view);
+                    prefs.edit().putBoolean("budget_limit_tour_shown", true).apply();
+                }
+
+                @Override
+                public void onTargetDismissed(TapTargetView view, boolean userInitiated) {
+                    prefs.edit().putBoolean("budget_limit_tour_shown", true).apply();
+                }
+            });
+        } catch (Exception ignored) {
+        }
     }
 
     @Override

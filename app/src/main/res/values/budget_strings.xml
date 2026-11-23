@@ -68,11 +68,13 @@
     <string name="budget_cat_transport">Transport</string>
     <string name="budget_cat_health">Health</string>
     <string name="budget_cat_other">Other</string>
-    <string name="budget_cat_salary">Salary &amp; Revenue</string>
-    <string name="budget_cat_network">Network Sales</string>
-    <string name="budget_cat_apps">Apps &amp; Coding</string>
+    <string name="budget_cat_salary">Salary <string name="budget_cat_salary">Salary &amp; Revenue</string>amp; Bonuses</string>
+    <string name="budget_cat_freelance">Freelance / Side Work</string>
+    <string name="budget_cat_investments">Investments</string>
     <string name="budget_cat_income_other">Other Income</string>
     <string name="budget_quick_monthly_sub">For monthly budget</string>
     <string name="budget_edit_limit_hint">e.g. 50000</string>
     <string name="budget_clear_limit">Remove Limit</string>
+    <string name="budget_tour_limit_title">Set Your Monthly Budget Limit</string>
+    <string name="budget_tour_limit_desc">Tap here to enter your monthly spending target so you can track usage percentage and remaining budget automatically.</string>
 </resources>

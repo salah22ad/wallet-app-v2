@@ -13,6 +13,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hpp.daftree.R;
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.budget.data.BudgetEntry;
 import com.hpp.daftree.budget.data.BudgetEntryWithCategory;
 import com.hpp.daftree.budget.util.BudgetUtils;
@@ -50,6 +51,7 @@ public class BudgetEntryAdapter extends RecyclerView.Adapter<BudgetEntryAdapter.
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemBudgetEntryBinding binding = ItemBudgetEntryBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
+        AppFontHelper.applyFontToViewTree(parent.getContext(), binding.getRoot());
         return new ViewHolder(binding);
     }
 

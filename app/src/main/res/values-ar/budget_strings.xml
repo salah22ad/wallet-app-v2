@@ -68,11 +68,13 @@
     <string name="budget_cat_transport">مواصلات</string>
     <string name="budget_cat_health">صحة</string>
     <string name="budget_cat_other">أخرى</string>
-    <string name="budget_cat_salary">راتب وإيرادات</string>
-    <string name="budget_cat_network">مبيعات الشبكة</string>
-    <string name="budget_cat_apps">تطبيقات وبرمجة</string>
+    <string name="budget_cat_salary">راتب ومكافآت</string>
+    <string name="budget_cat_freelance">عمل خارجي</string>
+    <string name="budget_cat_investments">استثمارات</string>
     <string name="budget_cat_income_other">دخل آخر</string>
     <string name="budget_quick_monthly_sub">للميزانية الشهرية</string>
     <string name="budget_edit_limit_hint">مثال: 50000</string>
     <string name="budget_clear_limit">إزالة الحد</string>
+    <string name="budget_tour_limit_title">حدد سقف ميزانيتك الشهرية</string>
+    <string name="budget_tour_limit_desc">اضغط هنا لإدخال حد الميزانية الشهري لمتابعة نسبة الاستهلاك والمبلغ المتبقي تلقائياً عند كل عملية.</string>
 </resources>

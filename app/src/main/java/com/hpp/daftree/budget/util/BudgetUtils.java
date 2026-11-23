@@ -8,8 +8,7 @@ import androidx.annotation.StringRes;
 
 import com.hpp.daftree.R;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,6 +35,21 @@ public final class BudgetUtils {
         Calendar cal = parseYearMonth(yearMonth);
         cal.add(Calendar.MONTH, deltaMonths);
         return String.format(Locale.US, "%04d-%02d", cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1);
+    }
+
+    public static boolean isAtOrAfterCurrentMonth(String yearMonth) {
+        if (yearMonth == null) return true;
+        return yearMonth.compareTo(getCurrentYearMonth()) >= 0;
+    }
+
+    public static long getEndOfCurrentMonthMillis() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal.getTimeInMillis();
     }
 
     public static List<String> getLastSixMonths(String endYearMonth) {
@@ -99,9 +113,10 @@ public final class BudgetUtils {
     }
 
     public static String formatAmount(double value) {
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-        DecimalFormat df = new DecimalFormat("#,##0.##", symbols);
-        return df.format(value);
+        NumberFormat format = NumberFormat.getNumberInstance(Locale.US);
+        format.setMinimumFractionDigits(0);
+        format.setMaximumFractionDigits(2);
+        return format.format(value);
     }
 
     public static String formatAmountWithCurrency(double value, String currencyLabel) {
@@ -123,8 +138,12 @@ public final class BudgetUtils {
             case "health": return R.string.budget_cat_health;
             case "other": return R.string.budget_cat_other;
             case "salary": return R.string.budget_cat_salary;
-            case "network": return R.string.budget_cat_network;
-            case "apps": return R.string.budget_cat_apps;
+            case "freelance":
+            case "network":
+                return R.string.budget_cat_freelance;
+            case "investments":
+            case "apps":
+                return R.string.budget_cat_investments;
             case "income_other": return R.string.budget_cat_income_other;
             default: return 0;
         }
@@ -161,8 +180,12 @@ public final class BudgetUtils {
             case "transport": return R.drawable.ic_budget_transport;
             case "health": return R.drawable.ic_budget_health;
             case "salary": return R.drawable.ic_budget_salary;
-            case "network": return R.drawable.ic_budget_network;
-            case "apps": return R.drawable.ic_budget_apps;
+            case "freelance":
+            case "network":
+                return R.drawable.ic_budget_freelance;
+            case "investments":
+            case "apps":
+                return R.drawable.ic_budget_investments;
             case "income_other": return R.drawable.ic_budget_income_other;
             case "other":
             default:

@@ -11,6 +11,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hpp.daftree.R;
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.budget.data.CategoryExpenseTotal;
 import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.databinding.ItemBudgetCategoryDistBinding;
@@ -40,6 +41,7 @@ public class CategoryDistributionAdapter extends RecyclerView.Adapter<CategoryDi
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemBudgetCategoryDistBinding binding = ItemBudgetCategoryDistBinding.inflate(
                 LayoutInflater.from(parent.getContext()), parent, false);
+        AppFontHelper.applyFontToViewTree(parent.getContext(), binding.getRoot());
         return new ViewHolder(binding);
     }
 

@@ -117,12 +117,20 @@ public class BudgetViewModel extends AndroidViewModel {
     }
 
     public void shiftMonth(int deltaMonths) {
-        selectedYearMonth.setValue(BudgetUtils.shiftYearMonth(getCurrentYearMonthValue(), deltaMonths));
+        String target = BudgetUtils.shiftYearMonth(getCurrentYearMonthValue(), deltaMonths);
+        String maxMonth = BudgetUtils.getCurrentYearMonth();
+        if (deltaMonths > 0 && target.compareTo(maxMonth) > 0) {
+            return;
+        }
+        selectedYearMonth.setValue(target);
     }
 
     public void setSelectedYearMonth(String yearMonth) {
-        if (yearMonth != null && !yearMonth.equals(selectedYearMonth.getValue())) {
-            selectedYearMonth.setValue(yearMonth);
+        if (yearMonth == null) return;
+        String maxMonth = BudgetUtils.getCurrentYearMonth();
+        String clamped = yearMonth.compareTo(maxMonth) > 0 ? maxMonth : yearMonth;
+        if (!clamped.equals(selectedYearMonth.getValue())) {
+            selectedYearMonth.setValue(clamped);
         }
     }
 

@@ -32,4 +32,9 @@ public interface BudgetCategoryDao {
 
     @Update
     void update(BudgetCategory category);
+    @Query("UPDATE budget_categories SET code = :newCode, iconKey = :newIcon WHERE code = :oldCode AND isDefault = 1")
+    void migrateDefaultCategoryCode(String oldCode, String newCode, String newIcon);
+
+    @Query("SELECT id FROM budget_categories WHERE code = :code AND isDeleted = 0 LIMIT 1")
+    Integer getCategoryIdByCodeSync(String code);
 }

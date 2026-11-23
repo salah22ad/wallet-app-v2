@@ -85,4 +85,6 @@ public interface BudgetEntryDao {
 
     @Query("SELECT * FROM budget_entries WHERE syncStatus != 'SYNCED'")
     List<BudgetEntry> getUnsyncedEntriesSync();
+    @Query("SELECT COUNT(*) FROM budget_entries WHERE isDeleted = 0")
+    int getTotalActiveEntryCountSync();
 }

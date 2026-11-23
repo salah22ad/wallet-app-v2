@@ -33,4 +33,6 @@ public interface MonthlyBudgetLimitDao {
 
     @Query("SELECT * FROM monthly_budget_limits WHERE syncStatus != 'SYNCED'")
     List<MonthlyBudgetLimit> getUnsyncedLimitsSync();
+    @Query("SELECT COUNT(*) FROM monthly_budget_limits WHERE isDeleted = 0 AND limitAmount > 0")
+    int getTotalActiveLimitCountSync();
 }

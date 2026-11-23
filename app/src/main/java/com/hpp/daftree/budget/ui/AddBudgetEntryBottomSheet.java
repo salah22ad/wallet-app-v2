@@ -18,7 +18,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.hpp.daftree.MyApplication;
 import com.hpp.daftree.R;
+import com.hpp.daftree.models.FormatingAmount;
 import com.hpp.daftree.budget.adapter.BudgetCategoryGridAdapter;
 import com.hpp.daftree.budget.data.BudgetEntry;
 import com.hpp.daftree.budget.data.BudgetEntryWithCategory;
@@ -109,7 +111,7 @@ public class AddBudgetEntryBottomSheet extends BottomSheetDialogFragment {
             if (isEditMode) {
                 double amount = args.getDouble(ARG_AMOUNT, 0.0);
                 if (amount > 0) {
-                    binding.etBudgetAmount.setText(BudgetUtils.formatAmount(amount).replace(",", ""));
+                    binding.etBudgetAmount.setText(BudgetUtils.formatAmount(amount));
                 }
                 binding.etBudgetNote.setText(args.getString(ARG_NOTE, ""));
                 selectedDateMillis = args.getLong(ARG_ENTRY_DATE, System.currentTimeMillis());
@@ -120,6 +122,8 @@ public class AddBudgetEntryBottomSheet extends BottomSheetDialogFragment {
             selectedDateMillis = System.currentTimeMillis();
         }
 
+        MyApplication.applyGlobalTextWatcher(binding.getRoot());
+        FormatingAmount.applyTo(binding.etBudgetAmount);
         setupHeaderAndColors();
         setupCategoryGrid();
         setupListeners();
@@ -192,7 +196,7 @@ public class AddBudgetEntryBottomSheet extends BottomSheetDialogFragment {
     private void openDatePicker() {
         Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(selectedDateMillis);
-        new DatePickerDialog(
+        DatePickerDialog datePicker = new DatePickerDialog(
                 requireContext(),
                 (dp, year, month, dayOfMonth) -> {
                     Calendar picked = Calendar.getInstance();
@@ -206,7 +210,9 @@ public class AddBudgetEntryBottomSheet extends BottomSheetDialogFragment {
                 cal.get(Calendar.YEAR),
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH)
-        ).show();
+        );
+        datePicker.getDatePicker().setMaxDate(BudgetUtils.getEndOfCurrentMonthMillis());
+        datePicker.show();
     }
 
     private void updateDateDisplay() {

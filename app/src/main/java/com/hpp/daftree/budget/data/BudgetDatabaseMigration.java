@@ -109,8 +109,8 @@ public final class BudgetDatabaseMigration {
 
         // ظپط¦ط§طھ ط§ظ„ط¯ط®ظ„ ط§ظ„ط§ظپطھط±ط§ط¶ظٹط©
         insertDefaultCategory(db, "salary", "INCOME", "salary", "#10B981", 1, now);
-        insertDefaultCategory(db, "network", "INCOME", "network", "#0EA5E9", 2, now);
-        insertDefaultCategory(db, "apps", "INCOME", "apps", "#6366F1", 3, now);
+        insertDefaultCategory(db, "freelance", "INCOME", "freelance", "#0EA5E9", 2, now);
+        insertDefaultCategory(db, "investments", "INCOME", "investments", "#6366F1", 3, now);
         insertDefaultCategory(db, "income_other", "INCOME", "income_other", "#EAB308", 4, now);
     }
 

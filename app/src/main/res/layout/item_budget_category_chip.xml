@@ -25,7 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:ellipsize="end"
-        android:fontFamily="@font/cairo_font_family"
         android:gravity="center"
         android:maxLines="1"
         android:textColor="@color/budget_text_primary"

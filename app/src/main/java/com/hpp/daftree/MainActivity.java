@@ -1062,19 +1062,9 @@ public class MainActivity extends BaseActivity implements
                 .listener(new TapTargetSequence.Listener() {
                     @Override
                     public void onSequenceFinish() {
-                        // عند انتهاء الشرح، نحفظ أنه تم العرض لعدم إظهاره مرة أخرى
+                        // عند انتهاء الشرح، نحفظ أنه تم العرض لعدم إظهاره مرة أخرى ونفتح قائمة الإدخالات الموحدة
                         prefs.edit().putBoolean("first_time_tour", false).apply();
-
-
-                        if (availableCurrencies.isEmpty() || currentCurrencyIndex >= availableCurrencies.size()) {
-                            //  Toast.makeText(this, getString(R.string.setupEventListeners_16), Toast.LENGTH_SHORT).show();
-                            addDefaultCurrencyAndProceed();
-                            return;
-                        }
-                        Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
-                        // **تصحيح: إرسال اسم العملة من القائمة الديناميكية**
-                        intent.putExtra("CURRENCY", availableCurrencies.get(currentCurrencyIndex).name);
-                        startActivity(intent);
+                        showQuickAddBottomSheet();
                     }
 
                     @Override
