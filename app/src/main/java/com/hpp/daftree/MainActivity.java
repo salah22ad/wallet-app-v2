@@ -216,6 +216,7 @@ import com.hpp.daftree.budget.ui.AddBudgetEntryBottomSheet;
 import com.hpp.daftree.budget.ui.BudgetContainerFragment;
 import com.hpp.daftree.budget.ui.EditBudgetLimitDialog;
 import com.hpp.daftree.budget.ui.QuickAddBottomSheet;
+import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.budget.viewmodel.BudgetViewModel;
 import com.hpp.daftree.viewmodels.ProfileViewModel;
 
@@ -3015,6 +3016,22 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
     private void showReportsDialogFromToolbar() {
         if (!licenseManager.canCreateTransaction() && !licenceData.isPremium()) {
             showExpiryDialog(getString(R.string.plan_expired_title), getString(R.string.plan_expired_message));
+            return;
+        }
+
+        if (isBudgetTabActive) {
+            String ym = budgetViewModel != null
+                    ? budgetViewModel.getCurrentYearMonthValue()
+                    : BudgetUtils.getCurrentYearMonth();
+            String budgetCurrencyName = budgetViewModel != null
+                    ? budgetViewModel.getCurrentCurrencyNameValue()
+                    : "";
+            if (budgetCurrencyName == null || budgetCurrencyName.trim().isEmpty()) {
+                budgetCurrencyName = binding.currencyTextView.getText() != null
+                        ? binding.currencyTextView.getText().toString().trim() : "";
+            }
+            ReportsBottomSheet budgetSheet = ReportsBottomSheet.newInstanceForBudget(ym, budgetCurrencyName);
+            budgetSheet.show(getSupportFragmentManager(), "ReportsSheetBudget");
             return;
         }
 

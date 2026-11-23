@@ -99,7 +99,8 @@
                 app:boxCornerRadiusTopEnd="14dp"
                 app:boxCornerRadiusTopStart="14dp"
                 app:endIconContentDescription="@string/calculator"
-                app:endIconDrawable="@drawable/ic_calculator"
+                app:endIconDrawable="@drawable/ic_modern_calculator"
+                app:endIconTint="@null"
                 app:endIconMode="custom">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -165,7 +166,8 @@
                 app:boxCornerRadiusBottomStart="14dp"
                 app:boxCornerRadiusTopEnd="14dp"
                 app:boxCornerRadiusTopStart="14dp"
-                app:startIconDrawable="@drawable/ic_calendar_today">
+                app:startIconDrawable="@drawable/ic_modern_calendar"
+                app:startIconTint="@null">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/dateEditText"
@@ -242,8 +244,7 @@
                 android:layout_marginStart="8dp"
                 android:background="@drawable/budget_bg_input_field"
                 android:contentDescription="@string/camera"
-                android:src="@drawable/ic_camera"
-                app:tint="?attr/colorPrimary" />
+                android:src="@drawable/ic_modern_camera" />
         </LinearLayout>
 
         <!-- خيار الربط الاختياري بالميزانية الشهرية -->

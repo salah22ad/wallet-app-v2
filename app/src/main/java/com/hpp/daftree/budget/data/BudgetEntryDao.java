@@ -100,4 +100,55 @@ public interface BudgetEntryDao {
 
     @Query("SELECT * FROM budget_entries WHERE isDeleted = 1 AND deleteDate > 0 AND deleteDate <= :threshold")
     List<BudgetEntry> getOldDeletedEntries(long threshold);
+    @Query("SELECT e.id AS id, e.firestoreId AS firestoreId, e.categoryId AS categoryId, " +
+            "e.currencyId AS currencyId, e.type AS type, e.amount AS amount, e.note AS note, " +
+            "e.entryDate AS entryDate, e.yearMonth AS yearMonth, " +
+            "c.code AS categoryCode, c.name AS categoryName, c.isDefault AS categoryIsDefault, " +
+            "c.iconKey AS categoryIconKey, c.colorHex AS categoryColorHex " +
+            "FROM budget_entries e LEFT JOIN budget_categories c ON e.categoryId = c.id " +
+            "WHERE e.currencyId = :currencyId AND e.isDeleted = 0 AND e.entryDate >= :startDate AND e.entryDate <= :endDate " +
+            "ORDER BY e.entryDate ASC, e.id ASC")
+    List<BudgetEntryWithCategory> getEntriesByDateRangeSync(int currencyId, long startDate, long endDate);
+
+    @Query("SELECT e.id AS id, e.firestoreId AS firestoreId, e.categoryId AS categoryId, " +
+            "e.currencyId AS currencyId, e.type AS type, e.amount AS amount, e.note AS note, " +
+            "e.entryDate AS entryDate, e.yearMonth AS yearMonth, " +
+            "c.code AS categoryCode, c.name AS categoryName, c.isDefault AS categoryIsDefault, " +
+            "c.iconKey AS categoryIconKey, c.colorHex AS categoryColorHex " +
+            "FROM budget_entries e LEFT JOIN budget_categories c ON e.categoryId = c.id " +
+            "WHERE e.currencyId = :currencyId AND e.isDeleted = 0 " +
+            "ORDER BY e.entryDate ASC, e.id ASC")
+    List<BudgetEntryWithCategory> getAllEntriesForCurrencySync(int currencyId);
+
+    @Query("SELECT c.id AS categoryId, c.code AS categoryCode, c.name AS name, c.isDefault AS isDefault, " +
+            "c.iconKey AS iconKey, c.colorHex AS colorHex, " +
+            "COALESCE(SUM(e.amount), 0) AS totalAmount, COUNT(e.id) AS entryCount " +
+            "FROM budget_entries e INNER JOIN budget_categories c ON e.categoryId = c.id " +
+            "WHERE e.currencyId = :currencyId AND e.type = :type AND e.isDeleted = 0 " +
+            "AND e.entryDate >= :startDate AND e.entryDate <= :endDate " +
+            "GROUP BY c.id ORDER BY totalAmount DESC")
+    List<CategoryExpenseTotal> getCategoryTotalsByDateRangeSync(int currencyId, String type, long startDate, long endDate);
+
+    @Query("SELECT c.id AS categoryId, c.code AS categoryCode, c.name AS name, c.isDefault AS isDefault, " +
+            "c.iconKey AS iconKey, c.colorHex AS colorHex, " +
+            "COALESCE(SUM(e.amount), 0) AS totalAmount, COUNT(e.id) AS entryCount " +
+            "FROM budget_entries e INNER JOIN budget_categories c ON e.categoryId = c.id " +
+            "WHERE e.currencyId = :currencyId AND e.type = :type AND e.isDeleted = 0 " +
+            "GROUP BY c.id ORDER BY totalAmount DESC")
+    List<CategoryExpenseTotal> getCategoryTotalsAllTimeSync(int currencyId, String type);
+
+    @Query("SELECT yearMonth, " +
+            "COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0) AS totalIncome, " +
+            "COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0) AS totalExpense " +
+            "FROM budget_entries WHERE currencyId = :currencyId AND isDeleted = 0 " +
+            "AND entryDate >= :startDate AND entryDate <= :endDate " +
+            "GROUP BY yearMonth ORDER BY yearMonth ASC")
+    List<MonthlyTotals> getMonthlyTotalsByDateRangeSync(int currencyId, long startDate, long endDate);
+
+    @Query("SELECT yearMonth, " +
+            "COALESCE(SUM(CASE WHEN type = 'INCOME' THEN amount ELSE 0 END), 0) AS totalIncome, " +
+            "COALESCE(SUM(CASE WHEN type = 'EXPENSE' THEN amount ELSE 0 END), 0) AS totalExpense " +
+            "FROM budget_entries WHERE currencyId = :currencyId AND isDeleted = 0 " +
+            "GROUP BY yearMonth ORDER BY yearMonth ASC")
+    List<MonthlyTotals> getMonthlyTotalsAllTimeSync(int currencyId);
 }

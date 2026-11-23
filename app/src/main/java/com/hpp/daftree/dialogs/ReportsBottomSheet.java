@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -29,11 +30,15 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.hpp.daftree.MyApplication;
 import com.hpp.daftree.R;
+import com.hpp.daftree.budget.data.BudgetEntry;
+import com.hpp.daftree.budget.report.BudgetReportGenerator;
+import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.database.Account;
 import com.hpp.daftree.database.AccountType;
 import com.hpp.daftree.database.Currency;
 import com.hpp.daftree.database.User;
 import com.hpp.daftree.databinding.BottomSheetReportsBinding;
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.helpers.LanguageManager;
 import com.hpp.daftree.models.ReportGenerator;
 import com.hpp.daftree.utils.DialogHelper;
@@ -73,21 +78,24 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
     private static final String ARG_ACCOUNT_TYPE_ID = "account_type_id";
     private static final String ARG_CURRENCY_NAME = "currency_name";
     private static final String ARG_PHONE_NUMBER = "phone_number";
+    private static final String ARG_BUDGET_YEAR_MONTH = "budget_year_month";
     private String phoneNumber = "";
 
     public enum LaunchMode {
         GENERAL,        // من القائمة الجانبية
         SINGLE_ACCOUNT, // من تفاصيل الحساب
-        FILTERED        // من الفلتر في الواجهة الرئيسية
+        FILTERED,       // من الفلتر في الواجهة الرئيسية
+        BUDGET          // من شاشة الميزانية
     }
 
     private LanguageManager languageManager;
     private LaunchMode currentMode = LaunchMode.GENERAL;
-    private int selectedReportType = 1; // 1: Statement, 2: Balance, 3: Monthly
-    private boolean isGuest;
-    private String guestUID;
+    private boolean isBudgetTabSelected = false;
+    private int selectedReportType = 1; // 1: Detailed, 2: Balances/Categories, 3: Monthly
+    private String budgetFilterType = "ALL"; // ALL, EXPENSE, INCOME
     private String pendingAccountTypeName = null;
     private String pendingAccountTypeId = null;
+    private String reportType = "";
 
     public static ReportsBottomSheet newInstanceGeneral() {
         ReportsBottomSheet fragment = new ReportsBottomSheet();
@@ -129,6 +137,16 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
         return fragment;
     }
 
+    public static ReportsBottomSheet newInstanceForBudget(String yearMonth, String currencyName) {
+        ReportsBottomSheet fragment = new ReportsBottomSheet();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_LAUNCH_MODE, LaunchMode.BUDGET);
+        args.putString(ARG_BUDGET_YEAR_MONTH, yearMonth);
+        args.putString(ARG_CURRENCY_NAME, currencyName);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -140,8 +158,8 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // إلغاء أي LayoutTransition لمنع قفز الـ BottomSheet لأعلى الشاشة عند إظهار أو إخفاء العناصر
         disableLayoutTransitions(binding.getRoot());
+        AppFontHelper.applyFontToViewTree(requireContext(), binding.getRoot());
 
         viewModel = new ViewModelProvider(this).get(ReportsViewModel.class);
         currencyViewModel = new ViewModelProvider(this).get(CurrencyViewModel.class);
@@ -151,21 +169,20 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
         Locale.setDefault(locale);
         MyApplication.applyGlobalTextWatcher(binding.getRoot());
 
-        isGuest = SecureLicenseManager.getInstance(getContext()).isGuest();
-        guestUID = SecureLicenseManager.getInstance(getContext()).guestUID();
         Configuration config = new Configuration(requireContext().getResources().getConfiguration());
         config.setLocale(locale);
         config.setLayoutDirection(locale);
         requireContext().createConfigurationContext(config);
 
         if (getArguments() != null) {
-            currentMode = (LaunchMode) getArguments().getSerializable(ARG_LAUNCH_MODE);
+            LaunchMode mode = (LaunchMode) getArguments().getSerializable(ARG_LAUNCH_MODE);
+            if (mode != null) currentMode = mode;
         }
 
         setupBottomBarInsets();
+        loadDefaultDates();
         setupUI();
         setupObservers();
-        loadDefaultDates();
     }
 
     private void disableLayoutTransitions(View view) {
@@ -197,34 +214,35 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
         switchSeparateAccounts = binding.switchSeparateAccounts;
         llSeparateAccounts.setVisibility(View.GONE);
 
-        // 1. إعداد Chips (نطاق التقرير) بدون استدعاء حركات تسبب القفز
-        binding.chipGroupScope.setOnCheckedChangeListener((group, checkedId) -> {
-            updateScopeVisibility(checkedId);
-        });
+        // 1. تبويبا القسمين: تقارير الحسابات / تقارير الميزانية
+        binding.tabReportAccounts.setOnClickListener(v -> switchReportCategoryTab(false));
+        binding.tabReportBudget.setOnClickListener(v -> switchReportCategoryTab(true));
 
-        // 2. إعداد Cards (نوع التقرير)
+        // 2. فلتر عمليات الميزانية (الكل / مصروفات / دخل)
+        binding.btnReportBudgetFilterAll.setOnClickListener(v -> setBudgetFilter("ALL"));
+        binding.btnReportBudgetFilterExpense.setOnClickListener(v -> setBudgetFilter(BudgetEntry.TYPE_EXPENSE));
+        binding.btnReportBudgetFilterIncome.setOnClickListener(v -> setBudgetFilter(BudgetEntry.TYPE_INCOME));
+
+        // 3. نطاق تقارير الحسابات
+        binding.chipGroupScope.setOnCheckedChangeListener((group, checkedId) -> updateScopeVisibility(checkedId));
+
+        // 4. بطاقات أنواع التقارير الثلاثة
         View.OnClickListener cardClickListener = v -> updateReportTypeSelection((MaterialCardView) v);
         binding.cardTypeStatement.setOnClickListener(cardClickListener);
         binding.cardTypeBalance.setOnClickListener(cardClickListener);
         binding.cardTypeMonthly.setOnClickListener(cardClickListener);
-
-        // افتراضياً: كشف حساب تفصيلي
         updateReportTypeSelection(binding.cardTypeStatement);
 
-        // 3. إعداد مفاتيح الفلاتر بدون TransitionManager لمنع ارتداد النافذة
-        binding.switchDateRange.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            binding.containerDateRange.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-        });
+        // 5. مفاتيح الفلاتر
+        binding.switchDateRange.setOnCheckedChangeListener((buttonView, isChecked) ->
+                binding.containerDateRange.setVisibility(isChecked ? View.VISIBLE : View.GONE));
 
-        binding.switchCurrency.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            binding.containerCurrency.setVisibility(isChecked ? View.VISIBLE : View.GONE);
-        });
+        binding.switchCurrency.setOnCheckedChangeListener((buttonView, isChecked) ->
+                binding.containerCurrency.setVisibility(isChecked ? View.VISIBLE : View.GONE));
 
-        // 4. إعداد منتقي التاريخ
         binding.etStartDate.setOnClickListener(v -> showDatePicker(true));
         binding.etEndDate.setOnClickListener(v -> showDatePicker(false));
 
-        // 5. إظهار أزرار PDF فقط (إنشاء تقرير PDF + مشاركة التقرير PDF) وإخفاء زر PNG
         if (binding.btnSharePng != null) {
             binding.btnSharePng.setVisibility(View.GONE);
         }
@@ -234,13 +252,71 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
         binding.btnGenerateReport.setOnClickListener(v -> generateReport(false));
         binding.btnShareReport.setOnClickListener(v -> generateReport(true));
 
-        // تطبيق المنطق بناءً على وضع الإطلاق
         applyLaunchModeLogic();
+    }
+
+    private void switchReportCategoryTab(boolean showBudget) {
+        isBudgetTabSelected = showBudget;
+        int activeText = ContextCompat.getColor(requireContext(), R.color.budget_text_on_card);
+        int inactiveText = ContextCompat.getColor(requireContext(), R.color.budget_text_secondary);
+
+        if (showBudget) {
+            binding.tabReportAccounts.setBackground(null);
+            binding.tvTabReportAccounts.setTextColor(inactiveText);
+            binding.tabReportBudget.setBackgroundResource(R.drawable.budget_bg_tab_active);
+            binding.tvTabReportBudget.setTextColor(activeText);
+
+            binding.containerAccountScopeSection.setVisibility(View.GONE);
+            binding.llSeparateAccounts.setVisibility(View.GONE);
+
+            binding.ivCardStatement.setImageResource(R.drawable.ic_modern_budget_list);
+            binding.tvCardStatement.setText(R.string.budget_report_type_detailed);
+            binding.ivCardBalance.setImageResource(R.drawable.ic_modern_budget_pie);
+            binding.tvCardBalance.setText(R.string.budget_report_type_categories);
+            binding.ivCardMonthly.setImageResource(R.drawable.ic_modern_budget_bar);
+            binding.tvCardMonthly.setText(R.string.budget_report_type_monthly);
+        } else {
+            binding.tabReportAccounts.setBackgroundResource(R.drawable.budget_bg_tab_active);
+            binding.tvTabReportAccounts.setTextColor(activeText);
+            binding.tabReportBudget.setBackground(null);
+            binding.tvTabReportBudget.setTextColor(inactiveText);
+
+            binding.containerAccountScopeSection.setVisibility(View.VISIBLE);
+
+            binding.ivCardStatement.setImageResource(R.drawable.ic_modern_report_statement);
+            binding.tvCardStatement.setText(R.string.radio_detailed_movement_all);
+            binding.ivCardBalance.setImageResource(R.drawable.ic_modern_report_balance);
+            binding.tvCardBalance.setText(R.string.radio_total_balance_all);
+            binding.ivCardMonthly.setImageResource(R.drawable.ic_modern_report_monthly);
+            binding.tvCardMonthly.setText(R.string.radio_monthly_summary_all);
+        }
+        updateBudgetFilterVisibility();
+        updateSeparateAccountsVisibility();
+    }
+
+    private void setBudgetFilter(String filter) {
+        budgetFilterType = filter;
+        styleBudgetFilterPill(binding.btnReportBudgetFilterAll, "ALL".equals(filter));
+        styleBudgetFilterPill(binding.btnReportBudgetFilterExpense, BudgetEntry.TYPE_EXPENSE.equals(filter));
+        styleBudgetFilterPill(binding.btnReportBudgetFilterIncome, BudgetEntry.TYPE_INCOME.equals(filter));
+    }
+
+    private void styleBudgetFilterPill(TextView pill, boolean selected) {
+        pill.setBackgroundResource(selected ? R.drawable.budget_bg_tab_active : R.drawable.budget_bg_currency_chip);
+        pill.setTextColor(ContextCompat.getColor(
+                requireContext(),
+                selected ? R.color.budget_chip_selected_text : R.color.budget_chip_unselected_text));
+    }
+
+    private void updateBudgetFilterVisibility() {
+        if (binding == null) return;
+        binding.layoutBudgetFilterPills.setVisibility(
+                (isBudgetTabSelected && selectedReportType == 1) ? View.VISIBLE : View.GONE);
     }
 
     private void updateSeparateAccountsVisibility() {
         if (llSeparateAccounts == null || switchSeparateAccounts == null) return;
-        boolean isAccountTypeScope = binding.chipScopeAccountType.isChecked();
+        boolean isAccountTypeScope = !isBudgetTabSelected && binding.chipScopeAccountType.isChecked();
         boolean isStatementType = (selectedReportType == 1);
         if (isAccountTypeScope && isStatementType) {
             llSeparateAccounts.setVisibility(View.VISIBLE);
@@ -255,6 +331,10 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
 
         switch (currentMode) {
             case SINGLE_ACCOUNT: {
+                binding.layoutReportCategoryTabs.setVisibility(View.GONE);
+                binding.tvReportSheetTitle.setVisibility(View.VISIBLE);
+                switchReportCategoryTab(false);
+
                 binding.chipScopeSingleAccount.setChecked(true);
                 binding.chipScopeAccountType.setVisibility(View.GONE);
                 binding.chipScopeAllAccounts.setVisibility(View.GONE);
@@ -264,10 +344,25 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
                 binding.spinnerAccounts.setText(accName, false);
                 binding.spinnerAccounts.setEnabled(false);
 
-                setupCurrencyIfExists(getArguments().getString(ARG_CURRENCY_NAME));
+                setupCurrencyIfExists(getArguments().getString(ARG_CURRENCY_NAME), false);
+                break;
+            }
+            case BUDGET: {
+                binding.layoutReportCategoryTabs.setVisibility(View.VISIBLE);
+                binding.tvReportSheetTitle.setVisibility(View.GONE);
+                switchReportCategoryTab(true);
+                setBudgetFilter("ALL");
+
+                String ym = getArguments().getString(ARG_BUDGET_YEAR_MONTH);
+                applyBudgetMonthDateRange(ym);
+                setupCurrencyIfExists(getArguments().getString(ARG_CURRENCY_NAME), true);
                 break;
             }
             case FILTERED: {
+                binding.layoutReportCategoryTabs.setVisibility(View.VISIBLE);
+                binding.tvReportSheetTitle.setVisibility(View.GONE);
+                switchReportCategoryTab(false);
+
                 String typeName = getArguments().getString(ARG_ACCOUNT_TYPE_NAME);
                 String typeId = getArguments().getString(ARG_ACCOUNT_TYPE_ID);
 
@@ -278,7 +373,6 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
                     binding.chipScopeAccountType.setChecked(true);
                     binding.layoutAccountTypeSpinner.setVisibility(View.VISIBLE);
                     binding.layoutAccountSpinner.setVisibility(View.GONE);
-
                     if (pendingAccountTypeName != null) {
                         binding.spinnerAccountType.setText(pendingAccountTypeName, false);
                     }
@@ -287,26 +381,44 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
                     binding.layoutAccountTypeSpinner.setVisibility(View.GONE);
                     binding.layoutAccountSpinner.setVisibility(View.GONE);
                 }
-                setupCurrencyIfExists(getArguments().getString(ARG_CURRENCY_NAME));
+                setupCurrencyIfExists(getArguments().getString(ARG_CURRENCY_NAME), false);
                 break;
             }
             case GENERAL:
+            default:
+                binding.layoutReportCategoryTabs.setVisibility(View.VISIBLE);
+                binding.tvReportSheetTitle.setVisibility(View.GONE);
+                switchReportCategoryTab(false);
                 binding.chipScopeAllAccounts.setChecked(true);
                 binding.layoutAccountTypeSpinner.setVisibility(View.GONE);
                 binding.layoutAccountSpinner.setVisibility(View.GONE);
-                setupCurrencyIfExists(getArguments().getString(ARG_CURRENCY_NAME));
-                break;
-            default:
-                binding.chipScopeSingleAccount.setChecked(true);
+                setupCurrencyIfExists(getArguments().getString(ARG_CURRENCY_NAME), false);
                 break;
         }
         updateSeparateAccountsVisibility();
     }
 
-    private void setupCurrencyIfExists(String currencyName) {
+    private void applyBudgetMonthDateRange(String yearMonth) {
+        Calendar cal = BudgetUtils.parseYearMonth(yearMonth != null ? yearMonth : BudgetUtils.getCurrentYearMonth());
+        startDate.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), 1, 0, 0, 0);
+        startDate.set(Calendar.MILLISECOND, 0);
+
+        int maxDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        endDate.set(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), maxDay, 23, 59, 59);
+        endDate.set(Calendar.MILLISECOND, 999);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        binding.etStartDate.setText(sdf.format(startDate.getTime()));
+        binding.etEndDate.setText(sdf.format(endDate.getTime()));
+        binding.switchDateRange.setChecked(true);
+        binding.containerDateRange.setVisibility(View.VISIBLE);
+    }
+
+    private void setupCurrencyIfExists(String currencyName, boolean enableSwitch) {
         if (currencyName != null && !currencyName.isEmpty()) {
-            binding.switchCurrency.setChecked(false);
             binding.spinnerCurrency.setText(currencyName, false);
+            binding.switchCurrency.setChecked(enableSwitch);
+            binding.containerCurrency.setVisibility(enableSwitch ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -345,6 +457,7 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
         if (selectedCard == binding.cardTypeStatement) selectedReportType = 1;
         else if (selectedCard == binding.cardTypeBalance) selectedReportType = 2;
         else if (selectedCard == binding.cardTypeMonthly) selectedReportType = 3;
+        updateBudgetFilterVisibility();
         updateSeparateAccountsVisibility();
     }
 
@@ -367,14 +480,9 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
 
         viewModel.getAllAccountTypes().observe(getViewLifecycleOwner(), types -> {
             if (types == null) return;
-
             this.accountTypesList = types;
-            List<String> names = types.stream()
-                    .map(AccountType::getName)
-                    .collect(Collectors.toList());
-
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
-                    android.R.layout.simple_dropdown_item_1line, names);
+            List<String> names = types.stream().map(AccountType::getName).collect(Collectors.toList());
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, names);
             binding.spinnerAccountType.setAdapter(adapter);
 
             if (currentMode == LaunchMode.FILTERED && (pendingAccountTypeName != null || pendingAccountTypeId != null)) {
@@ -406,12 +514,7 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
                     binding.layoutAccountSpinner.setVisibility(View.GONE);
                     updateSeparateAccountsVisibility();
                 } else {
-                    Log.w("ReportsBottomSheet",
-                            "تعذّر إيجاد نوع الحساب name=" + pendingAccountTypeName
-                                    + " id=" + pendingAccountTypeId);
-                    if (!names.isEmpty()) {
-                        binding.spinnerAccountType.setText(names.get(0), false);
-                    }
+                    if (!names.isEmpty()) binding.spinnerAccountType.setText(names.get(0), false);
                     binding.chipScopeAllAccounts.setChecked(true);
                     updateSeparateAccountsVisibility();
                 }
@@ -447,12 +550,11 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
                     View view = getLayoutInflater().inflate(R.layout.dialog_loading, null);
                     TextView tvMessage = view.findViewById(R.id.tv_message);
                     tvMessage.setText(message);
-
                     builder.setView(view);
                     builder.setCancelable(false);
-
                     progressDialog = builder.create();
                     progressDialog.show();
+                    AppFontHelper.applyFontToDialog(requireContext(), progressDialog);
                 } catch (Exception ignored) {
                 }
             });
@@ -473,6 +575,58 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void generateReport(boolean isForShare) {
+        boolean specificCurrency = binding.switchCurrency.isChecked();
+        int currencyId = -1;
+        if (specificCurrency) {
+            String currencyName = binding.spinnerCurrency.getText().toString();
+            currencyId = findCurrencyIdByName(currencyName);
+            if (currencyId == -1) {
+                Toast.makeText(getContext(), R.string.wronge_currency, Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+
+        boolean useDateRange = binding.switchDateRange.isChecked();
+        long start = useDateRange ? startDate.getTimeInMillis() : 0L;
+        long end = useDateRange ? endDate.getTimeInMillis() : Long.MAX_VALUE;
+
+        // ==================== فرع تقارير الميزانية ====================
+        if (isBudgetTabSelected) {
+            final int finalCurrencyId = currencyId;
+            final boolean finalSpecificCurrency = specificCurrency;
+            final String finalFilterType = budgetFilterType;
+            showProgressDialog(getString(R.string.ar_long_text_5));
+
+            new Thread(() -> {
+                try {
+                    BudgetReportGenerator budgetGenerator = new BudgetReportGenerator(
+                            requireContext(),
+                            currentUser,
+                            languageManager.getCurrentLanguage()
+                    );
+                    File outputFile = null;
+                    if (selectedReportType == 1) {
+                        outputFile = budgetGenerator.generateDetailedBudgetReport(
+                                finalCurrencyId, finalSpecificCurrency, start, end, useDateRange, finalFilterType);
+                        reportType = getString(R.string.budget_report_title_detailed);
+                    } else if (selectedReportType == 2) {
+                        outputFile = budgetGenerator.generateCategoryAnalysisReport(
+                                finalCurrencyId, finalSpecificCurrency, start, end, useDateRange);
+                        reportType = getString(R.string.budget_report_title_categories);
+                    } else if (selectedReportType == 3) {
+                        outputFile = budgetGenerator.generateMonthlyBudgetSummaryReport(
+                                finalCurrencyId, finalSpecificCurrency, start, end, useDateRange);
+                        reportType = getString(R.string.budget_report_title_monthly);
+                    }
+                    deliverReportResult(outputFile, isForShare);
+                } catch (Exception e) {
+                    handleReportException(e);
+                }
+            }).start();
+            return;
+        }
+
+        // ==================== فرع تقارير الحسابات والديون ====================
         boolean isSingleAccount = binding.chipScopeSingleAccount.isChecked();
         boolean isAccountType = binding.chipScopeAccountType.isChecked();
         boolean isAllAccounts = binding.chipScopeAllAccounts.isChecked();
@@ -491,26 +645,10 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
             String typeName = binding.spinnerAccountType.getText().toString();
             accountTypeId = findFirestoreIdByAccountTypeName(typeName);
             if (accountTypeId == null) {
-                Toast.makeText(getContext(), "اختر نوع حساب صحيح", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.required, Toast.LENGTH_SHORT).show();
                 return;
             }
         }
-
-        boolean specificCurrency = binding.switchCurrency.isChecked();
-        int currencyId = -1;
-        String currencyName = "";
-        if (specificCurrency) {
-            currencyName = binding.spinnerCurrency.getText().toString();
-            currencyId = findCurrencyIdByName(currencyName);
-            if (currencyId == -1) {
-                Toast.makeText(getContext(), "اختر عملة صحيحة", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
-
-        boolean useDateRange = binding.switchDateRange.isChecked();
-        long start = useDateRange ? startDate.getTimeInMillis() : 0;
-        long end = useDateRange ? endDate.getTimeInMillis() : Long.MAX_VALUE;
 
         showProgressDialog(getString(R.string.ar_long_text_5));
 
@@ -531,126 +669,103 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
 
                 if (isSingleAccount && finalAccount != null) {
                     if (selectedReportType == 1) {
-                        if (finalSpecificCurrency)
-                            outputFile = generator.generateDetailedMovementAccountStatement(
-                                    finalAccount, finalCurrencyId, start, end, useDateRange);
-                        else
-                            outputFile = generator.generateDetailedMovementAccountStatementAllCurrencies(
-                                    finalAccount, finalCurrencyId, start, end, useDateRange);
+                        outputFile = finalSpecificCurrency
+                                ? generator.generateDetailedMovementAccountStatement(finalAccount, finalCurrencyId, start, end, useDateRange)
+                                : generator.generateDetailedMovementAccountStatementAllCurrencies(finalAccount, finalCurrencyId, start, end, useDateRange);
                         reportType = getString(R.string.radio_detailed_movement_all) + " " + finalAccount.getAccountName();
                     } else if (selectedReportType == 2) {
-                        if (finalSpecificCurrency)
-                            outputFile = generator.generateDetailedAccountStatement(
-                                    finalAccount, finalCurrencyId, start, end, useDateRange);
-                        else
-                            outputFile = generator.generateDetailedAccountStatementAllCurrencies(
-                                    finalAccount, finalCurrencyId, start, end, useDateRange);
+                        outputFile = finalSpecificCurrency
+                                ? generator.generateDetailedAccountStatement(finalAccount, finalCurrencyId, start, end, useDateRange)
+                                : generator.generateDetailedAccountStatementAllCurrencies(finalAccount, finalCurrencyId, start, end, useDateRange);
                         reportType = getString(R.string.balance_summary) + " " + finalAccount.getAccountName();
                     } else if (selectedReportType == 3) {
-                        if (finalSpecificCurrency)
-                            outputFile = generator.generateMonthlyAccountSummary(finalAccount, finalCurrencyId);
-                        else
-                            outputFile = generator.generateMonthlyAccountSummaryAllCurrency(finalAccount, finalCurrencyId);
+                        outputFile = finalSpecificCurrency
+                                ? generator.generateMonthlyAccountSummary(finalAccount, finalCurrencyId)
+                                : generator.generateMonthlyAccountSummaryAllCurrency(finalAccount, finalCurrencyId);
                         reportType = getString(R.string.monthly_account_moves) + " " + finalAccount.getAccountName();
                     }
                 } else if (isAccountType && finalAccountTypeId != null) {
                     if (selectedReportType == 1) {
                         if (separateAccounts) {
-                            if (finalSpecificCurrency)
-                                outputFile = generator.generateSeparateAccountsMovementReportForAccountType(
-                                        finalAccountTypeId, finalCurrencyId, start, end, useDateRange, true);
-                            else
-                                outputFile = generator.generateSeparateAccountsMovementReportForAccountType(
-                                        finalAccountTypeId, -1, start, end, useDateRange, false);
+                            outputFile = finalSpecificCurrency
+                                    ? generator.generateSeparateAccountsMovementReportForAccountType(finalAccountTypeId, finalCurrencyId, start, end, useDateRange, true)
+                                    : generator.generateSeparateAccountsMovementReportForAccountType(finalAccountTypeId, -1, start, end, useDateRange, false);
                             reportType = getString(R.string.radio_detailed_movement_all) + " - " + getString(R.string.separate_accounts);
                         } else {
-                            if (finalSpecificCurrency)
-                                outputFile = generator.generateConsolidatedMovementReport(
-                                        finalAccountTypeId, finalCurrencyId, start, end, useDateRange);
-                            else
-                                outputFile = generator.generateConsolidatedMovementReportAllCurrencies(
-                                        finalAccountTypeId, start, end, useDateRange);
+                            outputFile = finalSpecificCurrency
+                                    ? generator.generateConsolidatedMovementReport(finalAccountTypeId, finalCurrencyId, start, end, useDateRange)
+                                    : generator.generateConsolidatedMovementReportAllCurrencies(finalAccountTypeId, start, end, useDateRange);
                             reportType = getString(R.string.radio_detailed_movement_all);
                         }
                     } else if (selectedReportType == 2) {
-                        if (finalSpecificCurrency)
-                            outputFile = generator.generateConsolidatedBalancesReport(
-                                    finalAccountTypeId, finalCurrencyId, start, end, useDateRange);
-                        else
-                            outputFile = generator.generateConsolidatedBalancesReportAllCurrency(
-                                    finalAccountTypeId, start, end);
+                        outputFile = finalSpecificCurrency
+                                ? generator.generateConsolidatedBalancesReport(finalAccountTypeId, finalCurrencyId, start, end, useDateRange)
+                                : generator.generateConsolidatedBalancesReportAllCurrency(finalAccountTypeId, start, end);
                         reportType = getString(R.string.summary_title);
                     } else if (selectedReportType == 3) {
-                        if (finalSpecificCurrency)
-                            outputFile = generator.generateMonthlySummaryByAccountType(
-                                    finalAccountTypeId, finalCurrencyId);
-                        else
-                            outputFile = generator.generateMonthlySummaryByAccountTypeAllCurrency(
-                                    finalAccountTypeId);
+                        outputFile = finalSpecificCurrency
+                                ? generator.generateMonthlySummaryByAccountType(finalAccountTypeId, finalCurrencyId)
+                                : generator.generateMonthlySummaryByAccountTypeAllCurrency(finalAccountTypeId);
                         reportType = getString(R.string.report_title_monthly_summary);
                     }
                 } else if (isAllAccounts) {
                     if (selectedReportType == 1) {
-                        if (finalSpecificCurrency)
-                            outputFile = generator.generateConsolidatedMovementReportAllTypes(
-                                    finalCurrencyId, start, end, useDateRange);
-                        else
-                            outputFile = generator.generateConsolidatedMovementReportAllCurrenciesAllTypes(
-                                    start, end, useDateRange);
+                        outputFile = finalSpecificCurrency
+                                ? generator.generateConsolidatedMovementReportAllTypes(finalCurrencyId, start, end, useDateRange)
+                                : generator.generateConsolidatedMovementReportAllCurrenciesAllTypes(start, end, useDateRange);
                         reportType = getString(R.string.radio_detailed_movement_all);
                     } else if (selectedReportType == 2) {
-                        if (finalSpecificCurrency)
-                            outputFile = generator.generateConsolidatedBalancesReportAllTypes(
-                                    finalCurrencyId, start, end, useDateRange);
-                        else
-                            outputFile = generator.generateConsolidatedBalancesReportAllCurrencyAllTypes(
-                                    start, end, useDateRange);
+                        outputFile = finalSpecificCurrency
+                                ? generator.generateConsolidatedBalancesReportAllTypes(finalCurrencyId, start, end, useDateRange)
+                                : generator.generateConsolidatedBalancesReportAllCurrencyAllTypes(start, end, useDateRange);
                         reportType = getString(R.string.summary_title);
                     } else if (selectedReportType == 3) {
-                        if (finalSpecificCurrency)
-                            outputFile = generator.generateMonthlySummaryByAccountAllTypes(
-                                    null, finalCurrencyId);
-                        else
-                            outputFile = generator.generateMonthlySummaryByAccountAllCurrenciesAllTypes(
-                                    null, finalCurrencyId);
+                        outputFile = finalSpecificCurrency
+                                ? generator.generateMonthlySummaryByAccountAllTypes(null, finalCurrencyId)
+                                : generator.generateMonthlySummaryByAccountAllCurrenciesAllTypes(null, finalCurrencyId);
                         reportType = getString(R.string.report_title_monthly_summary);
                     }
                 }
 
-                if (!isAdded() || getActivity() == null) {
-                    if (progressDialog != null && progressDialog.isShowing()) hideProgressDialog();
-                    return;
-                }
-
-                final File finalOutput = outputFile;
-                requireActivity().runOnUiThread(() -> {
-                    hideProgressDialog();
-                    dismiss();
-
-                    if (finalOutput != null && finalOutput.exists()) {
-                        if (isForShare) {
-                            sharePdfFile(finalOutput);
-                        } else {
-                            viewPdf(finalOutput);
-                        }
-                    } else {
-                        DialogHelper.show(
-                                getContext(),
-                                getString(R.string.report_no_data_generated),
-                                DialogHelper.FeedbackType.ERROR,
-                                null
-                        );
-                    }
-                });
-
+                deliverReportResult(outputFile, isForShare);
             } catch (Exception e) {
-                requireActivity().runOnUiThread(() -> {
-                    hideProgressDialog();
-                    Toast.makeText(getContext(), "خطأ: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                });
+                handleReportException(e);
             }
         }).start();
+    }
+
+    private void deliverReportResult(File outputFile, boolean isForShare) {
+        if (!isAdded() || getActivity() == null) {
+            hideProgressDialog();
+            return;
+        }
+        requireActivity().runOnUiThread(() -> {
+            hideProgressDialog();
+            dismiss();
+            if (outputFile != null && outputFile.exists()) {
+                if (isForShare) {
+                    sharePdfFile(outputFile);
+                } else {
+                    viewPdf(outputFile);
+                }
+            } else {
+                DialogHelper.show(
+                        getContext(),
+                        getString(R.string.report_no_data_generated),
+                        DialogHelper.FeedbackType.ERROR,
+                        null
+                );
+            }
+        });
+    }
+
+    private void handleReportException(Exception e) {
+        Log.e("ReportsBottomSheet", "Report generation failed", e);
+        if (!isAdded() || getActivity() == null) return;
+        requireActivity().runOnUiThread(() -> {
+            hideProgressDialog();
+            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        });
     }
 
     private void sharePdfFile(File pdfFile) {
@@ -667,18 +782,16 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
             shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             shareIntent.putExtra(Intent.EXTRA_TEXT, reportType);
 
-            if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            if (!isBudgetTabSelected && phoneNumber != null && !phoneNumber.isEmpty()) {
                 shareIntent.putExtra("address", phoneNumber);
-                shareIntent.putExtra(Intent.EXTRA_PHONE_NUMBER, phoneNumber);
+                shareIntent.putExtra("android.intent.extra.PHONE_NUMBER", phoneNumber);
             }
 
             startActivity(Intent.createChooser(shareIntent, getString(R.string._1266)));
         } catch (Exception e) {
-            Toast.makeText(getContext(), "حدث خطأ أثناء المشاركة", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.error, Toast.LENGTH_SHORT).show();
         }
     }
-
-    private String reportType = "";
 
     private Account findAccountByName(String name) {
         if (accountsList == null || name == null) return null;
@@ -707,7 +820,13 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
     private void showDatePicker(boolean isStartDate) {
         Calendar calendar = isStartDate ? startDate : endDate;
         new DatePickerDialog(requireContext(), (view, year, month, day) -> {
-            calendar.set(year, month, day);
+            if (isStartDate) {
+                calendar.set(year, month, day, 0, 0, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+            } else {
+                calendar.set(year, month, day, 23, 59, 59);
+                calendar.set(Calendar.MILLISECOND, 999);
+            }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             if (isStartDate) binding.etStartDate.setText(sdf.format(calendar.getTime()));
             else binding.etEndDate.setText(sdf.format(calendar.getTime()));
@@ -716,11 +835,22 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
 
     private void loadDefaultDates() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-        binding.etEndDate.setText(sdf.format(new Date()));
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        binding.etStartDate.setText(sdf.format(cal.getTime()));
-        startDate.setTime(cal.getTime());
+        Calendar nowEnd = Calendar.getInstance();
+        nowEnd.set(Calendar.HOUR_OF_DAY, 23);
+        nowEnd.set(Calendar.MINUTE, 59);
+        nowEnd.set(Calendar.SECOND, 59);
+        nowEnd.set(Calendar.MILLISECOND, 999);
+        endDate.setTimeInMillis(nowEnd.getTimeInMillis());
+        binding.etEndDate.setText(sdf.format(endDate.getTime()));
+
+        Calendar monthStart = Calendar.getInstance();
+        monthStart.set(Calendar.DAY_OF_MONTH, 1);
+        monthStart.set(Calendar.HOUR_OF_DAY, 0);
+        monthStart.set(Calendar.MINUTE, 0);
+        monthStart.set(Calendar.SECOND, 0);
+        monthStart.set(Calendar.MILLISECOND, 0);
+        startDate.setTimeInMillis(monthStart.getTimeInMillis());
+        binding.etStartDate.setText(sdf.format(startDate.getTime()));
     }
 
     private void viewPdf(File pdfFile) {
@@ -738,7 +868,6 @@ public class ReportsBottomSheet extends BottomSheetDialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-
         if (getDialog() != null) {
             View bottomSheet = getDialog().findViewById(com.google.android.material.R.id.design_bottom_sheet);
             if (bottomSheet != null) {

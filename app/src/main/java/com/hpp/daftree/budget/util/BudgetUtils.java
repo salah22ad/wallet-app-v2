@@ -149,6 +149,20 @@ public final class BudgetUtils {
         }
     }
 
+    public static String getCategoryDisplayName(android.content.res.Resources res, String code, String customName) {
+        if (customName != null && !customName.trim().isEmpty()) {
+            return customName.trim();
+        }
+        int resId = getDefaultCategoryNameRes(code);
+        if (res != null && resId != 0) {
+            try {
+                return res.getString(resId);
+            } catch (Exception ignored) {
+            }
+        }
+        return code != null ? code : "";
+    }
+
     public static String getCategoryDisplayName(Context context, String code, String customName, boolean isDefault) {
         if (customName != null && !customName.trim().isEmpty()) {
             return customName.trim();

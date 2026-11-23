@@ -80,4 +80,34 @@
     <string name="budget_link_debt_title">Optional link: Also record this transaction in Monthly Budget</string>
     <string name="budget_linked_account_note">Linked to account %1$s</string>
     <string name="budget_linked_saved_toast">Also recorded in Monthly Budget</string>
+
+    <!-- Budget PDF Reports -->
+    <string name="budget_report_tab_accounts">Account Reports</string>
+    <string name="budget_report_tab_budget">Budget Reports</string>
+    <string name="budget_report_type_detailed">Detailed Entries</string>
+    <string name="budget_report_type_categories">Categories Analysis</string>
+    <string name="budget_report_type_monthly">Monthly Summary</string>
+    <string name="budget_report_title_detailed">Detailed Budget Statement</string>
+    <string name="budget_report_title_categories">Budget Category Analysis Report</string>
+    <string name="budget_report_title_monthly">Monthly Budget Summary Report</string>
+    <string name="budget_report_col_date">Date</string>
+    <string name="budget_report_col_category">Category</string>
+    <string name="budget_report_col_type">Type</string>
+    <string name="budget_report_col_note">Description</string>
+    <string name="budget_report_col_amount">Amount</string>
+    <string name="budget_report_col_count">Count</string>
+    <string name="budget_report_col_percent">Share %%</string>
+    <string name="budget_report_col_month">Month</string>
+    <string name="budget_report_col_income">Income</string>
+    <string name="budget_report_col_expense">Expenses</string>
+    <string name="budget_report_col_limit">Budget Limit</string>
+    <string name="budget_report_col_usage">Usage %%</string>
+    <string name="budget_report_col_net">Net</string>
+    <string name="budget_report_type_income">Income</string>
+    <string name="budget_report_type_expense">Expense</string>
+    <string name="budget_report_section_expenses">Expense Breakdown by Category</string>
+    <string name="budget_report_section_income">Income Breakdown by Category</string>
+    <string name="budget_report_net_surplus">Net Surplus</string>
+    <string name="budget_report_net_deficit">Net Deficit</string>
+    <string name="budget_report_scope_label">Personal Budget</string>
 </resources>

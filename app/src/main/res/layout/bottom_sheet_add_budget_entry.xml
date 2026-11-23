@@ -135,8 +135,7 @@
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:contentDescription="@null"
-                android:src="@drawable/ic_calendar"
-                app:tint="@color/budget_primary" />
+                android:src="@drawable/ic_modern_calendar" />
 
             <TextView
                 android:layout_width="0dp"

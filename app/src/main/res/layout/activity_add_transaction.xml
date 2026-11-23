@@ -45,9 +45,8 @@
                     android:layout_height="40dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentStart="true"
-                    app:tint="@color/black"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@android:drawable/ic_menu_revert"/>
+                    android:src="@drawable/ic_modern_back"/>
 
                 <TextView
                     android:id="@+id/tv_screen_title"
@@ -123,7 +122,8 @@
                     android:layout_weight="1.5"
                     android:hint="@string/amount_hint"
                     app:endIconMode="custom"
-                    app:endIconDrawable="@drawable/ic_calculator"
+                    app:endIconDrawable="@drawable/ic_modern_calculator"
+                    app:endIconTint="@null"
                     app:endIconContentDescription="@string/calculator">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -178,7 +178,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:hint="@string/date_hint"
-                    app:startIconDrawable="@drawable/ic_calendar_today">
+                    app:startIconDrawable="@drawable/ic_modern_calendar"
+                    app:startIconTint="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/dateEditText"
@@ -229,8 +230,7 @@
                     android:layout_width="50dp"
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_camera"
-                    app:tint="?attr/colorPrimary" />
+                    android:src="@drawable/ic_modern_camera" />
             </LinearLayout>
             <!-- خيار الربط الاختياري بالميزانية الشهرية -->
             <LinearLayout

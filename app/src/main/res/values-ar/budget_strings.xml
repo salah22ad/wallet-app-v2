@@ -80,4 +80,34 @@
     <string name="budget_link_debt_title">ربط اختياري: تسجيل هذه العملية أيضاً في الميزانية الشهرية</string>
     <string name="budget_linked_account_note">مرتبط بحساب %1$s</string>
     <string name="budget_linked_saved_toast">تم تسجيل العملية أيضاً في الميزانية الشهرية</string>
+
+    <!-- تقارير الميزانية PDF -->
+    <string name="budget_report_tab_accounts">تقارير الحسابات</string>
+    <string name="budget_report_tab_budget">تقارير الميزانية</string>
+    <string name="budget_report_type_detailed">كشف العمليات التفصيلي</string>
+    <string name="budget_report_type_categories">تحليل التصنيفات</string>
+    <string name="budget_report_type_monthly">الملخص الشهري</string>
+    <string name="budget_report_title_detailed">كشف عمليات الميزانية التفصيلي</string>
+    <string name="budget_report_title_categories">تقرير تحليل وتوزيع الميزانية حسب التصنيف</string>
+    <string name="budget_report_title_monthly">تقرير الملخص والمقارنة الشهرية للميزانية</string>
+    <string name="budget_report_col_date">التاريخ</string>
+    <string name="budget_report_col_category">التصنيف</string>
+    <string name="budget_report_col_type">النوع</string>
+    <string name="budget_report_col_note">البيان</string>
+    <string name="budget_report_col_amount">المبلغ</string>
+    <string name="budget_report_col_count">العدد</string>
+    <string name="budget_report_col_percent">النسبة %%</string>
+    <string name="budget_report_col_month">الشهر</string>
+    <string name="budget_report_col_income">الدخل</string>
+    <string name="budget_report_col_expense">المصروفات</string>
+    <string name="budget_report_col_limit">حد الميزانية</string>
+    <string name="budget_report_col_usage">الاستهلاك %%</string>
+    <string name="budget_report_col_net">الصافي</string>
+    <string name="budget_report_type_income">دخل</string>
+    <string name="budget_report_type_expense">مصروف</string>
+    <string name="budget_report_section_expenses">توزيع المصروفات حسب التصنيف</string>
+    <string name="budget_report_section_income">توزيع الدخل حسب التصنيف</string>
+    <string name="budget_report_net_surplus">صافي فائض</string>
+    <string name="budget_report_net_deficit">صافي عجز</string>
+    <string name="budget_report_scope_label">الميزانية الشخصية</string>
 </resources>
