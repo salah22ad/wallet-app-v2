@@ -79,4 +79,5 @@
     <string name="budget_tour_limit_desc">Tap here to enter your monthly spending target so you can track usage percentage and remaining budget automatically.</string>
     <string name="budget_link_debt_title">Optional link: Also record this transaction in Monthly Budget</string>
     <string name="budget_linked_account_note">Linked to account %1$s</string>
+    <string name="budget_linked_saved_toast">Also recorded in Monthly Budget</string>
 </resources>

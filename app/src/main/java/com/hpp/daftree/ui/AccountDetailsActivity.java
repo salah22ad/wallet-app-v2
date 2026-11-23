@@ -1083,7 +1083,6 @@ public class AccountDetailsActivity extends BaseActivity implements
             updateDateInDialogView(activeDialogBinding, dialogSelectedDate);
             String selectedCurrency = binding.currencyTextView.getText().toString();
             activeDialogBinding.currencySpinnerAutocomplete.setText(selectedCurrency, false);
-            showKeyboard(activeDialogBinding.amountEditText);
         }
 
         // إعداد واجهة المستخدم والـ TextWatcher
@@ -1175,18 +1174,12 @@ public class AccountDetailsActivity extends BaseActivity implements
         activeDialogBinding.creditButton.setOnClickListener(saveClickListener);
         activeDialogBinding.debitButton.setOnClickListener(saveClickListener);
 
-        setupDialogKeyboardInteraction(dialog, activeDialogBinding.getRoot());
-        activeDialogBinding.amountEditText.requestFocus();
         dialog.show();
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-            dialog.getWindow().setSoftInputMode(
-                    WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        AppFontHelper.applyFontToDialog(this, dialog);
+        if (!isEditMode) {
+            activeDialogBinding.amountEditText.requestFocus();
+            showKeyboard(activeDialogBinding.amountEditText);
         }
-
-        // طلب التركيز لحقل المبلغ وتأخير إظهار لوحة المفاتيح
-        activeDialogBinding.amountEditText.requestFocus();
-        showKeyboard(activeDialogBinding.amountEditText);
     }
 
     private void checkCameraPermissionAndOpen() {
@@ -1551,7 +1544,8 @@ public class AccountDetailsActivity extends BaseActivity implements
                 .sendTransactionNotification(newTransaction, newCurrencyName, this);
 
         viewModel.addTransaction(newTransaction);
-        if (activeDialogBinding != null && activeDialogBinding.switchLinkToBudget.isChecked()) {
+        boolean linkToBudget = activeDialogBinding != null && activeDialogBinding.switchLinkToBudget.isChecked();
+        if (linkToBudget) {
             String linkedAccName = currentAccount != null && currentAccount.getAccountName() != null
                     ? currentAccount.getAccountName() : accountName;
             BudgetRepository.recordLinkedDebtTransaction(

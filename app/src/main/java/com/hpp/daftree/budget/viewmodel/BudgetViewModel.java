@@ -54,6 +54,10 @@ public class BudgetViewModel extends AndroidViewModel {
         reloadSources();
     }
 
+    public void forceReload() {
+        reloadSources();
+    }
+
     private void reloadSources() {
         String ym = selectedYearMonth.getValue();
         Integer cid = selectedCurrencyId.getValue();

@@ -768,21 +768,22 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
 
         Integer accountId = accountNameToIdMap.get(accountName);
         double amount = Double.parseDouble(amountStr);
+        final boolean shouldLinkToBudget = binding.switchLinkToBudget.isChecked();
 
         AppDatabase.databaseWriteExecutor.execute(() -> {
             long dateWithoutTime = getStartOfDay(selectedDate.getTime()).getTime();
             int duplicateCount = repository.findDuplicateTransaction(accountId, dateWithoutTime, amount, type, currencyId);
             runOnUiThread(() -> {
                 if (duplicateCount > 0) {
-                    showDuplicateWarningDialog(() -> saveTransaction(type, accountName, amount, details, currencyId));
+                    showDuplicateWarningDialog(() -> saveTransaction(type, accountName, amount, details, currencyId, shouldLinkToBudget));
                 } else {
-                    saveTransaction(type, accountName, amount, details, currencyId);
+                    saveTransaction(type, accountName, amount, details, currencyId, shouldLinkToBudget);
                 }
             });
         });
     }
 
-    private void saveTransaction(int type, String accountName, double amount, String details, int currencyId) {
+    private void saveTransaction(int type, String accountName, double amount, String details, int currencyId, boolean shouldLinkToBudget) {
         Integer accountId = accountNameToIdMap.get(accountName);
         if (accountId == null) return;
 // 1. الحصول على الوقت الفعلي الحالي لحظة الضغط على حفظ (للمزامنة وتاريخ الإضافة الفعلي)
@@ -810,7 +811,7 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
 //        newTransaction.setTimestamp(selectedDate.getTime());
         newTransaction.setTimestamp(transactionDate);
         viewModel.addTransaction(newTransaction);
-        if (binding.switchLinkToBudget.isChecked()) {
+        if (shouldLinkToBudget) {
             BudgetRepository.recordLinkedDebtTransaction(
                     this, accountName, amount, type, currencyId, transactionDate.getTime());
         }

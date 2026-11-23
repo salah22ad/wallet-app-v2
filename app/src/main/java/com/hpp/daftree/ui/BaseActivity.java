@@ -164,6 +164,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        AppFontHelper.applyThemeFontOverlay(this);
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         languageManager = LanguageManager.getInstance(this);

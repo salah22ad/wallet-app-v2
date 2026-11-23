@@ -137,6 +137,7 @@ import com.hpp.daftree.dialogs.ReferralRewardDialog;
 import com.hpp.daftree.dialogs.ReportsBottomSheet;
 import com.hpp.daftree.dialogs.UpdateAppDialog;
 import com.hpp.daftree.dialogs.UpdateDialog;
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.helpers.LanguageManager;
 import com.hpp.daftree.database.AccountWithBalance;
 import com.hpp.daftree.models.AppAuth;
@@ -1975,7 +1976,7 @@ public class MainActivity extends BaseActivity implements
         } else {
             manageDevice.setVisible(true);
         }
-
+        AppFontHelper.styleNavigationView(this, navigationView);
     }
 
 
@@ -2179,6 +2180,7 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
         });
 
         // --- نهاية التعديلات ---
+        AppFontHelper.styleNavigationView(this, navigationView);
 
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
@@ -2669,6 +2671,7 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
         });
 
         dialog.show();
+        AppFontHelper.applyFontToDialog(this, dialog);
     }
 
     private void updateLockSwitches(SwitchCompat passwordSwitch, SwitchCompat biometricSwitch) {
@@ -3395,6 +3398,7 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
         });
 
         dialog.show();
+        AppFontHelper.applyFontToDialog(this, dialog);
 
         // ضبط عرض الديالوج
         if (dialog.getWindow() != null) {
@@ -5826,6 +5830,9 @@ private void handlePurchaseApp() {
             }
             if (!availableCurrencies.isEmpty() && currentCurrencyIndex < availableCurrencies.size()) {
                 syncSelectedCurrencyToBudget(availableCurrencies.get(currentCurrencyIndex));
+            }
+            if (budgetViewModel != null) {
+                budgetViewModel.forceReload();
             }
         } else {
             binding.budgetFragmentContainer.setVisibility(View.GONE);
