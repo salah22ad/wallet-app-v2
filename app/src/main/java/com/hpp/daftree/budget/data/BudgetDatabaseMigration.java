@@ -39,7 +39,10 @@ public final class BudgetDatabaseMigration {
                 "`isDefault` INTEGER NOT NULL, " +
                 "`sortOrder` INTEGER NOT NULL, " +
                 "`isDeleted` INTEGER NOT NULL, " +
+                "`deleteDate` INTEGER NOT NULL, " +
+                "`deletedBy` TEXT, " +
                 "`lastModified` INTEGER NOT NULL, " +
+                "`lastSyncDate` INTEGER NOT NULL, " +
                 "`syncStatus` TEXT)");
 
         db.execSQL("CREATE TABLE IF NOT EXISTS `budget_entries` (" +
@@ -47,6 +50,7 @@ public final class BudgetDatabaseMigration {
                 "`firestoreId` TEXT, " +
                 "`ownerUID` TEXT, " +
                 "`categoryId` INTEGER NOT NULL, " +
+                "`categoryFirestoreId` TEXT, " +
                 "`currencyId` INTEGER NOT NULL, " +
                 "`currencyFirestoreId` TEXT, " +
                 "`type` TEXT, " +
@@ -76,7 +80,9 @@ public final class BudgetDatabaseMigration {
                 "`syncStatus` TEXT, " +
                 "`lastModified` INTEGER NOT NULL, " +
                 "`lastSyncDate` INTEGER NOT NULL, " +
-                "`isDeleted` INTEGER NOT NULL)");
+                "`isDeleted` INTEGER NOT NULL, " +
+                "`deleteDate` INTEGER NOT NULL, " +
+                "`deletedBy` TEXT)");
 
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_monthly_budget_limits_ym_cur` " +
                 "ON `monthly_budget_limits` (`yearMonth`, `currencyId`)");
@@ -99,7 +105,7 @@ public final class BudgetDatabaseMigration {
         }
 
         long now = System.currentTimeMillis();
-        // ظپط¦ط§طھ ط§ظ„ظ…طµط±ظˆظپط§طھ ط§ظ„ط§ظپطھط±ط§ط¶ظٹط© (طھظڈطھط±ط¬ظ… ط¯ظٹظ†ط§ظ…ظٹظƒظٹط§ظ‹ ظ…ظ† strings.xml ط¹ط¨ط± code)
+        // فئات المصروفات الافتراضية
         insertDefaultCategory(db, "bills", "EXPENSE", "bills", "#F59E0B", 1, now);
         insertDefaultCategory(db, "housing", "EXPENSE", "housing", "#22C55E", 2, now);
         insertDefaultCategory(db, "food", "EXPENSE", "food", "#F97316", 3, now);
@@ -107,7 +113,7 @@ public final class BudgetDatabaseMigration {
         insertDefaultCategory(db, "health", "EXPENSE", "health", "#A855F7", 5, now);
         insertDefaultCategory(db, "other", "EXPENSE", "other", "#06B6D4", 6, now);
 
-        // ظپط¦ط§طھ ط§ظ„ط¯ط®ظ„ ط§ظ„ط§ظپطھط±ط§ط¶ظٹط©
+        // فئات الدخل الافتراضية
         insertDefaultCategory(db, "salary", "INCOME", "salary", "#10B981", 1, now);
         insertDefaultCategory(db, "freelance", "INCOME", "freelance", "#0EA5E9", 2, now);
         insertDefaultCategory(db, "investments", "INCOME", "investments", "#6366F1", 3, now);
@@ -119,13 +125,13 @@ public final class BudgetDatabaseMigration {
                                               String colorHex, int sortOrder, long now) {
         String firestoreId = UUIDGenerator.generateSequentialUUID();
         String sql = "INSERT INTO budget_categories " +
-                "(firestoreId, ownerUID, code, name, type, iconKey, colorHex, isDefault, sortOrder, isDeleted, lastModified, syncStatus) VALUES (" +
+                "(firestoreId, ownerUID, code, name, type, iconKey, colorHex, isDefault, sortOrder, isDeleted, deleteDate, deletedBy, lastModified, lastSyncDate, syncStatus) VALUES (" +
                 DatabaseUtils.sqlEscapeString(firestoreId) + ", '', " +
                 DatabaseUtils.sqlEscapeString(code) + ", '', " +
                 DatabaseUtils.sqlEscapeString(type) + ", " +
                 DatabaseUtils.sqlEscapeString(iconKey) + ", " +
                 DatabaseUtils.sqlEscapeString(colorHex) + ", " +
-                "1, " + sortOrder + ", 0, " + now + ", 'SYNCED')";
+                "1, " + sortOrder + ", 0, 0, '', " + now + ", 0, 'SYNCED')";
         db.execSQL(sql);
     }
 }

@@ -37,4 +37,12 @@ public interface BudgetCategoryDao {
 
     @Query("SELECT id FROM budget_categories WHERE code = :code AND isDeleted = 0 LIMIT 1")
     Integer getCategoryIdByCodeSync(String code);
+    @Query("SELECT firestoreId FROM budget_categories WHERE id = :categoryId LIMIT 1")
+    String getCategoryFirestoreIdSync(int categoryId);
+
+    @Query("SELECT * FROM budget_categories WHERE firestoreId = :firestoreId LIMIT 1")
+    BudgetCategory getByFirestoreIdSync(String firestoreId);
+
+    @Query("SELECT * FROM budget_categories WHERE syncStatus != 'SYNCED'")
+    List<BudgetCategory> getUnsyncedCategoriesSync();
 }

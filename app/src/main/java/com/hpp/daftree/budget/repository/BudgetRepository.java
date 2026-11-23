@@ -121,6 +121,8 @@ public class BudgetRepository {
             entry.firestoreId = UUIDGenerator.generateSequentialUUID();
             entry.ownerUID = getCurrentUid();
             entry.categoryId = categoryId;
+            String catFsId = categoryDao.getCategoryFirestoreIdSync(categoryId);
+            entry.categoryFirestoreId = catFsId != null ? catFsId : "";
             entry.currencyId = currencyId;
             entry.currencyFirestoreId = currencyFirestoreId != null ? currencyFirestoreId : "";
             entry.type = type;
@@ -143,6 +145,8 @@ public class BudgetRepository {
             BudgetEntry existing = entryDao.getByIdSync(entryId);
             if (existing != null) {
                 existing.categoryId = categoryId;
+                String catFsId = categoryDao.getCategoryFirestoreIdSync(categoryId);
+                existing.categoryFirestoreId = catFsId != null ? catFsId : "";
                 existing.amount = amount;
                 existing.note = note != null ? note.trim() : "";
                 existing.entryDate = entryDate;
@@ -284,6 +288,8 @@ public class BudgetRepository {
                 entry.firestoreId = UUIDGenerator.generateSequentialUUID();
                 entry.ownerUID = uid;
                 entry.categoryId = catId;
+                String linkedCatFsId = catDao.getCategoryFirestoreIdSync(catId);
+                entry.categoryFirestoreId = linkedCatFsId != null ? linkedCatFsId : "";
                 entry.currencyId = resolvedCurrencyId;
                 entry.currencyFirestoreId = currencyFsId;
                 entry.type = budgetType;
