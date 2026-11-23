@@ -55,10 +55,59 @@ jobs:
       - name: Publish Failure Summary
         if: failure()
         run: |
-          echo "## ❌ أخطاء بناء Debug" >> $GITHUB_STEP_SUMMARY
-          echo '```text' >> $GITHUB_STEP_SUMMARY
-          grep -E "error:|FAILURE:|What went wrong:|Execution failed|cannot find symbol|Caused by:" -A 2 -B 1 build_logs/debug_build.log | tail -n 120 >> $GITHUB_STEP_SUMMARY \vert{}\vert{} tail -n 60 build_logs/debug_build.log >>$GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          python3 - << 'PYEOF'
+          import os, re
+
+          log_path = "build_logs/debug_build.log"
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          out = ["## ❌ ملخص أخطاء بناء Debug\n"]
+
+          if os.path.exists(log_path):
+              lines = open(log_path, encoding="utf-8", errors="ignore").read().splitlines()
+
+              failed = [l.strip() for l in lines if l.startswith("> Task ") and "FAILED" in l]
+              if failed:
+                  out.append("### المهمة الفاشلة\n```text\n" + "\n".join(dict.fromkeys(failed)) + "\n```\n")
+
+              what_wrong = []
+              capture = False
+              for l in lines:
+                  if l.startswith("* What went wrong:"):
+                      capture = True
+                      what_wrong.append(l)
+                      continue
+                  if capture:
+                      if l.startswith("* Try:") or l.startswith("* Exception is:") or l.startswith("BUILD FAILED"):
+                          capture = False
+                          continue
+                      what_wrong.append(l)
+              if what_wrong:
+                  out.append("### سبب الفشل المباشر\n```text\n" + "\n".join(what_wrong[:40]) + "\n```\n")
+
+              err_pat = re.compile(r"(\berror:|ERROR:|cannot find symbol|incompatible types|AAPT:|resource .* not found|failed linking|Duplicate|Caused by:)")
+              errs = []
+              for i, l in enumerate(lines):
+                  s = l.strip()
+                  if not s or s.startswith("at ") or s.startswith("... "):
+                      continue
+                  if err_pat.search(s):
+                      errs.append(l)
+                      for j in range(1, 4):
+                          if i + j < len(lines):
+                              nxt = lines[i + j]
+                              if nxt.strip() and not nxt.strip().startswith("at ") and not nxt.strip().startswith("... "):
+                                  errs.append(nxt)
+                              else:
+                                  break
+              if errs:
+                  out.append("### تفاصيل أخطاء الكود والموارد\n```text\n" + "\n".join(errs[:100]) + "\n```\n")
+
+          text = "\n".join(out)
+          if summary_path:
+              with open(summary_path, "a", encoding="utf-8") as sf:
+                  sf.write(text)
+          print(text)
+          PYEOF
 
       - name: Upload Debug APK
         if: success()
