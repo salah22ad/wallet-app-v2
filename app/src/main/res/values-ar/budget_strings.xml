@@ -52,14 +52,14 @@
     <string name="budget_saved_success">تم الحفظ وتحديث الميزانية بنجاح</string>
     <string name="budget_deleted_success">تم حذف العملية</string>
     <string name="budget_limit_updated">تم تحديث حد الميزانية الشهري</string>
-    <string name="budget_quick_add_title">إضافة سريعة</string>
+    <string name="budget_quick_add_title">إضافة عملية جديدة</string>
     <string name="budget_quick_add_subtitle">اختر نوع العملية التي تريد تسجيلها</string>
     <string name="budget_quick_expense_sub">تسجيل مصروف يومي أو فاتورة</string>
     <string name="budget_quick_income_sub">تسجيل راتب أو إيراد جديد</string>
-    <string name="budget_quick_debt_tx">إضافة عملية دين / سداد</string>
-    <string name="budget_quick_debt_tx_sub">تسجيل مبلغ لك أو عليك لحساب</string>
+    <string name="budget_quick_debt_tx">إضافة عملية دين</string>
+    <string name="budget_quick_debt_tx_sub">له / عليه في الدفتر</string>
     <string name="budget_quick_account">إضافة حساب جديد</string>
-    <string name="budget_quick_account_sub">إنشاء حساب عميل أو مورد جديد</string>
+    <string name="budget_quick_account_sub">عميل أو مورد جديد</string>
     <string name="budget_select_currency">اختر العملة</string>
     <!-- التصنيفات الافتراضية -->
     <string name="budget_cat_bills">فواتير</string>
@@ -72,4 +72,7 @@
     <string name="budget_cat_network">مبيعات الشبكة</string>
     <string name="budget_cat_apps">تطبيقات وبرمجة</string>
     <string name="budget_cat_income_other">دخل آخر</string>
+    <string name="budget_quick_monthly_sub">للميزانية الشهرية</string>
+    <string name="budget_edit_limit_hint">مثال: 50000</string>
+    <string name="budget_clear_limit">إزالة الحد</string>
 </resources>

@@ -60,4 +60,10 @@
     <color name="budget_cat_network">#0EA5E9</color>
     <color name="budget_cat_apps">#6366F1</color>
     <color name="budget_cat_income_other">#EAB308</color>
+
+    <!-- دوائر نافذة الزر العائم السريعة (الوضع الفاتح) -->
+    <color name="budget_quick_expense_circle">#FDE2E2</color>
+    <color name="budget_quick_income_circle">#DCFCE7</color>
+    <color name="budget_quick_debt_circle">#E2EBF5</color>
+    <color name="budget_quick_account_circle">#E0F2F5</color>
 </resources>

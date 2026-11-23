@@ -48,4 +48,10 @@
     <color name="budget_badge_active_bg">#33FFFFFF</color>
     <color name="budget_badge_active_text">#FFFFFF</color>
     <color name="budget_bar_highlight">#2614B8A6</color>
+
+    <!-- دوائر نافذة الزر العائم السريعة (الوضع الداكن) -->
+    <color name="budget_quick_expense_circle">#421C1E</color>
+    <color name="budget_quick_income_circle">#143A24</color>
+    <color name="budget_quick_debt_circle">#1F3047</color>
+    <color name="budget_quick_account_circle">#16363D</color>
 </resources>

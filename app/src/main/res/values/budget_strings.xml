@@ -52,14 +52,14 @@
     <string name="budget_saved_success">Saved and budget updated</string>
     <string name="budget_deleted_success">Entry deleted</string>
     <string name="budget_limit_updated">Budget limit updated</string>
-    <string name="budget_quick_add_title">Quick Add</string>
+    <string name="budget_quick_add_title">Add New Entry</string>
     <string name="budget_quick_add_subtitle">Choose the operation you want to record</string>
     <string name="budget_quick_expense_sub">Record daily spending</string>
     <string name="budget_quick_income_sub">Record salary or revenue</string>
-    <string name="budget_quick_debt_tx">Add Debt / Payment</string>
-    <string name="budget_quick_debt_tx_sub">Record debit or credit entry</string>
+    <string name="budget_quick_debt_tx">Add Debt Entry</string>
+    <string name="budget_quick_debt_tx_sub">Debit / Credit in ledger</string>
     <string name="budget_quick_account">Add New Account</string>
-    <string name="budget_quick_account_sub">Create customer or supplier account</string>
+    <string name="budget_quick_account_sub">New customer or supplier</string>
     <string name="budget_select_currency">Select Currency</string>
     <!-- التصنيفات الافتراضية -->
     <string name="budget_cat_bills">Bills</string>
@@ -72,4 +72,7 @@
     <string name="budget_cat_network">Network Sales</string>
     <string name="budget_cat_apps">Apps &amp; Coding</string>
     <string name="budget_cat_income_other">Other Income</string>
+    <string name="budget_quick_monthly_sub">For monthly budget</string>
+    <string name="budget_edit_limit_hint">e.g. 50000</string>
+    <string name="budget_clear_limit">Remove Limit</string>
 </resources>
