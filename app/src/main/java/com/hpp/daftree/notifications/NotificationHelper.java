@@ -41,7 +41,7 @@ import java.util.concurrent.Executors;
 
 public class NotificationHelper {
 
-    private static final String CHANNEL_MAIN = "daftree_main";
+    public static final String CHANNEL_MAIN = "daftree_main";
     private static final String GROUP_DAFTREE = "com.hpp.daftree.NOTIFICATIONS";
     public static final String ACTION_REMIND_LATER = "com.hpp.daftree.ACTION_REMIND_LATER";
     private static final int SUMMARY_ID = 9999;
@@ -66,7 +66,7 @@ public class NotificationHelper {
     }
     private void createChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification_sound);
+            Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/raw/notification_sound");
 
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -79,7 +79,12 @@ public class NotificationHelper {
                     context.getString(R.string.channel_general_name), NotificationManager.IMPORTANCE_HIGH);
             mainChannel.setDescription(context.getString(R.string.channel_general_desc));
             mainChannel.setSound(soundUri, audioAttributes);
+            mainChannel.setShowBadge(true);
+            mainChannel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
             mainChannel.enableVibration(true);
+            mainChannel.setVibrationPattern(new long[]{0, 500, 250, 500});
+            mainChannel.enableLights(true);
+            mainChannel.setLightColor(0xFF00FF00);
 
            if (manager != null) {
                 manager.createNotificationChannel(mainChannel);
@@ -92,7 +97,7 @@ public class NotificationHelper {
     }
     private void createChannels2() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification_sound);
+            Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/raw/notification_sound");
 
             AudioAttributes audioAttributes = new AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -395,7 +400,7 @@ public class NotificationHelper {
                 if (manager == null) return;
 
                 int notificationId = (int) (System.currentTimeMillis() & 0x7fffffff);
-                Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.notification_sound);
+                Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/raw/notification_sound");
                 Bitmap largeIcon = getBitmapFromDrawable(context, R.mipmap.ic_launcher);
                 int layoutResId = (modelType == 2) ? R.layout.layout_notif_model2 : R.layout.layout_notif_model1;
 

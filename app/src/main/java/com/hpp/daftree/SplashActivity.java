@@ -631,43 +631,88 @@ if(!isNetworkAvailable()){
         Log.d(TAG, getString(R.string.detecting_local_currency));
         updateProgressDialog(getString(R.string.detecting_local_currency));
 
-        fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
-            if (location == null) {
+        // 1) فحص توفر خدمات جوجل أولاً لتجنب تعليق التطبيق على الأجهزة بدون GMS
+        int gmsStatus = com.google.android.gms.common.GoogleApiAvailability
+                .getInstance().isGooglePlayServicesAvailable(this);
+        if (gmsStatus != com.google.android.gms.common.ConnectionResult.SUCCESS || fusedLocationClient == null) {
+            Log.w(TAG, "GMS unavailable (code=" + gmsStatus + "), falling back to default currency.");
+            addDefaultCurrencyAndProceed();
+            return;
+        }
+
+        final AtomicBoolean handled = new AtomicBoolean(false);
+        final Handler timeoutHandler = new Handler(Looper.getMainLooper());
+        final Runnable fallbackOnce = () -> {
+            if (handled.compareAndSet(false, true) && !isFinishing() && !isDestroyed()) {
                 addDefaultCurrencyAndProceed();
-                return;
             }
+        };
 
-            double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
-            Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        // 2) مهلة أمان 4 ثوانٍ في حال عدم استجابة مزود الموقع
+        timeoutHandler.postDelayed(() -> {
+            Log.w(TAG, "Location lookup timed out, falling back to default currency.");
+            fallbackOnce.run();
+        }, 4000);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                geocoder.getFromLocation(latitude, longitude, 1, new Geocoder.GeocodeListener() {
-                    // تم حذف حرف الـ d ليصبح المسمى كما طلبه الخطأ لديك
-                    @Override
-                    public void onGeocode(@NonNull List<Address> addresses) {
-                        runOnUiThread(() -> handleGeocodeResult(addresses));
-                    }
+        try {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, location -> {
+                        timeoutHandler.removeCallbacksAndMessages(null);
+                        if (!handled.compareAndSet(false, true)) return;
 
-                    @Override
-                    public void onError(@Nullable String errorMessage) {
-                        Log.e("LocalCurrency", "Geocoder Error: " + errorMessage);
-                        runOnUiThread(() -> addDefaultCurrencyAndProceed());
-                    }
-                });
+                        if (location == null || !Geocoder.isPresent()) {
+                            addDefaultCurrencyAndProceed();
+                            return;
+                        }
 
-            } else {
-                new Thread(() -> {
-                    try {
-                        List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-                        runOnUiThread(() -> handleGeocodeResult(addresses));
-                    } catch (Exception e) {
-                        Log.e("LocalCurrency", "Geocoder failed", e);
-                        runOnUiThread(() -> addDefaultCurrencyAndProceed());
-                    }
-                }).start();
-            }
-        });
+                        double latitude = location.getLatitude();
+                        double longitude = location.getLongitude();
+                        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            try {
+                                geocoder.getFromLocation(latitude, longitude, 1, new Geocoder.GeocodeListener() {
+                                    @Override
+                                    public void onGeocode(@NonNull List<Address> addresses) {
+                                        runOnUiThread(() -> handleGeocodeResult(addresses));
+                                    }
+
+                                    @Override
+                                    public void onError(@Nullable String errorMessage) {
+                                        Log.e("LocalCurrency", "Geocoder Error: " + errorMessage);
+                                        runOnUiThread(() -> addDefaultCurrencyAndProceed());
+                                    }
+                                });
+                            } catch (Exception e) {
+                                Log.e("LocalCurrency", "Geocoder Tiramisu exception", e);
+                                addDefaultCurrencyAndProceed();
+                            }
+                        } else {
+                            new Thread(() -> {
+                                try {
+                                    List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                                    runOnUiThread(() -> handleGeocodeResult(addresses));
+                                } catch (Exception e) {
+                                    Log.e("LocalCurrency", "Geocoder failed", e);
+                                    runOnUiThread(() -> addDefaultCurrencyAndProceed());
+                                }
+                            }).start();
+                        }
+                    })
+                    .addOnFailureListener(this, e -> {
+                        timeoutHandler.removeCallbacksAndMessages(null);
+                        Log.e(TAG, "fusedLocationClient failed, falling back to default currency.", e);
+                        fallbackOnce.run();
+                    })
+                    .addOnCanceledListener(this, () -> {
+                        timeoutHandler.removeCallbacksAndMessages(null);
+                        fallbackOnce.run();
+                    });
+        } catch (Exception e) {
+            timeoutHandler.removeCallbacksAndMessages(null);
+            Log.e(TAG, "Unexpected error calling fusedLocationClient", e);
+            fallbackOnce.run();
+        }
     }
 
     /**

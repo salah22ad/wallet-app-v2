@@ -16,7 +16,7 @@ import com.hpp.daftree.R;
 import com.hpp.daftree.MainActivity;
 
 public class NotificationService  {
-    private static final String CHANNEL_ID = "daftree_main";
+    private static final String CHANNEL_ID = NotificationHelper.CHANNEL_MAIN;
     private static final int NOTIFICATION_ID = 1001;
 
     private final Context context;
@@ -25,33 +25,8 @@ public class NotificationService  {
     public NotificationService(Context context) {
         this.context = context;
         this.notificationManager = NotificationManagerCompat.from(context);
-        createNotificationChannel();
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = context.getString(R.string.main_noti_app); ////"إشعارات التطبيق الرئيسية";
-            String description = context.getString(R.string.all_noti_app); //"جميع إشعارات التطبيق";
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-
-            // تفعيل جميع الخيارات المطلوبة
-            channel.setShowBadge(true);
-            channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-            channel.enableVibration(true);
-            channel.enableLights(true);
-            channel.setLightColor(0xFF00FF00);
-
-            long[] vibrationPattern = {0, 500, 250, 500};
-            channel.setVibrationPattern(vibrationPattern);
-
-            channel.setSound(android.provider.Settings.System.DEFAULT_NOTIFICATION_URI,
-                    channel.getAudioAttributes());
-
-            NotificationManager manager = context.getSystemService(NotificationManager.class);
-            manager.createNotificationChannel(channel);
-        }
+        // توحيد إنشاء القناة عبر NotificationHelper كمصدر وحيد لمنع تضارب الصوت والإعدادات
+        NotificationHelper.get(context);
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
