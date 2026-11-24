@@ -544,7 +544,8 @@ public class BudgetContainerFragment extends Fragment {
 
         PieData pieData = new PieData(dataSet);
         binding.pieChartExpenses.setData(pieData);
-        binding.pieChartExpenses.setCenterText(buildDonutCenterText(totalExpense, cur));
+        binding.pieChartExpenses.setCenterTextRadiusPercent(88f);
+        binding.pieChartExpenses.setCenterText(formatAdaptivePieCenterText(buildDonutCenterText(totalExpense, cur)));
         binding.pieChartExpenses.highlightValues(null);
         binding.pieChartExpenses.animateY(450);
         binding.pieChartExpenses.invalidate();
@@ -762,5 +763,59 @@ public class BudgetContainerFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private CharSequence formatAdaptivePieCenterText(CharSequence raw) {
+        if (raw == null) return "";
+        String text = raw.toString().trim();
+        if (text.isEmpty()) return "";
+
+        String[] lines = text.split("\\r?\\n");
+        float density = getResources().getDisplayMetrics().density;
+
+        // أحجام ثابتة بوحدة dp تتجاهل fontScale للنظام فلا تخرج أبداً عن حدود الدائرة
+        int labelPx = Math.round(13f * density);
+        int currencyPx = Math.round(12f * density);
+
+        StringBuilder rebuilt = new StringBuilder();
+        for (int i = 0; i < lines.length; i++) {
+            if (i > 0) rebuilt.append("\n");
+            rebuilt.append(lines[i].trim());
+        }
+
+        android.text.SpannableString span = new android.text.SpannableString(rebuilt.toString());
+        int primaryColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.budget_text_primary);
+        int secondaryColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.budget_text_secondary);
+        int accentColor = androidx.core.content.ContextCompat.getColor(requireContext(), R.color.budget_primary);
+
+        int offset = 0;
+        for (int i = 0; i < lines.length; i++) {
+            String line = lines[i].trim();
+            int start = offset;
+            int end = start + line.length();
+            if (end > start) {
+                if (i == 0 && lines.length >= 2) {
+                    span.setSpan(new android.text.style.AbsoluteSizeSpan(labelPx, false), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    span.setSpan(new android.text.style.ForegroundColorSpan(secondaryColor), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                } else if (i == 1 || lines.length == 1) {
+                    float amountDp;
+                    int len = line.length();
+                    if (len <= 6) amountDp = 22f;
+                    else if (len <= 9) amountDp = 18f;
+                    else if (len <= 12) amountDp = 15f;
+                    else amountDp = 12.5f;
+                    int amountPx = Math.round(amountDp * density);
+                    span.setSpan(new android.text.style.AbsoluteSizeSpan(amountPx, false), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    span.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    span.setSpan(new android.text.style.ForegroundColorSpan(primaryColor), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                } else {
+                    span.setSpan(new android.text.style.AbsoluteSizeSpan(currencyPx, false), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    span.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    span.setSpan(new android.text.style.ForegroundColorSpan(accentColor), start, end, android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            }
+            offset = end + 1;
+        }
+        return span;
     }
 }
