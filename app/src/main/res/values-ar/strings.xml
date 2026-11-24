@@ -1860,4 +1860,35 @@
     <string name="forgot_password_email_greeting">مرحباً،</string>
     <string name="forgot_password_email_intro">بناءً على طلبك من شاشة القفل، كلمة مرور قفل التطبيق الخاصة بك هي:</string>
     <string name="forgot_password_email_security_note">للحفاظ على خصوصيتك، ننصح بحذف هذه الرسالة بعد فتح التطبيق. إذا لم تقم بهذا الطلب، يرجى تغيير كلمة مرور القفل فوراً.</string>
+
+    <!-- إشعارات المشاركة التلقائية وشيت الحساب والفاتورة الموحّد -->
+    <string name="account_details_sheet_title">بيانات الحساب</string>
+    <string name="save_edit">حفظ التعديل</string>
+    <string name="auto_notify_section_title">وسيلة إرسال الإشعارات التلقائية</string>
+    <string name="notify_whatsapp_label">إشعار تلقائي عبر واتساب</string>
+    <string name="notify_sms_label">إشعار تلقائي عبر الرسائل النصية</string>
+    <string name="error_phone_required_for_notify">يرجى إدخال رقم الهاتف أولاً لتفعيل وسيلة المشاركة.</string>
+    <string name="whatsapp_not_installed_alert">للمشاركة عبر الواتساب يرجى تثبيت الواتساب أولاً في هاتفك.</string>
+    <string name="first_tx_no_share_title">تفعيل وسيلة المشاركة</string>
+    <string name="first_tx_no_share_message">لا توجد وسيلة مشاركة لهذا الحساب، هل تريد تفعيل وسيلة مشاركة؟</string>
+    <string name="ignore">تجاهل</string>
+    <string name="upgrade_notify_bubble_title">ميزة الإشعارات التلقائية الجديدة</string>
+    <string name="upgrade_notify_bubble_message">لتفعيل إرسال الإشعارات أوتوماتيكياً عبر الواتساب أو الرسائل النصية، يرجى تعديل الحسابات المطلوب إرسال الإشعارات لها وتفعيل الطريقة المناسبة لك.</string>
+    <string name="share_tx_header">نفيدكم بقيد عملية مالية في حسابكم:</string>
+    <string name="share_tx_type_label">نوع القيد</string>
+    <string name="share_tx_type_debit">عليكم (مدين)</string>
+    <string name="share_tx_type_credit">لكم (دائن)</string>
+    <string name="share_tx_amount_label">المبلغ</string>
+    <string name="share_tx_details_label">البيان</string>
+    <string name="share_tx_date_label">التاريخ</string>
+    <string name="share_tx_balance_label">الرصيد الحالي</string>
+    <string name="share_tx_balance_settled">مُصفّى</string>
+    <string name="share_inv_header_sales">نفيدكم بتسجيل فاتورة مبيعات:</string>
+    <string name="share_inv_header_purchases">نفيدكم بتسجيل فاتورة مشتريات:</string>
+    <string name="share_inv_total_label">قيمة الفاتورة</string>
+    <string name="share_inv_paid_label">المدفوع نقداً</string>
+    <string name="share_inv_remaining_label">المتبقي من الفاتورة</string>
+    <string name="share_inv_balance_label">إجمالي الرصيد الحالي</string>
+    <string name="share_bal_header">إشعار برصيد حسابكم الحالي لدينا بعملة (%1$s):</string>
+    <string name="share_bal_zero">نفيدكم بأن رصيد حسابكم الحالي لدينا بعملة (%1$s) هو: 0 (مُصفّى).</string>
 </resources>

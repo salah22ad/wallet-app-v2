@@ -42,6 +42,17 @@ public final class BudgetDatabaseMigration {
         if (!hasColumn(db, "accounts", "colorHex")) {
             db.execSQL("ALTER TABLE accounts ADD COLUMN colorHex TEXT");
         }
+        if (!hasColumn(db, "accounts", "notifyWhatsApp")) {
+            db.execSQL("ALTER TABLE accounts ADD COLUMN notifyWhatsApp INTEGER NOT NULL DEFAULT 0");
+        }
+        if (!hasColumn(db, "accounts", "notifySms")) {
+            db.execSQL("ALTER TABLE accounts ADD COLUMN notifySms INTEGER NOT NULL DEFAULT 0");
+        }
+        // وسم كافة الحسابات بـ EDITED لرفع الحقول الجديدة إلى Firestore تلقائياً عبر SyncWorker
+        long now = System.currentTimeMillis();
+        db.execSQL("UPDATE accounts SET syncStatus = 'EDITED', lastModified = " + now + " WHERE isDeleted = 0");
+        // علم إظهار فقاعة الترقية التوضيحية عند أول عملية بعد التحديث للإصدار الجديد
+        db.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('notify_upgrade_banner_pending', 1)");
     }
 
     private static boolean hasColumn(@NonNull SupportSQLiteDatabase db, String table, String column) {

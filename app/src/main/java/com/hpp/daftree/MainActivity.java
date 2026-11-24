@@ -129,6 +129,7 @@ import com.hpp.daftree.databinding.ActivityMainBinding;
 import com.hpp.daftree.databinding.DialogAccountOptionsBinding;
 import com.hpp.daftree.databinding.DialogEditAccountBinding;
 import com.hpp.daftree.databinding.DialogWelcomeBackBinding;
+import com.hpp.daftree.dialogs.AccountBottomSheet;
 import com.hpp.daftree.dialogs.DeviceManagementDialog;
 import com.hpp.daftree.dialogs.InvoiceDialog;
 import com.hpp.daftree.dialogs.LanguageSelectionDialog;
@@ -3539,24 +3540,19 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
     }
 
     private void showAccountOptionsDialog(final Account account) {
-        DialogAccountOptionsBinding dialogBinding = DialogAccountOptionsBinding.inflate(getLayoutInflater());
-        dialogBinding.dialogOptionsTitle.setText(account.getAccountName());
-
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setView(dialogBinding.getRoot()).create();
-
-        dialogBinding.buttonEditAccount.setOnClickListener(v -> {
-            Account accountToEdit = new Account(account);
-            addNewAccout(accountToEdit, false);
-            dialog.dismiss();
+        if (account == null || isFinishing() || isDestroyed()) return;
+        AccountBottomSheet sheet = AccountBottomSheet.newInstanceForViewOptions(account.getId());
+        sheet.setAccountActionListener(new AccountBottomSheet.AccountActionListener() {
+            @Override
+            public void onAccountSaved(Account saved, boolean isNew) {
+                if (mainViewModel != null) mainViewModel.refreshData();
+            }
+            @Override
+            public void onAccountDeleted(Account deleted) {
+                if (mainViewModel != null) mainViewModel.refreshData();
+            }
         });
-
-        dialogBinding.buttonDeleteAccount.setOnClickListener(v -> {
-            handleAccountDeletion(account);
-            dialog.dismiss();
-        });
-
-        dialog.show();
+        sheet.show(getSupportFragmentManager(), "AccountBottomSheetOptions");
     }
 
     private String findFirestoreIdByAccountTypeName(String name) {
@@ -6010,7 +6006,15 @@ private void handlePurchaseApp() {
 
     @Override
     public void onQuickAddAccount() {
-        addNewAccout(null, true);
+        if (isFinishing() || isDestroyed()) return;
+        AccountBottomSheet sheet = AccountBottomSheet.newInstanceForCreate("");
+        sheet.setAccountActionListener(new AccountBottomSheet.AccountActionListener() {
+            @Override
+            public void onAccountSaved(Account account, boolean isNew) {
+                if (mainViewModel != null) mainViewModel.refreshData();
+            }
+        });
+        sheet.show(getSupportFragmentManager(), "AccountBottomSheetCreate");
     }
 
     // واجهة مبسطة للاستدعاء

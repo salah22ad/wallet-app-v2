@@ -1,215 +1,247 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:layout_height="wrap_content"
+    android:background="@drawable/budget_bg_bottom_sheet"
     android:fillViewport="true">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/invoiceSheetContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:paddingHorizontal="18dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="24dp">
 
-            <TextView
-                android:id="@+id/titleTextView"
-                style="@style/TextAppearance.Material3.TitleLarge"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:gravity="center"
-                android:text="@string/new_invoice_tit"
-                android:textColor="?attr/colorPrimary"
-                android:textStyle="bold" />
+            <!-- مقبض السحب العلوي -->
+            <View
+                android:layout_width="42dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center_horizontal"
+                android:background="@drawable/budget_bg_handle_bar" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="@android:color/transparent"
-                app:cardElevation="0dp"
-                app:strokeColor="?attr/colorOutline"
-                app:strokeWidth="1dp">
-
-                <RadioGroup
-                    android:id="@+id/billTypeRadioGroup"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="4dp">
-
-                    <RadioButton
-                        android:id="@+id/radioSales"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/bg_tab_selected"
-                        android:button="@null"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="@string/ar_text_6_2"
-                        android:textColor="@android:color/white" />
-
-                    <RadioButton
-                        android:id="@+id/radioPurchases"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1"
-                        android:background="@android:color/transparent"
-                        android:button="@null"
-                        android:gravity="center"
-                        android:padding="8dp"
-                        android:text="@string/ar_text_7_2"
-                        android:textColor="#757575" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/currencyInputLayout"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_weight="1.8"
-                        android:gravity="center"
-                        android:hint="@string/currency"
-                        app:endIconMode="dropdown_menu">
-
-                        <AutoCompleteTextView
-                            android:id="@+id/currencyAutoComplete"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:clickable="true"
-                            android:focusable="false"
-                            android:gravity="center"
-                            android:inputType="none"
-                            android:textSize="14sp"
-                            app:autoSizeTextType="uniform"
-                            app:autoSizeMinTextSize="10sp"
-                            app:autoSizeMaxTextSize="16sp"
-                            app:autoSizeStepGranularity="1sp"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                </RadioGroup>
-            </com.google.android.material.card.MaterialCardView>
-
+            <!-- الترويسة: أيقونة الفاتورة + العنوان + زر الإغلاق -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
-                android:spacing="8dp">
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_modern_invoice" />
+
+                <TextView
+                    android:id="@+id/titleTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2.3"
-                    android:hint="@string/account_name_hint">
+                    android:layout_weight="1"
+                    android:text="@string/new_invoice_tit"
+                    android:textColor="@color/budget_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <ImageButton
+                    android:id="@+id/btnCloseInvoice"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/cancel"
+                    android:padding="6dp"
+                    android:src="@drawable/ic_close"
+                    app:tint="@color/budget_text_secondary" />
+            </LinearLayout>
+
+            <!-- شريط التبديل المقسّم: مبيعات | مشتريات (مشابه لشاشة الميزانية) -->
+            <RadioGroup
+                android:id="@+id/billTypeRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/budget_bg_pill_segmented"
+                android:orientation="horizontal"
+                android:padding="4dp">
+
+                <RadioButton
+                    android:id="@+id/radioSales"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_tab_selected"
+                    android:button="@null"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:text="@string/ar_text_6_2"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <RadioButton
+                    android:id="@+id/radioPurchases"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="@string/ar_text_7_2"
+                    android:textColor="@color/budget_text_secondary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </RadioGroup>
+
+            <!-- الصف الأول: اسم الحساب -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/accountInputLayout"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/account_name_hint"
+                app:boxCornerRadiusBottomEnd="14dp"
+                app:boxCornerRadiusBottomStart="14dp"
+                app:boxCornerRadiusTopEnd="14dp"
+                app:boxCornerRadiusTopStart="14dp"
+                app:startIconDrawable="@drawable/ic_modern_person"
+                app:startIconTint="@null">
+
+                <AutoCompleteTextView
+                    android:id="@+id/accountAutoComplete"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:background="@null"
+                    android:gravity="center_vertical|start"
+                    android:imeOptions="actionNext"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:paddingHorizontal="12dp"
+                    android:singleLine="true"
+                    android:tag="exclude_global_filter"
+                    android:textSize="14sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- الصف الثاني: العملة والتاريخ -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/currencyInputLayout"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:hint="@string/currency"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp">
 
                     <AutoCompleteTextView
-                        android:id="@+id/accountAutoComplete"
+                        android:id="@+id/currencyAutoComplete"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@null"
-                        android:enabled="false"
+                        android:clickable="true"
+                        android:focusable="false"
                         android:gravity="center"
-                        android:imeOptions="actionNext"
-                        android:importantForAutofill="no"
-                        android:inputType="text"
+                        android:inputType="none"
                         android:maxLines="1"
-                        android:padding="16dp"
-                        android:selectAllOnFocus="true"
-                        android:singleLine="true"
-                        android:tag="exclude_global_filter"
-                        android:textIsSelectable="true"
-                        android:textSize="14sp"
-                        app:autoSizeMaxTextSize="16sp"
-                        app:autoSizeMinTextSize="8sp"
-                        app:autoSizeStepGranularity="1sp"
-                        app:autoSizeTextType="uniform" />
+                        android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:layout_weight="1.7"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
                     android:hint="@string/date"
-                    app:endIconDrawable="@drawable/ic_modern_calendar"
-                    app:endIconMode="custom"
-    app:endIconTint="@null">
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp"
+                    app:startIconDrawable="@drawable/ic_modern_calendar"
+                    app:startIconTint="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/invoiceDateEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:clickable="true"
                         android:focusable="false"
                         android:gravity="center"
                         android:inputType="none"
-                        android:textSize="13sp"
-                        app:autoSizeTextType="uniform"
-                        app:autoSizeMinTextSize="10sp"
-                        app:autoSizeMaxTextSize="15sp"
-                        app:autoSizeStepGranularity="1sp" />
+                        android:maxLines="1"
+                        android:textSize="13sp" />
                 </com.google.android.material.textfield.TextInputLayout>
-
             </LinearLayout>
 
+            <!-- الصف الثالث: التفاصيل وزر إرفاق الصورة -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
                     android:layout_weight="1"
-                    android:hint="@string/details">
+                    android:hint="@string/details"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/detailsEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:enabled="false"
-                        android:gravity="top|start"
+                        android:gravity="center_vertical|start"
                         android:maxLines="2"
-                        app:autoSizeTextType="uniform"
-                        app:autoSizeMinTextSize="10sp"
-                        app:autoSizeMaxTextSize="16sp"
-                        app:autoSizeStepGranularity="1sp"
                         android:tag="exclude_global_filter"
                         android:textSize="14sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <ImageButton
                     android:id="@+id/btnAttachImage"
-                    android:layout_width="60dp"
-                    android:layout_height="match_parent"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/budget_bg_input_field"
+                    android:contentDescription="@string/camera"
                     android:src="@drawable/ic_modern_camera" />
             </LinearLayout>
 
-
+            <!-- بطاقة المبالغ (قيمة الفاتورة / المدفوع نقداً / المتبقي) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="?attr/colorSurfaceVariant"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp">
+                app:cardBackgroundColor="@color/budget_surface_soft"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/budget_border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -223,54 +255,67 @@
                         android:orientation="horizontal">
 
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="4dp"
+                            android:layout_marginEnd="5dp"
                             android:layout_weight="1"
                             android:hint="@string/invoce_value"
-                            app:boxBackgroundColor="@android:color/transparent"
+                            app:boxCornerRadiusBottomEnd="12dp"
+                            app:boxCornerRadiusBottomStart="12dp"
+                            app:boxCornerRadiusTopEnd="12dp"
+                            app:boxCornerRadiusTopStart="12dp"
                             app:prefixText="+">
 
-                            <EditText
+                            <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/invoiceAmountEditText"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
                                 android:inputType="numberDecimal"
-                                android:maxLines="1" />
+                                android:maxLines="1"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="4dp"
+                            android:layout_marginStart="5dp"
                             android:layout_weight="1"
                             android:hint="@string/amount_pay"
-                            app:boxBackgroundColor="@android:color/transparent"
+                            app:boxCornerRadiusBottomEnd="12dp"
+                            app:boxCornerRadiusBottomStart="12dp"
+                            app:boxCornerRadiusTopEnd="12dp"
+                            app:boxCornerRadiusTopStart="12dp"
                             app:prefixText="-">
 
-                            <EditText
+                            <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/paidAmountEditText"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center"
                                 android:inputType="numberDecimal"
-                                android:maxLines="1" />
+                                android:maxLines="1"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/remaining_remain"
+                            android:textColor="@color/budget_text_secondary"
+                            android:textSize="13sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -279,127 +324,102 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="0"
+                            android:textColor="@color/budget_primary"
+                            android:textSize="15sp"
                             android:textStyle="bold" />
-
-
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-
+            <!-- أزرار الحفظ والإلغاء (بالخلفية المعتمدة) -->
             <LinearLayout
                 android:id="@+id/layoutSaveActions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:visibility="gone"
                 tools:visibility="visible">
-                <!-- Save Button (Visible in create/edit mode) -->
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/saveButton"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="6dp"
                     android:layout_weight="1"
                     android:text="@string/save"
                     android:textColor="?attr/colorPrimary"
+                    android:textStyle="bold"
+                    app:cornerRadius="14dp"
                     app:icon="@drawable/ic_save"
+                    app:iconGravity="textStart"
                     app:strokeColor="?attr/colorPrimary" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnCancel"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     android:text="@string/cancel"
                     android:textColor="@color/secondaryColor"
-                    app:icon="@drawable/ic_close_white"
+                    android:textStyle="bold"
+                    app:cornerRadius="14dp"
+                    app:icon="@drawable/ic_close"
+                    app:iconGravity="textStart"
                     app:strokeColor="@color/secondaryColor" />
-
-                <!-- Share Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/shareButton"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/menu_share_pdf"
-                    android:textColor="@color/secondaryColor"
-                    android:visibility="gone"
-                    app:icon="@drawable/ic_share"
-                    app:strokeColor="@color/secondaryColor" />
-
-                <!-- Export PDF Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/exportPdfButton"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="PDF"
-                    android:textColor="@color/secondaryColor"
-                    android:visibility="gone"
-                    app:icon="@drawable/ic_modern_pdf"
-                    app:strokeColor="@color/secondaryColor" 
-    app:iconTint="@null"/>
             </LinearLayout>
 
+            <!-- أزرار العرض (تعديل / حذف) -->
             <LinearLayout
                 android:id="@+id/layoutEditActions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:visibility="gone">
 
-                <!-- Delete Button (Visible in view mode) -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/deleteButton"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text="@string/delete"
-                    android:textColor="@color/red"
-                    app:icon="@drawable/ic_delete"
-                    app:strokeColor="@color/red" />
-                <!-- Edit Button (Visible in view mode) -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/editButton"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="6dp"
                     android:layout_weight="1"
                     android:text="@string/edit"
                     android:textColor="@color/primaryColor"
+                    android:textStyle="bold"
+                    app:cornerRadius="14dp"
                     app:icon="@drawable/ic_edit"
+                    app:iconGravity="textStart"
                     app:strokeColor="@color/primaryColor" />
 
-
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/deleteButton"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:text="@string/delete"
+                    android:textColor="@color/red"
+                    android:textStyle="bold"
+                    app:cornerRadius="14dp"
+                    app:icon="@drawable/ic_delete"
+                    app:iconGravity="textStart"
+                    app:strokeColor="@color/red" />
             </LinearLayout>
-
         </LinearLayout>
 
         <ProgressBar
-
             android:id="@+id/loadingOverlay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone" />
-
     </FrameLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

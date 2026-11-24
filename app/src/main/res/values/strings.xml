@@ -1776,4 +1776,35 @@
     <string name="forgot_password_email_greeting">Hello,</string>
     <string name="forgot_password_email_intro">As requested from the lock screen, your app lock password is:</string>
     <string name="forgot_password_email_security_note">For your privacy, please delete this email after unlocking the app. If you did not make this request, please change your lock password immediately.</string>
+
+    <!-- Auto-Share Notifications & Unified Account/Invoice Sheets -->
+    <string name="account_details_sheet_title">Account Details</string>
+    <string name="save_edit">Save Changes</string>
+    <string name="auto_notify_section_title">Automatic Notification Method</string>
+    <string name="notify_whatsapp_label">Auto-notify via WhatsApp</string>
+    <string name="notify_sms_label">Auto-notify via SMS</string>
+    <string name="error_phone_required_for_notify">Please enter a phone number first to enable notifications.</string>
+    <string name="whatsapp_not_installed_alert">To share via WhatsApp, please install WhatsApp on your phone first.</string>
+    <string name="first_tx_no_share_title">Enable Sharing Notifications</string>
+    <string name="first_tx_no_share_message">No sharing method is enabled for this account. Would you like to enable a sharing method?</string>
+    <string name="ignore">Ignore</string>
+    <string name="upgrade_notify_bubble_title">New Auto-Share Feature</string>
+    <string name="upgrade_notify_bubble_message">To enable automatic notifications via WhatsApp or SMS, please edit the accounts you want to notify automatically and activate your preferred method.</string>
+    <string name="share_tx_header">A financial transaction has been recorded on your account:</string>
+    <string name="share_tx_type_label">Transaction Type</string>
+    <string name="share_tx_type_debit">Debit (On You)</string>
+    <string name="share_tx_type_credit">Credit (For You)</string>
+    <string name="share_tx_amount_label">Amount</string>
+    <string name="share_tx_details_label">Details</string>
+    <string name="share_tx_date_label">Date</string>
+    <string name="share_tx_balance_label">Current Balance</string>
+    <string name="share_tx_balance_settled">Settled</string>
+    <string name="share_inv_header_sales">A Sales Invoice has been recorded:</string>
+    <string name="share_inv_header_purchases">A Purchase Invoice has been recorded:</string>
+    <string name="share_inv_total_label">Invoice Value</string>
+    <string name="share_inv_paid_label">Cash Paid</string>
+    <string name="share_inv_remaining_label">Invoice Remaining</string>
+    <string name="share_inv_balance_label">Total Account Balance</string>
+    <string name="share_bal_header">Current account balance notice in (%1$s):</string>
+    <string name="share_bal_zero">Your current account balance with us in (%1$s) is: 0 (Settled).</string>
 </resources>

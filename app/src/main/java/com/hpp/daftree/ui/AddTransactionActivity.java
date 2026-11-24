@@ -66,7 +66,9 @@ import com.hpp.daftree.databinding.ActivityAddTransactionBinding;
 import com.hpp.daftree.databinding.DialogAddAccountBinding;
 import com.hpp.daftree.databinding.DialogEditAccountBinding;
 import com.hpp.daftree.databinding.DialogShareOptionsBinding;
+import com.hpp.daftree.dialogs.AccountBottomSheet;
 import com.hpp.daftree.dialogs.CalculatorDialog;
+import com.hpp.daftree.helpers.ShareNotificationHelper;
 import com.hpp.daftree.models.AutoResizeTextHelper;
 import com.hpp.daftree.budget.repository.BudgetRepository;
 import com.hpp.daftree.models.DaftreeRepository;
@@ -817,8 +819,12 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
                     this, accountName, amount, type, currencyId, transactionDate.getTime());
         }
         this.lastSavedTransaction = newTransaction;
-        onTransactionSaved(amount * type);
+        String savedCurrencyName = binding.currencySpinnerAutocomplete.getText() != null
+                ? binding.currencySpinnerAutocomplete.getText().toString().trim() : "";
         resetFieldsForNewEntry(accountName, accountId);
+        ShareNotificationHelper.handleAfterTransactionSaved(
+                this, accountId, currencyId, savedCurrencyName, newTransaction);
+        checkFirstRunAndShowReminderDialog();
 
         new TransactionNotificationManager(this)
                 .sendTransactionNotification(newTransaction,binding.currencySpinnerAutocomplete.getText().toString(),this);
@@ -842,120 +848,24 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
     }
 
     private void showAddNewAccountDialog(String name, boolean focusAmountAfter) {
-        activeAddAccountDialogBinding = DialogAddAccountBinding.inflate(getLayoutInflater());
-
-        activeAddAccountDialogBinding.editAccountName.setText(name);
-        MyApplication.applyGlobalTextWatcher(activeAddAccountDialogBinding.getRoot());
-
-        // --- NEW: ربط زر جهات الاتصال ---
-        activeAddAccountDialogBinding.dialogPhoneInputLayout.setEndIconOnClickListener(v -> {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                openContactPicker();
-            } else {
-                requestContactPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
-            }
-        });
-        // ---------------------------------
-
-        AutoCompleteTextView accountTypeSpinner = activeAddAccountDialogBinding.spinnerAccountType;
-        accountTypeViewModel.getAllAccountTypes().observe(this, types -> {
-            if (types != null && !types.isEmpty()) {
-                this.availableAccountTypes = types;
-                List<String> typeNames = types.stream().map(t -> t.name).collect(Collectors.toList());
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, typeNames);
-                accountTypeSpinner.setAdapter(adapter);
-                if (!typeNames.isEmpty()) {
-                    accountTypeSpinner.setText(typeNames.get(0), false);
+        if (isFinishing() || isDestroyed()) return;
+        AccountBottomSheet sheet = AccountBottomSheet.newInstanceForCreate(name);
+        sheet.setAccountActionListener(new AccountBottomSheet.AccountActionListener() {
+            @Override
+            public void onAccountSaved(Account account, boolean isNew) {
+                if (account == null) return;
+                accountNameToIdMap.put(account.getAccountName(), account.getId());
+                isSelectionFromList = true;
+                binding.accountNameAutoComplete.setText(account.getAccountName());
+                binding.accountNameAutoComplete.setSelection(account.getAccountName().length());
+                isSelectionFromList = false;
+                viewModel.setSelectedAccount(account.getId());
+                if (focusAmountAfter) {
+                    binding.amountEditText.requestFocus();
                 }
             }
         });
-
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-//                .setTitle(R.string.add_new_account_title)
-                .setView(activeAddAccountDialogBinding.getRoot()) // تأكد من استخدام activeAddAccountDialogBinding
-//                .setPositiveButton(R.string.add_account, null)
-//                .setNegativeButton(R.string.cancel, (d, which) -> {
-//                    binding.accountNameAutoComplete.requestFocus();
-//                    activeAddAccountDialogBinding = null; // تنظيف المرجع
-//                })
-                .create();
-
-        dialog.setOnDismissListener(d -> activeAddAccountDialogBinding = null); // تنظيف المرجع عند الإغلاق
-
-        dialog.setOnShowListener(d -> {
-            activeAddAccountDialogBinding.btnCancel.setOnClickListener(v -> {
-                binding.accountNameAutoComplete.requestFocus();
-                dialog.dismiss();
-            });
-            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            activeAddAccountDialogBinding.btnAdd.setOnClickListener(v -> {
-                String finalName = activeAddAccountDialogBinding.editAccountName.getText().toString().trim();
-                String phone = activeAddAccountDialogBinding.editAccountPhone.getText().toString().trim();
-                String type = accountTypeSpinner.getText().toString();
-
-                if (TextUtils.isEmpty(finalName)) {
-                    activeAddAccountDialogBinding.editAccountName.setError(getString(R.string.error_account_name_empty));
-                    return;
-                }
-                if (isAccountExists(finalName)) {
-                    Toast.makeText(this, R.string.error_account_exists, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (TextUtils.isEmpty(type)) {
-                    activeAddAccountDialogBinding.accountTypeSpinnerLayout.setError(getString(R.string.required));
-                    return;
-                }
-
-                String uid = isGuest ? guestUID : AppAuth.getUserID(this);
-
-                       // (FirebaseAuth.getInstance().getCurrentUser() != null ? FirebaseAuth.getInstance().getCurrentUser().getUid() : "");
-                String typeId = findFirestoreIdByAccountTypeName(type);
-
-                Account newAccount = new Account();
-                assert uid != null;
-                newAccount.setOwnerUID(uid);
-                newAccount.setAccountName(finalName);
-                newAccount.setPhoneNumber(phone);
-                newAccount.setAccountType(type);
-                if (typeId != null) newAccount.setAcTypeFirestoreId(typeId);
-                AccountType matchedType = null;
-                if (availableAccountTypes != null) {
-                    for (AccountType t : availableAccountTypes) {
-                        if (type.equals(t.getName())) { matchedType = t; break; }
-                    }
-                }
-                AccountTypeIconHelper.applyTypeVisualsToAccount(this, newAccount, matchedType);
-
-                viewModel.createAccount(newAccount);
-                binding.accountNameAutoComplete.setText(finalName);
-
-                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                    Integer newAccountId = accountNameToIdMap.get(finalName);
-                    if (newAccountId != null) {
-                        viewModel.setSelectedAccount(newAccountId);
-                        if(!TextUtils.isEmpty(phone)) {
-                            new TransactionNotificationManager(this).sendNewAccount(phone,this);
-                        }
-                    }
-                    if (focusAmountAfter) {
-                        binding.amountEditText.requestFocus();
-                        showKeyboard(binding.amountEditText);
-                    }
-                }, 200);
-
-                dialog.dismiss();
-            });
-        });
-
-        dialog.show();
-        if (dialog.getWindow() != null) {
-            android.view.WindowManager.LayoutParams lp = new android.view.WindowManager.LayoutParams();
-            lp.copyFrom(dialog.getWindow().getAttributes());
-            lp.width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
-            lp.height = android.view.WindowManager.LayoutParams.WRAP_CONTENT;
-
-            dialog.getWindow().setAttributes(lp);
-        }
+        sheet.show(getSupportFragmentManager(), "AccountBottomSheetCreate");
     }
 
     // --- بقية الدوال المساعدة (تبقى كما هي) ---

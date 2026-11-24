@@ -50,7 +50,9 @@ import com.hpp.daftree.database.RecurringOperation;
 import com.hpp.daftree.database.Transaction;
 import com.hpp.daftree.database.User;
 import com.hpp.daftree.databinding.ActivityAccountDetailsBinding;
+import com.hpp.daftree.dialogs.AccountBottomSheet;
 import com.hpp.daftree.dialogs.CalculatorDialog;
+import com.hpp.daftree.helpers.ShareNotificationHelper;
 import com.hpp.daftree.dialogs.PurchaseBottomSheet;
 import com.hpp.daftree.dialogs.ReportsBottomSheet;
 import com.hpp.daftree.helpers.LanguageManager;
@@ -976,18 +978,39 @@ public class AccountDetailsActivity extends BaseActivity implements
     }
 
     private void shareTransaction() {
-        // الآن، نستخدم المتغير المحلي مباشرة دون الحاجة لمراقب جديد
         if (currentAccount == null) {
             Toast.makeText(this, getString(R.string._572), Toast.LENGTH_SHORT).show();
-            // return;
+            return;
         }
+        String currency = binding.currencyTextView.getText() != null
+                ? binding.currencyTextView.getText().toString().trim() : "";
+        List<TransactionItem> currentItems = historyAdapter != null ? historyAdapter.getCurrentList() : null;
+        double actualBalance = (currentItems != null && !currentItems.isEmpty())
+                ? currentItems.get(0).getBalanceAfter() : 0.0;
+        String message = ShareNotificationHelper.buildBalanceSummaryMessage(this, currency, actualBalance);
 
-        String phoneNumber = currentAccount.getPhoneNumber();
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            showEditAccountDialogForSharing(currentAccount);
+        String phone = currentAccount.getPhoneNumber() != null ? currentAccount.getPhoneNumber().trim() : "";
+        if (phone.isEmpty()) {
+            AccountBottomSheet sheet = AccountBottomSheet.newInstanceForEditDirect(currentAccount.getId());
+            sheet.setAccountActionListener(new AccountBottomSheet.AccountActionListener() {
+                @Override
+                public void onAccountSaved(Account savedAccount, boolean isNew) {
+                    if (savedAccount == null) return;
+                    currentAccount = savedAccount;
+                    String savedPhone = savedAccount.getPhoneNumber() != null ? savedAccount.getPhoneNumber().trim() : "";
+                    if (savedPhone.isEmpty()) return;
+                    if (savedAccount.isNotifyWhatsApp()) {
+                        ShareNotificationHelper.sendViaWhatsAppSilently(AccountDetailsActivity.this, savedPhone, message);
+                    } else {
+                        ShareNotificationHelper.sendViaSms(AccountDetailsActivity.this, savedPhone, message);
+                    }
+                }
+            });
+            sheet.show(getSupportFragmentManager(), "AccountBottomSheetBalanceShare");
+        } else if (currentAccount.isNotifyWhatsApp()) {
+            ShareNotificationHelper.sendViaWhatsAppSilently(this, phone, message);
         } else {
-            String message = generateShareMessage();
-            openSmsIntent(phoneNumber, message);
+            ShareNotificationHelper.sendViaSms(this, phone, message);
         }
     }
 
@@ -1552,9 +1575,9 @@ public class AccountDetailsActivity extends BaseActivity implements
                     this, linkedAccName, newAmount, newType, currencyId, newDate.getTimeInMillis());
         }
         this.lastSavedTransaction = newTransaction;
-        double finalAmount = newAmount * newType;
-        onTransactionSaved(finalAmount);
         licenseManager.incrementTransactionCount();
+        ShareNotificationHelper.handleAfterTransactionSaved(
+                this, accountId, currencyId, newCurrencyName, newTransaction);
 
         if (isNetworkAvailable()) {
             // المزامنة الفورية إن لزم
@@ -2397,9 +2420,9 @@ public class AccountDetailsActivity extends BaseActivity implements
                     this, op.getAccountName(), amount, type, currencyId, System.currentTimeMillis());
         }
         this.lastSavedTransaction = transaction;
-        double finalAmount = amount * type;
-        onTransactionSaved(finalAmount);
         licenseManager.incrementTransactionCount();
+        ShareNotificationHelper.handleAfterTransactionSaved(
+                this, op.getAccountId(), currencyId, currencyName, transaction);
 //        Toast.makeText(this, R.string.transaction_added, Toast.LENGTH_SHORT).show();
         dialog.dismiss();
         markRecurringProcessed(op);

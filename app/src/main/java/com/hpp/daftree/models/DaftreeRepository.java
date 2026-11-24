@@ -335,6 +335,8 @@ public class DaftreeRepository {
                 long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
                 long deleteDate = readLongSafe(data, "deleteDate", 0L);
                 boolean isDeletedRemote = readIsDeletedSafe(data);
+                boolean notifyWaRemote = data.containsKey("notifyWhatsApp") && convertFirestoreBoolean(data.get("notifyWhatsApp"));
+                boolean notifySmsRemote = data.containsKey("notifySms") && convertFirestoreBoolean(data.get("notifySms"));
 
                 Account existing = mAccountDao.getAccountByFirestoreId(firestoreId);
 
@@ -356,6 +358,8 @@ public class DaftreeRepository {
                         existing.setSyncStatus("SYNCED");
                         existing.setDeletedBy((String) data.get("deletedBy"));
                         existing.setDeleted(isDeletedRemote);
+                        existing.setNotifyWhatsApp(notifyWaRemote);
+                        existing.setNotifySms(notifySmsRemote);
                         AccountTypeIconHelper.applyTypeVisualsToAccount(context, existing, accountTypeDao.getAccountTypeByFirestoreId(existing.getAcTypeFirestoreId()));
                         mAccountDao.update(existing);
                     }
@@ -375,6 +379,8 @@ public class DaftreeRepository {
                     newAccount.setAcTypeFirestoreId(acTypeFsId != null ? acTypeFsId : "");
                     newAccount.setDeletedBy((String) data.get("deletedBy"));
                     newAccount.setDeleted(isDeletedRemote);
+                    newAccount.setNotifyWhatsApp(notifyWaRemote);
+                    newAccount.setNotifySms(notifySmsRemote);
                     AccountTypeIconHelper.applyTypeVisualsToAccount(context, newAccount, accountTypeDao.getAccountTypeByFirestoreId(newAccount.getAcTypeFirestoreId()));
                     mAccountDao.insert(newAccount);
                 }

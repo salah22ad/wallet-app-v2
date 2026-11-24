@@ -81,6 +81,14 @@ public class Account {
     @Exclude
     @ColumnInfo(name = "colorHex")
     private String colorHex = "";
+
+    @ColumnInfo(name = "notifyWhatsApp")
+    @PropertyName("notifyWhatsApp")
+    private boolean notifyWhatsApp = false;
+
+    @ColumnInfo(name = "notifySms")
+    @PropertyName("notifySms")
+    private boolean notifySms = false;
     public Account() {
     }
     // أضف هذا داخل كلاس Account
@@ -98,6 +106,8 @@ public class Account {
         this.deletedBy = other.deletedBy;
         this.iconKey = other.iconKey;
         this.colorHex = other.colorHex;
+        this.notifyWhatsApp = other.notifyWhatsApp;
+        this.notifySms = other.notifySms;
     }
     // --- Getters ---
     public int getId() { return id; }
@@ -175,6 +185,8 @@ public class Account {
                 Objects.equals(accountName, account.accountName) &&
                 Objects.equals(acTypeFirestoreId, account.acTypeFirestoreId) &&
                 Objects.equals(phoneNumber, account.phoneNumber) &&
+                notifyWhatsApp == account.notifyWhatsApp &&
+                notifySms == account.notifySms &&
                 lastModified == account.lastModified;
     }
 
@@ -192,4 +204,14 @@ public class Account {
     public String getColorHex() { return colorHex; }
     @Exclude
     public void setColorHex(String colorHex) { this.colorHex = colorHex; }
+
+    @PropertyName("notifyWhatsApp")
+    public boolean isNotifyWhatsApp() { return notifyWhatsApp; }
+    @PropertyName("notifyWhatsApp")
+    public void setNotifyWhatsApp(boolean notifyWhatsApp) { this.notifyWhatsApp = notifyWhatsApp; }
+
+    @PropertyName("notifySms")
+    public boolean isNotifySms() { return notifySms; }
+    @PropertyName("notifySms")
+    public void setNotifySms(boolean notifySms) { this.notifySms = notifySms; }
 }

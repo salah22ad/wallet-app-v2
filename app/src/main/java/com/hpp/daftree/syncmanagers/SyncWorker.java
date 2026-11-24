@@ -184,6 +184,8 @@ public class SyncWorker extends Worker {
         map.put("ownerUID", account.getOwnerUID());
         map.put("accountName", account.getAccountName());
         map.put("phoneNumber", account.getPhoneNumber());
+                        data.put("notifyWhatsApp", account.isNotifyWhatsApp());
+                        data.put("notifySms", account.isNotifySms());
         map.put("accountType", account.getAccountType());
         map.put("lastModified", account.getLastModified());
         map.put("lastSyncDate", syncTime);
