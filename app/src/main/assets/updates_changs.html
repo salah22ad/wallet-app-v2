@@ -4,395 +4,447 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark">
-    <title>دليل ميزة متابعة حساباتي | Track My Account Guide</title>
+    <title>تحديثات محفظتي الذكية v2.0.0 | My Smart Wallet v2.0.0</title>
     <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/5968/5968875.png">
     <style>
         :root {
-          --primary-color: #0f766e;
-          --primary-dark: #115e59;
-          --secondary-color: #3b82f6;
-          --secondary-dark: #1d4ed8;
-          --accent-color: #10b981;
-          --accent-dark: #059669;
-          --text-light: #222;
-          --text-dark: #f8fafc;
-          --bg-light: #f4f6f8;
-          --bg-dark: #0f172a;
-          --card-light: #ffffff;
-          --card-dark: #1e293b;
-          --shadow-light: rgba(0, 0, 0, 0.06);
-          --shadow-dark: rgba(0, 0, 0, 0.2);
-          --update-bg-light: #f0f9ff;
-          --update-bg-dark: #0c4a6e;
-        }
-
-        body {
-          margin: 0;
-          font-family: "Tahoma", "Arial", sans-serif;
-          background: var(--bg-light);
-          color: var(--text-light);
-          line-height: 1.9;
-          transition: background 0.3s, color 0.3s;
+            --primary-color: #0d6e6e;
+            --primary-dark: #094f4f;
+            --secondary-color: #0284c7;
+            --accent-color: #10b981;
+            --gold-color: #f59e0b;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --bg-color: #f4f7f9;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+            --hero-badge-bg: rgba(255, 255, 255, 0.18);
+            --section-v2-bg: linear-gradient(135deg, #ecfeff 0%, #f0fdf4 100%);
+            --section-v2-border: rgba(13, 110, 110, 0.22);
+            --highlight-bg: #ecfeff;
         }
 
         @media (prefers-color-scheme: dark) {
-          body {
-            background: var(--bg-dark);
-            color: var(--text-dark);
-          }
+            :root {
+                --text-color: #f1f5f9;
+                --text-muted: #94a3b8;
+                --bg-color: #0f172a;
+                --card-bg: #1e293b;
+                --border-color: #334155;
+                --shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+                --section-v2-bg: linear-gradient(135deg, #132a33 0%, #102a27 100%);
+                --section-v2-border: rgba(20, 184, 166, 0.3);
+                --highlight-bg: rgba(15, 118, 110, 0.22);
+            }
         }
 
-        [lang="en"] {
-          direction: ltr;
-          text-align: left;
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: "Cairo", "Tajawal", "Segoe UI", Tahoma, Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            transition: background 0.3s, color 0.3s;
         }
 
-        .language-ar {
-          display: block;
+        .language-ar { display: block; }
+        .language-en { display: none; }
+
+        .lang-switch-bar {
+            position: fixed;
+            top: 12px;
+            left: 12px;
+            z-index: 999;
         }
 
-        .language-en {
-          display: none;
+        [dir="ltr"] .lang-switch-bar {
+            left: auto;
+            right: 12px;
         }
 
-        header {
-          background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-          color: #fff;
-          padding: 40px 20px;
-          text-align: center;
-          position: relative;
+        .lang-btn {
+            background: rgba(15, 23, 42, 0.55);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
         }
 
-        .update-badge {
-          position: absolute;
-          top: 15px;
-          right: 15px;
-          background: #ff6b6b;
-          color: white;
-          padding: 5px 12px;
-          border-radius: 20px;
-          font-size: 14px;
-          font-weight: bold;
-          animation: pulse 2s infinite;
+        .lang-btn:hover {
+            background: rgba(15, 23, 42, 0.8);
+            transform: scale(1.03);
         }
 
-        [lang="en"] .update-badge {
-          right: auto;
-          left: 15px;
+        .hero-header {
+            background: linear-gradient(135deg, #0d6e6e 0%, #0f766e 50%, #0369a1 100%);
+            color: #ffffff;
+            padding: 46px 20px 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .version-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--hero-badge-bg);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 14px;
+            animation: pulse 2.4s infinite;
         }
 
         @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-          100% { transform: scale(1); }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.04); }
         }
 
-        header h1 {
-          margin: 0;
-          font-size: 28px;
+        .hero-header h1 {
+            margin: 0;
+            font-size: 26px;
+            line-height: 1.4;
         }
 
-        header p {
-          margin-top: 10px;
-          font-size: 16px;
-          opacity: 0.95;
+        .hero-header p {
+            margin: 10px auto 0;
+            max-width: 680px;
+            font-size: 15px;
+            opacity: 0.94;
         }
 
         .container {
-          max-width: 900px;
-          margin: 30px auto;
-          padding: 0 20px;
+            max-width: 920px;
+            margin: 24px auto 40px;
+            padding: 0 16px;
         }
 
-        /* New Updates Section */
+        /* v2.0.0 Major Release Showcase */
         .updates-section {
-          background: linear-gradient(135deg, var(--update-bg-light), #e0f2fe);
-          border-radius: 16px;
-          padding: 25px;
-          margin-bottom: 30px;
-          box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
-          border: 1px solid rgba(59, 130, 246, 0.2);
+            background: var(--section-v2-bg);
+            border-radius: 20px;
+            padding: 24px 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--section-v2-border);
+        }
+
+        .section-heading {
+            margin: 0 0 6px;
+            font-size: 22px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         @media (prefers-color-scheme: dark) {
-          .updates-section {
-            background: linear-gradient(135deg, var(--update-bg-dark), #0c4a6e);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-          }
+            .section-heading { color: #2dd4bf; }
         }
 
-        .updates-section h2 {
-          margin-top: 0;
-          font-size: 24px;
-          color: var(--secondary-color);
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-
-        .updates-section h2::before {
-          content: "";
-          font-size: 26px;
+        .section-subtitle {
+            margin: 0 0 18px;
+            color: var(--text-muted);
+            font-size: 14px;
         }
 
         .update-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 20px;
-          margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(255px, 1fr));
+            gap: 16px;
         }
 
         .update-card {
-          background: rgba(255, 255, 255, 0.9);
-          border-radius: 12px;
-          padding: 20px;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-          transition: transform 0.3s, box-shadow 0.3s;
-          border-left: 4px solid var(--accent-color);
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid var(--primary-color);
+            transition: transform 0.25s, box-shadow 0.25s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        [lang="en"] .update-card {
-          border-left: none;
-          border-right: 4px solid var(--accent-color);
+        .update-card.featured {
+            border-top-color: var(--accent-color);
         }
 
-        @media (prefers-color-scheme: dark) {
-          .update-card {
-            background: rgba(30, 41, 59, 0.8);
-          }
+        .update-card.accent-blue {
+            border-top-color: var(--secondary-color);
+        }
+
+        .update-card.accent-gold {
+            border-top-color: var(--gold-color);
         }
 
         .update-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
         }
 
         .update-card h3 {
-          margin-top: 0;
-          color: var(--secondary-color);
-          font-size: 18px;
-          display: flex;
-          align-items: center;
-          gap: 8px;
+            margin: 0 0 8px;
+            color: var(--text-color);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .update-card p {
-          margin-bottom: 0;
-          font-size: 14px;
-          line-height: 1.6;
+            margin: 0;
+            font-size: 13.5px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .badge-row {
+            margin-top: 12px;
         }
 
         .feature-badge {
-          display: inline-block;
-          background: var(--accent-color);
-          color: white;
-          padding: 3px 10px;
-          border-radius: 12px;
-          font-size: 12px;
-          font-weight: bold;
-          margin-top: 10px;
+            display: inline-block;
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: bold;
         }
 
-        /* Original Content Cards */
+        .feature-badge.major { background: #10b981; }
+        .feature-badge.blue  { background: #0284c7; }
+        .feature-badge.gold  { background: #d97706; }
+
+        /* Previous Highlights Compact Grid */
+        .prev-updates {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .prev-updates summary {
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: bold;
+            color: var(--text-color);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .prev-updates summary::-webkit-details-marker { display: none; }
+
+        .prev-list {
+            margin: 14px 0 0;
+            padding-inline-start: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .prev-list li { margin-bottom: 8px; }
+        .prev-list strong { color: var(--text-color); }
+
+        /* Section Banner */
+        .sub-banner {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: #ffffff;
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            margin: 26px 0 18px;
+        }
+
+        .sub-banner h2 {
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .sub-banner p {
+            margin: 8px 0 0;
+            font-size: 14px;
+            opacity: 0.92;
+        }
+
+        /* Guide Cards */
         .card {
-          background: var(--card-light);
-          border-radius: 14px;
-          padding: 25px;
-          margin-bottom: 20px;
-          box-shadow: 0 10px 25px var(--shadow-light);
-          transition: background 0.3s, box-shadow 0.3s;
-        }
-
-        @media (prefers-color-scheme: dark) {
-          .card {
-            background: var(--card-dark);
-            box-shadow: 0 10px 25px var(--shadow-dark);
-          }
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 22px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
         }
 
         .card h2 {
-          margin-top: 0;
-          font-size: 22px;
-          color: var(--primary-color);
+            margin: 0 0 12px;
+            font-size: 19px;
+            color: var(--primary-color);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .card h2 { color: #2dd4bf; }
         }
 
         .card ul {
-          padding-right: 20px;
+            margin: 0;
+            padding-inline-start: 20px;
         }
 
-        [lang="en"] .card ul {
-          padding-left: 20px;
-          padding-right: 0;
-        }
+        .card li { margin-bottom: 8px; font-size: 14.5px; }
 
-        .card li {
-          margin-bottom: 8px;
-        }
-
-        .steps {
-          counter-reset: step;
-        }
+        .steps { counter-reset: step; }
 
         .step {
-          margin-bottom: 15px;
-          padding-right: 40px;
-          position: relative;
-        }
-
-        [lang="en"] .step {
-          padding-left: 40px;
-          padding-right: 0;
+            margin-bottom: 14px;
+            padding-inline-start: 38px;
+            position: relative;
+            font-size: 14.5px;
         }
 
         .step::before {
-          counter-increment: step;
-          content: counter(step);
-          position: absolute;
-          right: 0;
-          top: 0;
-          width: 28px;
-          height: 28px;
-          background: var(--primary-color);
-          color: #fff;
-          border-radius: 50%;
-          text-align: center;
-          line-height: 28px;
-          font-weight: bold;
-        }
-
-        [lang="en"] .step::before {
-          right: auto;
-          left: 0;
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            inset-inline-start: 0;
+            top: 2px;
+            width: 26px;
+            height: 26px;
+            background: var(--primary-color);
+            color: #ffffff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 26px;
+            font-size: 13px;
+            font-weight: bold;
         }
 
         .highlight {
-          background: #ecfeff;
-          border-right: 5px solid var(--primary-color);
-          padding: 15px;
-          border-radius: 8px;
-          transition: background 0.3s;
+            background: var(--highlight-bg);
+            border-inline-start: 4px solid var(--primary-color);
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 14.5px;
         }
 
-        [lang="en"] .highlight {
-          border-right: none;
-          border-left: 5px solid var(--primary-color);
-        }
-
-        @media (prefers-color-scheme: dark) {
-          .highlight {
-            background: rgba(15, 118, 110, 0.2);
-          }
-        }
+        .highlight p { margin: 0; }
 
         footer {
-          background: #0f172a;
-          color: #cbd5f5;
-          text-align: center;
-          padding: 20px 10px;
-          font-size: 14px;
-          margin-top: 40px;
-        }
-
-        @media (prefers-color-scheme: dark) {
-          footer {
-            background: #1e293b;
-          }
-        }
-
-        .app-download {
-          background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-          color: #ffffff;
-          border-radius: 18px;
-          padding: 35px 25px;
-          text-align: center;
-          box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        }
-
-        .app-download h2 {
-          margin-top: 0;
-          font-size: 26px;
-          color: #ffffff;
-        }
-
-        .app-download p {
-          color: #e0f2f1;
-          font-size: 16px;
-          margin: 15px 0 25px;
-          opacity: 0.95;
-        }
-
-        .play-btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 12px;
-          background: #ffffff;
-          color: var(--primary-color);
-          text-decoration: none;
-          padding: 14px 22px;
-          border-radius: 50px;
-          font-size: 16px;
-          font-weight: bold;
-          transition: all 0.3s ease;
-        }
-
-        .play-btn:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-        }
-
-        .play-btn img {
-          width: 26px;
-          height: 26px;
+            background: #0f172a;
+            color: #cbd5e1;
+            text-align: center;
+            padding: 20px 12px;
+            font-size: 13px;
+            margin-top: 32px;
         }
     </style>
 </head>
 <body>
+
+<div class="lang-switch-bar">
+    <button id="langToggleBtn" class="lang-btn" onclick="toggleLanguage()">English</button>
+</div>
+
+<!-- ==================== النسخة العربية ==================== -->
 <div class="language-ar" lang="ar" dir="rtl">
-    <header>
-        <div class="update-badge">تحديثات 2026</div>
+    <header class="hero-header">
+        <div class="version-pill">🚀 الإصدار الرئيسي v2.0.0 — نقلة نوعية جديدة</div>
+        <h1>مرحباً بك في الإصدار v2.0.0 من محفظتي الذكية</h1>
+        <p>إصدار جديد بالكامل يجمع بين إدارة الديون والحسابات ونظام الميزانية الشهرية الاحترافي بتصميم عصري وتقارير PDF شاملة.</p>
     </header>
 
     <div class="container">
         <section class="updates-section">
-            <h2> التحديثات الجديدة لعام 2026</h2>
-            <p>نقدم لكم آخر التحديثات لتحسين تجربتكم مع تطبيق محفظتي الذكية:</p>
+            <h2 class="section-heading">✨ أبرز مميزات الإصدار v2.0.0</h2>
+            <p class="section-subtitle">إضافات جذرية وتحسينات شاملة تمنحك سيطرة كاملة على أموالك ومصروفاتك اليومية:</p>
 
             <div class="update-grid">
-                <div class="update-card">
-                    <h3>🔄 العمليات الدورية</h3>
-                    <p>من ضمن تطوير التطبيق فقد تم اضافة امكانية تكرار العمليات  للحسابات بشكل (يومي - أسبوعي - شهري).</p>
-                    <div class="feature-badge">ميزة جديدة</div>
+                <div class="update-card featured">
+                    <div>
+                        <h3>📊 الميزانية الشهرية وإدارة النفقات</h3>
+                        <p>قسم متكامل لإدارة الدخل والمصروفات الشخصية مع لوحة ملخص ذكية، سقف ميزانية شهري، شريط نسبة الاستهلاك، رسوم بيانية تفاعلية (توزيع التصنيفات ومقارنة آخر 6 أشهر)، وتصنيفات افتراضية ومخصصة.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge major">ميزة رئيسية v2.0.0</span></div>
+                </div>
+
+                <div class="update-card accent-blue">
+                    <div>
+                        <h3>🔗 الربط الاختياري بين الديون والميزانية</h3>
+                        <p>أصبح بإمكانك تفعيل خيار الربط أثناء تسجيل أي عملية دين (لك أو عليك) لتُدرج تلقائياً في الميزانية الشهرية بضغطة مفتاح واحدة دون إعادة إدخال.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge blue">ربط ذكي</span></div>
+                </div>
+
+                <div class="update-card accent-gold">
+                    <div>
+                        <h3>📄 تقارير PDF موحّدة (الحسابات + الميزانية)</h3>
+                        <p>شيت تقارير محدّث مقسّم بذكاء بين «تقارير الحسابات» و«تقارير الميزانية» مع 3 تقارير PDF احترافية للميزانية: كشف العمليات التفصيلي، تحليل وتوزيع التصنيفات، والملخص الشهري المقارن.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge gold">تقارير متقدمة</span></div>
                 </div>
 
                 <div class="update-card">
-                    <h3>🎨 أيقونة جديدة</h3>
-                    <p>تم تحديث أيقونة التطبيق لتناسب معايير جوجل بلاي الجديدة لعام 2026، مع تصميم عصري وواضح يسهل التعرف على التطبيق.</p>
-                    <div class="feature-badge">محدث</div>
+                    <div>
+                        <h3>🎨 تصميم عصري وأيقونات ملونة موحّدة</h3>
+                        <p>شريط تنقل سفلي مطوّر مع زر إضافة موحد (+)، حزمة أيقونات حديثة وملونة في كافة الشاشات والقائمة الجانبية، وتلوين ديناميكي مميز لكل تصنيف حساب بمرجعية شاشة تصنيفات الحسابات.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge">واجهة جديدة</span></div>
                 </div>
 
-                <div class="update-card">
-                    <h3>🖼️ إرفاق الصور</h3>
-                    <p>من ضمن تطوير التطبيق فقد تم اضافة ارفاق الصور للعمليات والفواتير ليتم حفظ السندات مع المرفقات.</p>
-                    <div class="feature-badge">ميزة جديدة</div>
+                <div class="update-card accent-blue">
+                    <div>
+                        <h3>☁️ مزامنة سحابية واستعادة كاملة للميزانية</h3>
+                        <p>مزامنة لحظية فورية لبيانات الميزانية والتصنيفات والحدود الشهرية بين أجهزتك عبر السحابة، مع دعم الترقية التلقائية من حساب الضيف إلى الحساب الرسمي والنسخ الاحتياطي المحلي.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge blue">مزامنة آمنة</span></div>
                 </div>
 
-                <div class="update-card">
-                    <h3>💰 اشتراكات جوجل بلاي</h3>
-                    <p>أضفنا نظام اشتراكات متطور عبر منصة جوجل بلاي يتيح خيارات مرنة للاشتراك الشهري والسنوي مع تجديد تلقائي آمن.</p>
-                    <div class="feature-badge">ميزة جديدة</div>
-                </div>
-
-                <div class="update-card">
-                    <h3>📺 مشاهدة إعلانات</h3>
-                    <p>ميزة جديدة تتيح لك جمع نقاط مجانية بمشاهدة إعلانات قصيرة. النقاط قابلة للاستبدال بمزايا داخل التطبيق.</p>
-                    <div class="feature-badge">ميزة جديدة</div>
+                <div class="update-card featured">
+                    <div>
+                        <h3>⚡ تحسينات الأداء والخطوط ولوحة المفاتيح</h3>
+                        <p>توحيد خط Cairo الأنيق في الشاشات والديالوجات والقائمة الجانبية، تحسين تفاعل النوافذ مع لوحة المفاتيح وتكبير خطوط الهاتف، وتطوير التحقق الذكي لأرقام الهاتف.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge major">تحسين شامل</span></div>
                 </div>
             </div>
         </section>
-        <header>
-            <h1>دليل إستخدام ميزة متابعة حساباتي</h1>
-            <p>كيفية الاستفادة من ميزة <strong>متابعة حساباتي</strong> في تطبيق محفظتي الذكية</p>
-        </header>
+
+        <details class="prev-updates">
+            <summary>
+                <span>📌 أبرز مزايا التحديثات السابقة (2026)</span>
+                <span>▼</span>
+            </summary>
+            <ul class="prev-list">
+                <li><strong>🔄 العمليات الدورية:</strong> تكرار تلقائي لعمليات الحسابات (يومي، أسبوعي، شهري).</li>
+                <li><strong>🖼️ إرفاق الصور والسندات:</strong> إمكانية إرفاق صور الفواتير والإيصالات مباشرة مع العمليات.</li>
+                <li><strong>💰 اشتراكات Google Play:</strong> خطط اشتراك شهرية وسنوية مرنة وآمنة مع تجديد تلقائي.</li>
+                <li><strong>📺 مكافآت الإعلانات ودعوة الأصدقاء:</strong> جمع نقاط وعمليات إضافية مجانية بسهولة.</li>
+            </ul>
+        </details>
+
+        <div class="sub-banner">
+            <h2>💎 دليل استخدام ميزة متابعة حساباتي</h2>
+            <p>شفافية مالية فورية تتيح لك ولعملائك متابعة الأرصدة المسجلة دون اتصال أو انتظار</p>
+        </div>
+
         <div class="card">
             <h2>🏪 لماذا هذه الميزة مهمة لك؟</h2>
             <ul>
@@ -403,42 +455,29 @@
             </ul>
         </div>
 
-        <div class="card security-card">
+        <div class="card">
             <h2>🛡️ معلومات الأمان والتحقق</h2>
-            <div class="security-alert">
-                <p>لضمان حماية البيانات ومنع الدخول غير المصرح به، يستخدم التطبيق نظام التحقق الثنائي.</p>
-                <p>عند تفعيل الميزة، سيصلك <strong>رمز تحقق (SMS)</strong> للتأكد من ملكية الرقم. هذه الخطوة ضرورية لحماية خصوصية بياناتك وبيانات زبائنك.</p>
-                <p style="margin-top: 10px; font-size: 0.9em;"><strong>ملاحظة:</strong> يمكنك إلغاء تفعيل الميزة في أي وقت من إعدادات التطبيق.</p>
-            </div>
+            <p>لضمان حماية البيانات ومنع الدخول غير المصرح به، يستخدم التطبيق نظام التحقق الثنائي عبر <strong>رمز تحقق (SMS)</strong> للتأكد من ملكية الرقم. يمكنك إلغاء تفعيل الميزة في أي وقت من إعدادات التطبيق.</p>
         </div>
 
         <div class="card">
             <h2>📱 شروط استخدام الميزة</h2>
             <ul>
-                <li>يجب أن يكون الطرفان (التجار أو أصحاب البقالات أو أي مستخدم والطرف الآخر سواء زبون أو المسجل عليه الحساب) قد فعّلا ميزة متابعة حساباتي.</li>
+                <li>يجب أن يكون الطرفان (التاجر أو صاحب الحساب والطرف الآخر) قد فعّلا ميزة متابعة حساباتي.</li>
                 <li>لا يمكن لأي شخص تصفح الحسابات دون تفعيل الميزة والتحقق من الرقم.</li>
-                <li>في حال عدم رغبتك بالسماح للآخرين بمتابعة حساباتهم لديك، يمكنك <strong>إلغاء تفعيل الميزة في أي وقت</strong>.</li>
+                <li>يمكنك <strong>إلغاء تفعيل الميزة في أي وقت</strong> من الإعدادات.</li>
             </ul>
             <p><strong>🔔 تذكير:</strong> حماية الحساب مسؤولية مشتركة، ولا تشارك رمز التحقق مع أي شخص.</p>
         </div>
 
         <div class="card">
-            <h2>📱 خطوات التفعيل</h2>
+            <h2>🚀 خطوات التفعيل</h2>
             <div class="steps">
                 <div class="step">افتح تطبيق <strong>محفظتي الذكية</strong></div>
-                <div class="step">فعّل ميزة <strong>متابعة حساباتي</strong></div>
+                <div class="step">فعّل ميزة <strong>متابعة حساباتي</strong> من الشريط السفلي</div>
                 <div class="step">سجّل اسمك التجاري ورقم هاتفك الصحيح</div>
                 <div class="step">استخدم نفس الرقم لإدارة حسابات الزبائن</div>
             </div>
-        </div>
-
-        <div class="card">
-            <h2>🧾 إضافة حسابات الزبائن</h2>
-            <ul>
-                <li>أدخل رقم هاتف الزبون الصحيح عند تسجيل الحساب</li>
-                <li>تأكد أن الزبون فعّل الميزة بنفس الرقم</li>
-                <li>سيظهر الحساب تلقائيًا لدى الزبون</li>
-            </ul>
         </div>
 
         <div class="card">
@@ -447,223 +486,175 @@
                 <p>"لو حاب تعرف حسابك في أي وقت، فعّل ميزة متابعة حساباتي في تطبيق محفظتي الذكية، وراح تشوف رصيدك بدون اتصال أو انتظار."</p>
             </div>
         </div>
-
-        <div class="card">
-            <h2>❗ في حال لم تظهر الحسابات</h2>
-            <ul>
-                <li>تأكد أن الزبون فعّل الميزة بنفس رقم هاتفه</li>
-                <li>راجع رقم الهاتف المدخل في حساب الزبون</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2>✅ الخلاصة</h2>
-            <ul>
-                <li>فعّل الميزة مرة واحدة</li>
-                <li>وجّه الزبائن لمتابعة حساباتهم بأنفسهم</li>
-                <li>قلّل الضغط وركّز على عملك</li>
-            </ul>
-        </div>
     </div>
 
     <footer>
-        جميع الحقوق محفوظة © تطبيق محفظتي الذكية 2026
+        جميع الحقوق محفوظة © تطبيق محفظتي الذكية v2.0.0 — Haddad Inc 2026
     </footer>
 </div>
 
+<!-- ==================== English Version ==================== -->
 <div class="language-en" lang="en" dir="ltr">
-    <header>
-        <div class="update-badge">2026 Updates</div>
-        <h1>Track My Account Feature Guide</h1>
-        <p>How to use the <strong>Track My Account</strong> feature in My Smart Wallet app</p>
+    <header class="hero-header">
+        <div class="version-pill">🚀 Major Release v2.0.0 — All-New Experience</div>
+        <h1>Welcome to My Smart Wallet v2.0.0</h1>
+        <p>A major milestone combining debt &amp; account management with a complete personal monthly budget system, modern design, and unified PDF reports.</p>
     </header>
 
     <div class="container">
         <section class="updates-section">
-            <h2> New Updates for 2026</h2>
-            <p>We present the latest updates to enhance your experience with My Smart Wallet app:</p>
-            <div class="update-card">
-                <h3>🔄 Recurring Transactions</h3>
-                <p>As part of the app development, the ability to add recurring transactions for accounts has been added (daily, weekly, monthly).</p>
-                <div class="feature-badge">New Feature</div>
-            </div>
+            <h2 class="section-heading">✨ What's New in Version 2.0.0</h2>
+            <p class="section-subtitle">Powerful new capabilities and visual upgrades designed to give you complete control over your finances:</p>
+
             <div class="update-grid">
-                <div class="update-card">
-                    <h3>🎨 New App Icon</h3>
-                    <p>Updated app icon to meet Google Play's 2026 standards, with a modern and clear design for easy app recognition.</p>
-                    <div class="feature-badge">Updated</div>
+                <div class="update-card featured">
+                    <div>
+                        <h3>📊 Monthly Budget &amp; Expense Manager</h3>
+                        <p>A dedicated budget dashboard with net monthly balance (surplus/deficit), customizable monthly spending limits with live usage bar, interactive charts (category pie &amp; 6-month comparison), and custom categories.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge major">Major Feature v2.0.0</span></div>
+                </div>
+
+                <div class="update-card accent-blue">
+                    <div>
+                        <h3>🔗 Optional Debt-to-Budget Linking</h3>
+                        <p>Record any debt transaction (Credit or Debit) directly into your Monthly Budget with a single toggle—saving time and keeping your personal cash flow accurate.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge blue">Smart Sync</span></div>
+                </div>
+
+                <div class="update-card accent-gold">
+                    <div>
+                        <h3>📄 Unified PDF Reports (Accounts + Budget)</h3>
+                        <p>Redesigned segmented report sheet switching seamlessly between Account Reports and Budget Reports, introducing 3 new Budget PDFs: Detailed Entries, Category Analysis, and Monthly Summary.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge gold">Advanced PDF</span></div>
                 </div>
 
                 <div class="update-card">
-                    <h3>🖼️ Attach Images</h3>
-                    <p>As part of the app development, we have added the ability to attach images to transactions and invoices to save vouchers with attachments.</p>
-                    <div class="feature-badge">New Feature</div>
+                    <div>
+                        <h3>🎨 Modern UI &amp; Multicolor Vector Icons</h3>
+                        <p>Upgraded bottom navigation with a unified Quick Add (+) menu, crisp multicolor vector icons across all screens and drawer, plus dynamic color-coded account category badges.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge">Refreshed UI</span></div>
                 </div>
 
-                <div class="update-card">
-                    <h3>💰 Google Play Subscriptions</h3>
-                    <p>Added an advanced subscription system through Google Play platform offering flexible monthly and yearly plans with secure auto-renewal.</p>
-                    <div class="feature-badge">New Feature</div>
+                <div class="update-card accent-blue">
+                    <div>
+                        <h3>☁️ Full Cloud Sync &amp; Backup for Budget</h3>
+                        <p>Real-time multi-device Firestore sync for budget entries, categories, and monthly limits, complete guest-to-official account migration, and local database backup/restore support.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge blue">Cloud Ready</span></div>
                 </div>
 
-                <div class="update-card">
-                    <h3>📺 Watch Ads for Points</h3>
-                    <p>New feature that allows you to earn free points by watching short ads. Points can be redeemed for in-app benefits.</p>
-                    <div class="feature-badge">New Feature</div>
+                <div class="update-card featured">
+                    <div>
+                        <h3>⚡ Typography, Keyboard &amp; UX Polish</h3>
+                        <p>Unified typography across screens, dialogs, and navigation drawer, smoother keyboard responsiveness on forms and bottom sheets, and improved smart phone number detection.</p>
+                    </div>
+                    <div class="badge-row"><span class="feature-badge major">Polish &amp; Speed</span></div>
                 </div>
             </div>
         </section>
 
+        <details class="prev-updates">
+            <summary>
+                <span>📌 Previous 2026 Highlights</span>
+                <span>▼</span>
+            </summary>
+            <ul class="prev-list">
+                <li><strong>🔄 Recurring Transactions:</strong> Automate daily, weekly, or monthly account entries.</li>
+                <li><strong>🖼️ Image Attachments:</strong> Attach receipts and invoice photos directly to transactions.</li>
+                <li><strong>💰 Google Play Subscriptions:</strong> Flexible monthly and yearly plans with secure auto-renewal.</li>
+                <li><strong>📺 Ads &amp; Referral Rewards:</strong> Earn bonus transactions by watching short ads or inviting friends.</li>
+            </ul>
+        </details>
+
+        <div class="sub-banner">
+            <h2>💎 Track My Account Feature Guide</h2>
+            <p>Instant financial transparency letting you and your customers view live balances anytime</p>
+        </div>
+
         <div class="card">
-            <h2>🏪 Why is this feature important for you?</h2>
+            <h2>🏪 Why is this feature important?</h2>
             <ul>
-                <li>Reduce daily communication about balances</li>
-                <li>Organize accounts more clearly</li>
-                <li>Save time and effort</li>
-                <li>Enable customers to track their accounts themselves</li>
+                <li>Reduce daily calls and messages asking about balances</li>
+                <li>Organize accounts clearly and transparently</li>
+                <li>Save time and effort for both merchants and customers</li>
+                <li>Allow customers to review their own statements anytime</li>
             </ul>
         </div>
 
-        <div class="card security-card">
-            <h2>🛡️ Security and Verification Information</h2>
-            <div class="security-alert">
-                <p>To ensure data protection and prevent unauthorized access, the app uses two-factor authentication.</p>
-                <p>When activating the feature, you will receive a <strong>verification code (SMS)</strong> to confirm phone number ownership. This step is essential to protect your privacy and your customers' data.</p>
-                <p style="margin-top: 10px; font-size: 0.9em;"><strong>Note:</strong> You can deactivate the feature anytime from the app settings.</p>
-            </div>
+        <div class="card">
+            <h2>🛡️ Security and Verification</h2>
+            <p>To protect privacy and prevent unauthorized access, the app uses two-factor verification via an <strong>SMS verification code</strong> to confirm phone ownership. You can deactivate this feature anytime from settings.</p>
         </div>
 
         <div class="card">
             <h2>📱 Feature Usage Terms</h2>
             <ul>
-                <li>Both parties (merchants, grocery owners, or any user and the other party whether customer or account holder) must have activated the Track My Account feature.</li>
-                <li>No one can browse accounts without activating the feature and verifying the phone number.</li>
-                <li>If you don't want to allow others to track their accounts with you, you can <strong>deactivate the feature at any time</strong>.</li>
+                <li>Both parties must activate the Track My Account feature.</li>
+                <li>No one can view accounts without activating the feature and verifying their phone number.</li>
+                <li>You can <strong>disable the feature at any time</strong> from app settings.</li>
             </ul>
-            <p><strong>🔔 Reminder:</strong> Account protection is a shared responsibility, do not share verification codes with anyone.</p>
+            <p><strong>🔔 Reminder:</strong> Never share your SMS verification code with anyone.</p>
         </div>
 
         <div class="card">
-            <h2>📱 Activation Steps</h2>
+            <h2>🚀 Activation Steps</h2>
             <div class="steps">
                 <div class="step">Open <strong>My Smart Wallet</strong> app</div>
-                <div class="step">Activate <strong>Track My Account</strong> feature</div>
-                <div class="step">Register your business name and correct phone number</div>
-                <div class="step">Use the same number to manage customer accounts</div>
+                <div class="step">Tap <strong>Track My Accounts</strong> from the bottom bar</div>
+                <div class="step">Enter your business name and valid phone number</div>
+                <div class="step">Use the same number when managing customer accounts</div>
             </div>
         </div>
 
         <div class="card">
-            <h2>🧾 Adding Customer Accounts</h2>
-            <ul>
-                <li>Enter the customer's correct phone number when registering the account</li>
-                <li>Make sure the customer has activated the feature with the same number</li>
-                <li>The account will automatically appear to the customer</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2>🗣️ How to inform customers about the feature?</h2>
+            <h2>🗣️ How to inform your customers?</h2>
             <div class="highlight">
-                <p>"If you want to know your account balance anytime, activate the Track My Account feature in My Smart Wallet app, and you'll see your balance without calls or waiting."</p>
+                <p>"To check your account balance anytime, activate the Track My Account feature in My Smart Wallet app and view your statements without calls or waiting."</p>
             </div>
-        </div>
-
-        <div class="card">
-            <h2>❗ If accounts don't appear</h2>
-            <ul>
-                <li>Make sure the customer activated the feature with the same phone number</li>
-                <li>Review the phone number entered in the customer's account</li>
-            </ul>
-        </div>
-
-        <div class="card">
-            <h2>✅ Summary</h2>
-            <ul>
-                <li>Activate the feature once</li>
-                <li>Guide customers to track their accounts themselves</li>
-                <li>Reduce pressure and focus on your business</li>
-            </ul>
         </div>
     </div>
 
     <footer>
-        All rights reserved © My Smart Wallet App 2026
+        All rights reserved © My Smart Wallet v2.0.0 — Haddad Inc 2026
     </footer>
 </div>
 
 <script>
-    // Detect browser language and show appropriate content
-    function detectLanguage() {
-      const userLang = navigator.language || navigator.userLanguage;
-      const arabicElements = document.querySelectorAll('.language-ar');
-      const englishElements = document.querySelectorAll('.language-en');
+    let currentLang = 'ar';
 
-      // Check if language starts with 'ar' (Arabic)
-      if (userLang.startsWith('ar')) {
-        arabicElements.forEach(el => el.style.display = 'block');
-        englishElements.forEach(el => el.style.display = 'none');
-        document.documentElement.lang = 'ar';
-        document.documentElement.dir = 'rtl';
-      } else {
-        // Default to English for non-Arabic languages
-        arabicElements.forEach(el => el.style.display = 'none');
-        englishElements.forEach(el => el.style.display = 'block');
-        document.documentElement.lang = 'en';
-        document.documentElement.dir = 'ltr';
-      }
-    }
-
-    // Apply theme based on system preference
-    function applyTheme() {
-      const darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-      if (darkMode) {
-        document.documentElement.style.setProperty('--bg-light', '#0f172a');
-        document.documentElement.style.setProperty('--text-light', '#f8fafc');
-        document.documentElement.style.setProperty('--card-light', '#1e293b');
-        document.documentElement.style.setProperty('--shadow-light', 'rgba(0, 0, 0, 0.2)');
-      }
-    }
-
-    // Listen for theme changes
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
-
-    // Initialize on page load
-    document.addEventListener('DOMContentLoaded', () => {
-      detectLanguage();
-      applyTheme();
-
-      // Add language switcher for manual override
-     // const langSwitcher = document.createElement('div');
-     // langSwitcher.style.position = 'fixed';
-     // langSwitcher.style.top = '10px';
-      //langSwitcher.style.right = '10px';
-     // langSwitcher.style.zIndex = '1000';
-      //langSwitcher.innerHTML = `
-      //  <button onclick="switchLanguage('ar')" style="padding: 5px 10px; margin: 2px; background: #0f766e; color: white; border: none; border-radius: 4px; cursor: pointer;">العربية</button>
-      //  <button onclick="switchLanguage('en')" style="padding: 5px 10px; margin: 2px; background: #0f766e; color: white; border: none; border-radius: 4px; cursor: pointer;">English</button>
-      //`;
-     // document.body.appendChild(langSwitcher);
-    });
-
-    // Manual language switch function
     function switchLanguage(lang) {
-      const arabicElements = document.querySelectorAll('.language-ar');
-      const englishElements = document.querySelectorAll('.language-en');
+        currentLang = lang;
+        const arBlocks = document.querySelectorAll('.language-ar');
+        const enBlocks = document.querySelectorAll('.language-en');
+        const btn = document.getElementById('langToggleBtn');
 
-      if (lang === 'ar') {
-        arabicElements.forEach(el => el.style.display = 'block');
-        englishElements.forEach(el => el.style.display = 'none');
-        document.documentElement.lang = 'ar';
-        document.documentElement.dir = 'rtl';
-      } else {
-        arabicElements.forEach(el => el.style.display = 'none');
-        englishElements.forEach(el => el.style.display = 'block');
-        document.documentElement.lang = 'en';
-        document.documentElement.dir = 'ltr';
-      }
+        if (lang === 'ar') {
+            arBlocks.forEach(el => el.style.display = 'block');
+            enBlocks.forEach(el => el.style.display = 'none');
+            document.documentElement.lang = 'ar';
+            document.documentElement.dir = 'rtl';
+            if (btn) btn.textContent = 'English';
+        } else {
+            arBlocks.forEach(el => el.style.display = 'none');
+            enBlocks.forEach(el => el.style.display = 'block');
+            document.documentElement.lang = 'en';
+            document.documentElement.dir = 'ltr';
+            if (btn) btn.textContent = 'العربية';
+        }
     }
+
+    function toggleLanguage() {
+        switchLanguage(currentLang === 'ar' ? 'en' : 'ar');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const userLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
+        switchLanguage(userLang.startsWith('ar') ? 'ar' : 'en');
+    });
 </script>
 </body>
 </html>

@@ -42,11 +42,11 @@ android {
         applicationId = "com.hpp.daftree"
         minSdk = 24
         targetSdk = 36
-        versionCode = 68
-        versionName = "1.6.8"
+        versionCode = 69
+        versionName = "1.6.9"
 
         // إظهار ديالوج التحديث
-        buildConfigField("boolean", "IS_MAJOR_UPDATE", "false")
+        buildConfigField("boolean", "IS_MAJOR_UPDATE", "true")
         buildConfigField("int", "VERSION_CODE", versionCode.toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
