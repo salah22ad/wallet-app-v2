@@ -1,0 +1,1008 @@
+# بيانات متجر Google Play — القسم الثاني (اللغات من 15 إلى 29)
+
+> **ضوابط Google Play Console المعتمدة في هذا الملف:**
+> - **اسم التطبيق:** حد أقصى `30` حرفاً.
+> - **الوصف المختصر:** حد أقصى `80` حرفاً.
+> - **الوصف الكامل:** حد أقصى `4,000` حرف (نص صافٍ بدون علامات `**` لضمان مظهر احترافي على المتجر).
+
+---
+
+## 15. المجرية (`hu-HU`)
+
+**اسم التطبيق (26 / 30):**
+```text
+Smart Wallet: Költségvetés
+```
+
+**الوصف المختصر (74 / 80):**
+```text
+Kezeld havi költségvetésed, kiadásaid, tartozásaid és mások feljegyzéseit!
+```
+
+**الوصف الكامل:**
+```text
+Gondolkodtál már azon, hova tűnik el a pénzed a hónap vége előtt? Összekeverednek a személyes kiadásaid az ügyfelek és ismerősök tartozásaival? 🤔💸
+
+Ne találgass tovább – vedd át a teljes irányítást a pénzügyeid felett!
+A My Smart Wallet egyetlen alkalmazásban egyesíti a havi költségvetés-tervezőt, a napi kiadáskövetőt és az intelligens tartozási naplót. Ideális családoknak, diákoknak, szabadúszóknak és kisvállalkozóknak.
+
+━━━━━━━━━━━━━━━━
+
+✨ ÚJDONSÁG: Személyes Költségvetés és Tartozások Okos Elkülönítése
+Tartsd külön a napi magánkiadásaidat az ügyfél-, beszállítói és kölcsönszámláktól — egy opcionális kapcsolóval pedig egyetlen érintéssel átemelhetsz bármely tartozási tételt a havi költségvetésbe.
+
+📊 1. Havi Költségvetés és Kiadáskövető
+- Rögzíts bevételeket és kiadásokat (Számlák, Lakhatás, Élelmiszer, Közlekedés, Egészség vagy egyéni kategóriák) másodpercek alatt.
+- Állíts be havi keretet pénznemenként, és kövesd élőben a felhasználást, a maradék keretet és a nettó megtakarítást.
+- Interaktív kördiagramok és 6 havi bevétel-kiadás összehasonlítás.
+
+💎 2. Exkluzív: „Számláim Követése”
+Ne csak azt vezesd, amivel te tartozol vagy neked tartoznak — lásd azt is, amit mások rögzítettek a számodra!
+- Teljes pénzügyi átláthatóság a kereskedőknél és partnereknél vezetett tételekről.
+- Maximális adatvédelem: bármikor be- vagy kikapcsolható.
+
+📒 3. Okos Tartozási és Ügyfélkönyv
+- Rendezd ügyfeleidet, beszállítóidat és korlátlan saját kategóriáidat színes jelvényekkel.
+- Átlátható Tartozik / Követel nyilvántartás minden művelet után frissülő egyenleggel.
+- Beépített számológép, blokkfotó csatolás és kimutatás küldése WhatsAppon vagy SMS-ben.
+
+📄 4. Professzionális PDF Jelentések (Számlák és Költségvetés)
+- Számlajelentések: részletes kivonatok, összesített egyenlegek és havi összefoglalók.
+- Költségvetési jelentések: tételes lista, százalékos kategóriaelemzés és havi keret-összehasonlítás.
+- Saját profillal és logóval, azonnal nyomtatható vagy megosztható.
+
+☁️ 5. Valós idejű Felhő-szinkron 2 Eszközön és Offline Mód
+- Használd ugyanazt a fiókot két telefonon egyszerre, azonnali szinkronizálással.
+- Automatikus felhőmentés biztonságos készülékváltáshoz.
+- 100%-ban működik internet nélkül, és támogatja a régi biztonsági mentések importálását.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Profi Eszközök:
+🌍 Több pénznem: HUF, EUR, USD vagy egyéni devizák.
+🧾 Eladási és beszerzési számlák a kifizetett és fennmaradó összeg követésével.
+🔁 Ismétlődő tételek bérleti díjhoz, fizetésekhez és előfizetésekhez.
+💻 PC-s elérés Wi-Fi-n keresztül kényelmes böngészős megtekintéshez.
+🔒 Ujjlenyomat/PIN védelem, Sötét mód és 29 nyelv.
+
+📥 Töltsd le a My Smart Wallet alkalmazást MOST, és teremts pénzügyi egyensúlyt!
+```
+
+---
+
+## 16. السلوفاكية (`sk`)
+
+**اسم التطبيق (29 / 30):**
+```text
+Smart Wallet: Rozpočet a Dlhy
+```
+
+**الوصف المختصر (69 / 80):**
+```text
+Spravujte mesačný rozpočet, výdavky, dlhy a účty vedené na vaše meno!
+```
+
+**الوصف الكامل:**
+```text
+Premýšľate, kam miznú vaše peniaze pred koncom mesiaca? Miešajú sa vám osobné výdavky s dlhmi a účtami zákazníkov? 🤔💸
+
+Prestaňte hádať a získajte plnú kontrolu nad svojimi financiami!
+My Smart Wallet spája mesačný rozpočet, sledovanie denných výdavkov a inteligentnú knihu dlhov v jednej aplikácii. Ideálna pre rodiny, študentov, živnostníkov aj malé podniky.
+
+━━━━━━━━━━━━━━━━
+
+✨ NOVINKA: Inteligentné oddelenie Osobného Rozpočtu a Dlhov
+Udržujte svoje osobné výdavky úplne oddelené od účtov zákazníkov, dodávateľov a pôžičiek — s voliteľným prepínačom, ktorý jedným ťuknutím zapíše dlhovú operáciu aj do mesačného rozpočtu.
+
+📊 1. Mesačný Rozpočet a Sledovanie Výdavkov
+- Zapisujte príjmy a výdavky (Účty, Bývanie, Jedlo, Doprava, Zdravie alebo vlastné kategórie) za pár sekúnd.
+- Nastavte mesačný limit pre každú menu a sledujte percento čerpania, zostatok aj čistú úsporu.
+- Interaktívne koláčové grafy a 6-mesačné porovnanie príjmov a výdavkov.
+
+💎 2. Exkluzívne: „Sledovanie mojich účtov“
+Nezapisujte len vlastné záznamy — pozrite si aj to, čo na vaše číslo zaznamenali iní!
+- Úplná finančná transparentnosť pri účtoch u obchodníkov alebo partnerov.
+- Zaručené súkromie: funkciu môžete kedykoľvek zapnúť alebo pozastaviť.
+
+📒 3. Chytrá Kniha Dlhov a Účtov
+- Organizujte zákazníkov, dodávateľov a neobmedzené vlastné kategórie s farebnými ikonami.
+- Presné sledovanie pohľadávok a záväzkov s priebežným zostatkom po každej operácii.
+- Vstavaná kalkulačka, fotografie dokladov a posielanie výpisov cez WhatsApp alebo SMS.
+
+📄 4. Profesionálne PDF Správy (Účty aj Rozpočet)
+- Správy účtov: podrobné výpisy, súhrnné zostatky a mesačné prehľady.
+- Správy rozpočtu: podrobný zoznam, percentuálna analýza kategórií a porovnanie s limitmi.
+- S vaším logom, pripravené na tlač alebo okamžité zdieľanie.
+
+☁️ 5. Cloudová Synchronizácia na 2 Zariadeniach a Režim Offline
+- Používajte jeden účet na dvoch telefónoch súčasne s okamžitou aktualizáciou.
+- Automatická cloudová záloha chráni vaše údaje pri zmene telefónu.
+- Funguje 100% offline a podporuje import záloh zo starších aplikácií.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Pokročilé Funkcie:
+🌍 Viac mien: EUR, USD, lokálne alebo vlastné meny.
+🧾 Predajné a nákupné faktúry so sledovaním platieb a doplatkov.
+🔁 Opakujúce sa platby pre nájomné, mzdy a predplatné.
+💻 Prístup z PC cez Wi-Fi na pohodlné prezeranie v prehliadači.
+🔒 Zámok odtlačkom prsta alebo PIN kódom, tmavý režim a 29 jazykov.
+
+📥 Stiahnite si My Smart Wallet TERAZ a majte svoje peniaze pevne pod kontrolou!
+```
+
+---
+
+## 17. السويدية (`sv-SE`)
+
+**اسم التطبيق (30 / 30):**
+```text
+Smart Wallet: Budget & Skulder
+```
+
+**الوصف المختصر (71 / 80):**
+```text
+Styr din budget, utgifter, skulder och se vad andra registrerat på dig!
+```
+
+**الوصف الكامل:**
+```text
+Undrar du vart pengarna tar vägen innan månaden är slut? Blandas dina privata utgifter ihop med skulder och kundkonton? 🤔💸
+
+Sluta gissa och ta full kontroll över din ekonomi!
+My Smart Wallet samlar månadsbudget, utgiftskoll och en smart skuldbok i en och samma app. Perfekt för familjer, studenter, frilansare och småföretagare.
+
+━━━━━━━━━━━━━━━━
+
+✨ NYTT: Smart uppdelning mellan Privatbudget och Skulder
+Håll dina dagliga privata utgifter helt åtskilda från kund-, leverantörs- och lånekonton – med en valfri knapp för att spegla valfri skuldpost i din månadsbudget med ett tryck.
+
+📊 1. Månadsbudget & Utgiftskoll
+- Registrera inkomster och utgifter (Räkningar, Boende, Mat, Transport, Hälsa eller egna kategorier) på några sekunder.
+- Sätt en månadsgräns per valuta och följ förbrukning i procent, kvarvarande budget och nettosparande i realtid.
+- Interaktiva cirkeldiagram och 6-månaders stapeldiagram över inkomster kontra utgifter.
+
+💎 2. Exklusivt: "Följ Mina Konton"
+Anteckna inte bara vad du är skyldig eller har att fordra – se även vad andra registrerar på ditt nummer!
+- Full ekonomisk transparens kring poster hos handlare eller partners.
+- Total integritet och kontroll: aktivera eller pausa när du vill.
+
+📒 3. Smart Skuld- & Kontobok (Kredit & Debet)
+- Organisera kunder, leverantörer och obegränsade egna kategorier med färgkodade ikoner.
+- Tydligt löpande saldo efter varje enskild transaktion.
+- Inbyggd kalkylator, kvittofoton och delning av kontoutdrag via WhatsApp eller SMS.
+
+📄 4. Professionella PDF-rapporter (Konton & Budget)
+- Kontorapporter: detaljerade utdrag, samlade saldon och månadssammanfattningar.
+- Budgetrapporter: fullständig transaktionslista, kategorifördelning i procent och månadsjämförelse mot budgetgräns.
+- Anpassade med din profil och logotyp, klara att skriva ut eller dela direkt.
+
+☁️ 5. Molnsynk på 2 Enheter & Offline-läge
+- Använd samma konto på två telefoner samtidigt med direkt synkronisering.
+- Automatisk molnbackup gör det tryggt att byta mobil.
+- Fungerar 100% offline och importerar säkerhetskopior från äldre appar.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Pro-verktyg:
+🌍 Flera valutor: SEK, EUR, USD eller egna valutor.
+🧾 Försäljnings- och inköpsfakturor med koll på betalt belopp och restskuld.
+🔁 Återkommande poster för hyra, lön och abonnemang.
+💻 Datoråtkomst via Wi-Fi för att granska rapporter i webbläsaren.
+🔒 Fingeravtryck/PIN-lås, Mörkt läge och 29 språk.
+
+📥 Ladda ner My Smart Wallet NU och få lugn och ordning på din ekonomi!
+```
+
+---
+
+## 18. الدنماركية (`da-DK`)
+
+**اسم التطبيق (27 / 30):**
+```text
+Smart Wallet: Budget & Gæld
+```
+
+**الوصف المختصر (72 / 80):**
+```text
+Styr dit budget, daglige udgifter, gæld og se konti oprettet i dit navn!
+```
+
+**الوصف الكامل:**
+```text
+Undrer du dig over, hvor pengene bliver af før månedens udgang? Bliver dine personlige udgifter blandet sammen med gæld og kundekonti? 🤔💸
+
+Stop med at gætte og tag fuld kontrol over din økonomi!
+My Smart Wallet forener månedsbudget, udgiftsstyring og en smart gælds- og regnskabsbog i én overskuelig app. Ideel til familier, studerende, freelancere og erhvervsdrivende.
+
+━━━━━━━━━━━━━━━━
+
+✨ NYHED: Smart adskillelse mellem Privatbudget og Gæld
+Hold dine daglige private udgifter helt adskilt fra kunder, leverandører og lån – med en valgfri funktion, der med ét tryk overfører en gældspost til dit månedsbudget.
+
+📊 1. Månedsbudget & Daglig Udgiftsstyring
+- Registrer indtægter og udgifter (Regninger, Bolig, Mad, Transport, Sundhed eller egne kategorier) på få sekunder.
+- Sæt et månedligt loft pr. valuta og følg forbrugsprocent, restbudget og nettoresultat live.
+- Interaktive lagkagediagrammer og 6-måneders sammenligning af indtægter og udgifter.
+
+💎 2. Eksklusivt: "Følg Mine Konti"
+Noter ikke kun dine egne poster – se også hvad andre registrerer på dit nummer!
+- Fuld økonomisk gennemsigtighed over beløb registreret af butikker eller partnere.
+- Fuld kontrol over privatlivet: aktiver eller sæt på pause når som helst.
+
+📒 3. Smart Gælds- & Kundebog (Kredit & Debet)
+- Organiser kunder, leverandører og ubegrænsede egne kategorier med farvede ikoner.
+- Præcis løbende saldo efter hver eneste postering.
+- Indbygget lommeregner, kvitteringsbilleder og deling af kontoudtog via WhatsApp eller SMS.
+
+📄 4. Professionelle PDF-rapporter (Konti & Budget)
+- Kontorapporter: detaljerede kontoudtog, samlede saldi og månedsoversigter.
+- Budgetrapporter: detaljeret liste, kategori-analyse i procent og månedlig budgetsammenligning.
+- Med dit eget logo, klar til udskrivning eller øjeblikkelig deling.
+
+☁️ 5. Cloud-synk på 2 Enheder & Offline-tilstand
+- Brug den samme konto på to telefoner samtidig med realtidssynkronisering.
+- Automatisk cloud-backup beskytter dine data ved telefonskift.
+- Fungerer 100% offline og importerer sikkerhedskopier fra tidligere apps.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Pro-værktøjer:
+🌍 Flere valutaer: DKK, EUR, USD eller brugerdefinerede valutaer.
+🧾 Salgs- og købsfakturaer med sporing af kontant betaling og restbeløb.
+🔁 Gentagne posteringer til husleje, løn og abonnementer.
+💻 PC-adgang via Wi-Fi så du kan se rapporter på stor skærm.
+🔒 Fingeraftryk/PIN-lås, Mørk tilstand og 29 sprog.
+
+📥 Download My Smart Wallet NU og skab fuldt overblik over din økonomi!
+```
+
+---
+
+## 19. النرويجية (`no-NO` / `nb-NO`)
+
+**اسم التطبيق (30 / 30):**
+```text
+Smart Wallet: Budsjett & Gjeld
+```
+
+**الوصف المختصر (72 / 80):**
+```text
+Styr månedsbudsjett, utgifter, gjeld og se hva andre registrerer på deg!
+```
+
+**الوصف الكامل:**
+```text
+Lurer du på hvor pengene blir av før måneden er over? Blander personlige utgifter seg med gjeld og kundekontoer? 🤔💸
+
+Slutt å gjette og ta full kontroll over økonomien din!
+My Smart Wallet kombinerer månedsbudsjett, utgiftssporing og en smart gjeldsbok i én brukervennlig app. Perfekt for familier, studenter, frilansere og små bedrifter.
+
+━━━━━━━━━━━━━━━━
+
+✨ NYTT: Smart skille mellom Personlig Budsjett og Gjeld
+Hold personlige utgifter helt adskilt fra kunder, leverandører og lån – med en valgfri bryter for å speile en gjeldspost inn i månedsbudsjettet med ett trykk.
+
+📊 1. Månedsbudsjett & Utgiftsoversikt
+- Registrer inntekter og utgifter (Regninger, Bolig, Mat, Transport, Helse eller egne kategorier) på sekunder.
+- Sett en månedlig budsjettgrense per valuta og følg forbruksprosent, gjenstående beløp og nettosparing i sanntid.
+- Interaktive smultringdiagrammer og 6-måneders sammenligning av inntekter og utgifter.
+
+💎 2. Eksklusivt: "Følg Mine Kontoer"
+Ikke bare noter hva du skylder eller har til gode – se også hva andre registrerer på nummeret ditt!
+- Full åpenhet rundt kontoer og saldoer hos butikker eller partnere.
+- Full kontroll og personvern: aktiver eller deaktiver når som helst.
+
+📒 3. Smart Gjelds- & Kontobok (Kredit & Debet)
+- Organiser kunder, leverandører og ubegrensede egne kategorier med fargede merker.
+- Tydelig løpende saldo etter hver transaksjon.
+- Innebygd kalkulator, kvitteringsbilder og deling av kontoutskrifter via WhatsApp eller SMS.
+
+📄 4. Profesjonelle PDF-rapporter (Kontoer & Budsjett)
+- Kontorapporter: detaljerte utskrifter, samlede saldoer og månedsoversikter.
+- Budsjettrapporter: detaljert logg, kategorifordeling i prosent og sammenligning mot månedsbudsjett.
+- Tilpasset med profil og logo, klar for utskrift eller deling.
+
+☁️ 5. Skysynk på 2 Enheter & Frakoblet Modus
+- Bruk samme konto på to telefoner samtidig med øyeblikkelig synkronisering.
+- Automatisk skybackup sikrer dataene dine når du bytter mobil.
+- Fungerer 100% uten internett og importerer sikkerhetskopier fra eldre apper.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Pro-funksjoner:
+🌍 Flere valutaer: NOK, EUR, USD eller egendefinerte valutaer.
+🧾 Salgs- og kjøpsfakturaer med sporing av innbetaling og restbeløp.
+🔁 Faste gjentakende posteringer for husleie, lønn og abonnementer.
+💻 PC-tilgang over Wi-Fi for å bla gjennom rapporter i nettleseren.
+🔒 Fingeravtrykk/PIN-lås, Mørk modus og 29 språk.
+
+📥 Last ned My Smart Wallet NÅ og få full trygghet og økonomisk oversikt!
+```
+
+---
+
+## 20. الفنلندية (`fi-FI`)
+
+**اسم التطبيق (30 / 30):**
+```text
+Smart Wallet: Budjetti & Velat
+```
+
+**الوصف المختصر (74 / 80):**
+```text
+Hallitse budjettia, menoja, velkoja ja näe muiden sinulle kirjaamat tilit!
+```
+
+**الوصف الكامل:**
+```text
+Mietitkö joka kuukausi, mihin rahasi katoavat? Sekoittuvatko henkilökohtaiset menosi velkoihin ja asiakastileihin? 🤔💸
+
+Lopeta arvailu ja ota taloutesi täysin hallintaan!
+My Smart Wallet yhdistää kuukausibudjetin, menoseurannan ja älykkään velkakirjan yhteen selkeään sovellukseen. Erinomainen perheille, opiskelijoille, freelancereille ja yrittäjille.
+
+━━━━━━━━━━━━━━━━
+
+✨ UUTTA: Älykäs erottelu Henkilökohtaisen Budjetin ja Velkojen välillä
+Pidä arjen menot täysin erillään asiakas-, toimittaja- ja lainatileistä – valinnaisen kytkimen avulla voit heijastaa velkatapahtuman myös kuukausibudjettiisi yhdellä napautuksella.
+
+📊 1. Kuukausibudjetti ja Menoseuranta
+- Kirjaa tulot ja menot (Laskut, Asuminen, Ruoka, Liikenne, Terveys tai omat kategoriat) sekunneissa.
+- Aseta kuukausiraja valuuttakohtaisesti ja seuraa kulutusprosenttia, jäljellä olevaa budjettia ja nettosäästöä reaaliajassa.
+- Interaktiiviset donitsikaaviot ja 6 kuukauden tulojen ja menojen vertailu.
+
+💎 2. Ainutlaatuinen: "Seuraa Tilejäni"
+Älä kirjaa vain omia merkintöjäsi – näe myös mitä muut ovat kirjanneet numerollesi!
+- Täydellinen läpinäkyvyys kauppiaiden tai kumppaneiden kirjaamiin saldoihin.
+- Täysi yksityisyyden hallinta: ota käyttöön tai keskeytä milloin haluat.
+
+📒 3. Älykäs Velka- ja Asiakaskirja
+- Järjestä asiakkaat, toimittajat ja rajattomat omat kategoriat värikoodatuilla kuvakkeilla.
+- Tarkka juokseva saldo jokaisen tapahtuman jälkeen.
+- Sisäänrakennettu laskin, kuittikuvat ja tiliotteiden jako WhatsAppilla tai tekstiviestillä.
+
+📄 4. Ammattimaiset PDF-raportit (Tilit ja Budjetti)
+- Tiliraportit: yksityiskohtaiset tiliotteet, kokonaissaldot ja kuukausiyhteenvedot.
+- Budjettiraportit: tapahtumalista, kategorioiden osuudet prosentteina ja vertailu kuukausirajaan.
+- Omalla logollasi, valmiina tulostukseen tai välittömään jakamiseen.
+
+☁️ 5. Pilvisynkronointi 2 Laitteelle & Offline-tila
+- Käytä samaa tiliä kahdella puhelimella samanaikaisesti reaaliaikaisella synkronoinnilla.
+- Automaattinen pilvivarmuuskopio turvaa tietosi puhelinta vaihtaessa.
+- Toimii 100% ilman internetiä ja tuo varmuuskopiot vanhoista sovelluksista.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Pro-työkalut:
+🌍 Useat valuutat: EUR, USD, paikalliset tai omat valuutat.
+🧾 Myynti- ja ostolaskut käteismaksujen ja loppusaldon seurannalla.
+🔁 Toistuvat tapahtumat vuokralle, palkoille ja tilauksille.
+💻 PC-käyttö Wi-Fi-yhteydellä raporttien selaamiseen selaimessa.
+🔒 Sormenjälki-/PIN-lukitus, Tumma tila ja 29 kieltä.
+
+📥 Lataa My Smart Wallet NYT ja tuo selkeyttä ja varmuutta raha-asioihisi!
+```
+
+---
+
+## 21. الإندونيسية (`id`)
+
+**اسم التطبيق (30 / 30):**
+```text
+Smart Wallet: Anggaran & Utang
+```
+
+**الوصف المختصر (74 / 80):**
+```text
+Atur anggaran bulanan, pengeluaran, utang & pantau catatan atas nama Anda!
+```
+
+**الوصف الكامل:**
+```text
+Sering bingung ke mana perginya uang Anda sebelum akhir bulan? Pengeluaran pribadi tercampur dengan catatan utang piutang dan akun pelanggan? 🤔💸
+
+Berhenti menebak dan kendalikan keuangan Anda sepenuhnya!
+My Smart Wallet menyatukan pengatur anggaran bulanan, pencatat pengeluaran harian, dan buku utang piutang pintar dalam satu aplikasi. Cocok untuk keluarga, mahasiswa, freelancer, hingga pemilik toko.
+
+━━━━━━━━━━━━━━━━
+
+✨ BARU: Pemisahan Cerdas antara Anggaran Pribadi & Utang
+Pisahkan pengeluaran pribadi sepenuhnya dari akun pelanggan, pemasok, dan pinjaman — dilengkapi tombol opsional sekali ketuk untuk mencatat transaksi utang ke anggaran bulanan kapan pun Anda mau.
+
+📊 1. Anggaran Bulanan & Pelacak Pengeluaran
+- Catat pemasukan dan pengeluaran (Tagihan, Rumah, Makanan, Transportasi, Kesehatan, atau kategori khusus) dalam hitungan detik.
+- Tetapkan batas anggaran bulanan per mata uang dan pantau persentase pemakaian, sisa anggaran, serta surplus/defisit secara langsung.
+- Grafik donat interaktif dan diagram batang perbandingan pemasukan vs pengeluaran 6 bulan terakhir.
+
+💎 2. Eksklusif: "Pantau Akun Saya"
+Jangan hanya mencatat utang piutang Anda — lihat juga apa yang dicatat orang lain atas nomor Anda!
+- Transparansi penuh untuk catatan toko atau rekan bisnis.
+- Privasi dan kendali penuh: aktifkan atau nonaktifkan fitur kapan saja.
+
+📒 3. Buku Utang Piutang Pintar (Pelanggan & Pemasok)
+- Kelola pelanggan, pemasok, dan kategori tanpa batas dengan ikon berwarna khas.
+- Sistem Debit & Kredit yang akurat dengan saldo berjalan setelah setiap transaksi.
+- Kalkulator bawaan, lampiran foto struk, dan kirim rincian lewat WhatsApp atau SMS.
+
+📄 4. Laporan PDF Profesional (Akun & Anggaran)
+- Laporan Akun: mutasi detail, ringkasan saldo, dan rekap bulanan.
+- Laporan Anggaran: daftar lengkap, analisis kategori dalam persentase, dan perbandingan batas bulanan.
+- Dilengkapi profil dan logo usaha Anda, siap dicetak atau dibagikan seketika.
+
+☁️ 5. Sinkronisasi Cloud 2 Perangkat & Mode Offline
+- Gunakan satu akun di dua HP sekaligus dengan sinkronisasi real-time.
+- Pencadangan cloud otomatis menjaga data aman saat berganti HP.
+- Bekerja 100% tanpa internet dan mendukung impor cadangan dari aplikasi lama.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Fitur Pro Lengkap:
+🌍 Multi-Mata Uang: IDR, USD, EUR, atau mata uang kustom lainnya.
+🧾 Faktur Penjualan & Pembelian dengan pelacakan pembayaran tunai dan sisa tagihan.
+🔁 Transaksi Berulang otomatis untuk sewa, gaji, dan langganan.
+💻 Akses lewat PC (Wi-Fi) untuk melihat laporan lebih lega di browser.
+🔒 Kunci Sidik Jari / PIN, Mode Gelap, dan 29 bahasa.
+
+📥 Unduh My Smart Wallet SEKARANG dan mulai hidup lebih tertata secara finansial!
+```
+
+---
+
+## 22. الفيتنامية (`vi`)
+
+**اسم التطبيق (30 / 30):**
+```text
+Smart Wallet: Chi Tiêu & Sổ Nợ
+```
+
+**الوصف المختصر (76 / 80):**
+```text
+Quản lý ngân sách, chi tiêu, sổ nợ và theo dõi khoản người khác ghi cho bạn!
+```
+
+**الوصف الكامل:**
+```text
+Bạn luôn thắc mắc tiền đi đâu hết trước khi cuối tháng? Chi tiêu cá nhân bị lẫn lộn với sổ nợ khách hàng và các khoản vay mượn? 🤔💸
+
+Ngừng đoán mò và kiểm soát tài chính của bạn ngay hôm nay!
+My Smart Wallet kết hợp quản lý ngân sách hàng tháng, theo dõi thu chi hằng ngày và sổ nợ thông minh trong cùng một ứng dụng. Phù hợp cho gia đình, sinh viên, người làm tự do và chủ cửa hàng.
+
+━━━━━━━━━━━━━━━━
+
+✨ MỚI: Tách Biệt Thông Minh Giữa Ngân Sách Cá Nhân & Sổ Nợ
+Giữ chi tiêu cá nhân tách biệt hoàn toàn với tài khoản khách hàng, nhà cung cấp và khoản vay — kèm nút bật tùy chọn một chạm để tự động ghi nhận giao dịch nợ vào ngân sách tháng khi cần.
+
+📊 1. Ngân Sách Hàng Tháng & Quản Lý Thu Chi
+- Ghi chép thu chi hằng ngày (Hóa đơn, Nhà ở, Ăn uống, Di chuyển, Sức khỏe hoặc danh mục tự tạo) chỉ trong vài giây.
+- Đặt hạn mức chi tiêu mỗi tháng theo từng loại tiền tệ, theo dõi phần trăm đã dùng, số tiền còn lại và mức tiết kiệm theo thời gian thực.
+- Biểu đồ tròn tương tác và biểu đồ cột so sánh thu – chi trong 6 tháng gần nhất.
+
+💎 2. Độc Quyền: "Theo Dõi Tài Khoản Của Tôi"
+Không chỉ tự ghi chép — xem ngay những gì người khác ghi nhận theo số điện thoại của bạn!
+- Minh bạch tài chính tuyệt đối với các khoản công nợ tại cửa hàng hoặc đối tác.
+- Quyền riêng tư tuyệt đối: bật hoặc tắt tính năng bất cứ lúc nào.
+
+📒 3. Sổ Nợ & Công Nợ Thông Minh (Khách Hàng & Nhà Cung Cấp)
+- Phân loại khách hàng, nhà cung cấp và danh mục tùy chỉnh không giới hạn với biểu tượng màu sắc nổi bật.
+- Ghi rõ Phải Thu / Phải Trả cùng số dư lũy kế chính xác sau từng giao dịch.
+- Tích hợp máy tính, đính kèm ảnh hóa đơn và gửi sao kê nhanh qua WhatsApp hoặc SMS.
+
+📄 4. Xuất Báo Cáo PDF Chuyên Nghiệp (Công Nợ & Ngân Sách)
+- Báo cáo tài khoản: sao kê chi tiết, tổng hợp số dư và báo cáo theo tháng.
+- Báo cáo ngân sách: nhật ký thu chi, phân tích danh mục theo tỷ lệ % và đối chiếu hạn mức tháng.
+- Hiển thị thông tin và logo cá nhân, sẵn sàng in ấn hoặc chia sẻ tức thì.
+
+☁️ 5. Đồng Bộ Đám Mây 2 Thiết Bị & Dùng Ngoại Tuyến
+- Dùng chung một tài khoản trên hai điện thoại với đồng bộ thời gian thực.
+- Sao lưu đám mây tự động giúp khôi phục ngay khi đổi máy mới.
+- Hoạt động 100% không cần mạng và hỗ trợ nhập dữ liệu từ bản sao lưu cũ.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Tiện Ích Nâng Cao:
+🌍 Đa Tiền Tệ: VND, USD, EUR và mọi loại tiền bạn tự thêm.
+🧾 Hóa Đơn Bán & Mua Hàng theo dõi tiền thanh toán ngay và phần còn nợ.
+🔁 Giao Dịch Định Kỳ tự động cho tiền thuê nhà, lương và gói đăng ký.
+💻 Kết Nối Máy Tính qua Wi-Fi để xem báo cáo rộng rãi trên trình duyệt.
+🔒 Khóa Vân Tay / Mã PIN, Chế Độ Tối và hỗ trợ 29 ngôn ngữ.
+
+📥 Tải My Smart Wallet NGAY để làm chủ ngân sách và sổ nợ dễ dàng hơn bao giờ hết!
+```
+
+---
+
+## 23. التايلاندية (`th`)
+
+**اسم التطبيق (29 / 30):**
+```text
+Smart Wallet: บัญชี งบ & หนี้
+```
+
+**الوصف المختصر (71 / 80):**
+```text
+จัดการงบรายเดือน รายรับรายจ่าย บัญชีหนี้ และดูยอดที่คนอื่นจดไว้ให้คุณ!
+```
+
+**الوصف الكامل:**
+```text
+เคยสงสัยไหมว่าเงินหายไปไหนหมดก่อนสิ้นเดือน? รายจ่ายส่วนตัวปนกับบัญชีหนี้สินและลูกค้าจนสับสนใช่ไหม? 🤔💸
+
+หยุดเดาแล้วเริ่มควบคุมการเงินของคุณอย่างมืออาชีพ!
+My Smart Wallet รวมแอปวางแผนงบประมาณรายเดือน บันทึกรายรับรายจ่าย และสมุดจดหนี้อัจฉริยะไว้ในแอปเดียว เหมาะสำหรับครอบครัว นักเรียน ฟรีแลนซ์ และเจ้าของร้านค้า
+
+━━━━━━━━━━━━━━━━
+
+✨ ใหม่: แยกงบส่วนตัวออกจากบัญชีหนี้สินอย่างชาญฉลาด
+แยกรายจ่ายส่วนตัวออกจากบัญชีลูกค้า ซัพพลายเออร์ และเงินกู้ยืมอย่างชัดเจน พร้อมสวิตช์ตัวเลือก 1 แตะ เพื่อบันทึกรายการหนี้เข้าสู่งบรายเดือนได้ทันทีเมื่อต้องการ
+
+📊 1. วางแผนงบประมาณและบันทึกรายรับ-รายจ่าย
+- บันทึกรายรับรายจ่ายประจำวัน (ค่าบิล ที่พัก อาหาร เดินทาง สุขภาพ หรือหมวดหมู่กำหนดเอง) ในไม่กี่วินาที
+- ตั้งวงเงินงบรายเดือนแยกตามสกุลเงิน ดูเปอร์เซ็นต์ที่ใช้ไป ยอดคงเหลือ และเงินออมสุทธิแบบเรียลไทม์
+- กราฟวงกลมแบบโต้ตอบและกราฟแท่งเปรียบเทียบรายรับ-รายจ่ายย้อนหลัง 6 เดือน
+
+💎 2. ฟีเจอร์พิเศษ: "ติดตามบัญชีของฉัน"
+ไม่ได้แค่จดสิ่งที่คุณให้หรือรับ แต่ยังดูยอดที่คนอื่นบันทึกไว้ภายใต้เบอร์ของคุณได้ด้วย!
+- โปร่งใสทุกยอดค้างชำระกับร้านค้าหรือคู่ค้า
+- ปลอดภัยและเป็นส่วนตัว เปิดหรือปิดการใช้งานได้ทุกเมื่อ
+
+📒 3. สมุดจดหนี้และลูกหนี้อัจฉริยะ
+- จัดหมวดหมู่ลูกค้า ซัพพลายเออร์ และหมวดหมู่เองได้ไม่จำกัด พร้อมไอคอนสีสันชัดเจน
+- ระบบเจ้าหนี้/ลูกหนี้แม่นยำ แสดงยอดคงเหลือสะสมหลังทุกรายการ
+- เครื่องคิดเลขในตัว แนบรูปใบเสร็จ และส่งสรุปยอดผ่าน WhatsApp หรือ SMS
+
+📄 4. รายงาน PDF มืออาชีพ (บัญชีและงบประมาณ)
+- รายงานบัญชี: รายการเดินบัญชีละเอียด ยอดคงเหลือรวม และสรุปรายเดือน
+- รายงานงบประมาณ: บันทึกรายละเอียด สัดส่วนหมวดหมู่เป็นเปอร์เซ็นต์ และเทียบกับวงเงินงบ
+- ใส่โลโก้และข้อมูลของคุณ พร้อมพิมพ์หรือแชร์ได้ทันที
+
+☁️ 5. ซิงก์คลาวด์ 2 เครื่องแบบเรียลไทม์และใช้งานออฟไลน์
+- ใช้งานบัญชีเดียวกันได้พร้อมกัน 2 เครื่อง ข้อมูลอัปเดตทันที
+- สำรองข้อมูลบนคลาวด์อัตโนมัติ เปลี่ยนเครื่องใหม่ข้อมูลไม่หาย
+- ใช้งานแบบออฟไลน์ได้ 100% และรองรับการนำเข้าข้อมูลสำรองจากแอปเก่า
+
+━━━━━━━━━━━━━━━━
+
+🌟 ฟีเจอร์ระดับโปร:
+🌍 รองรับหลายสกุลเงิน: THB, USD, EUR หรือสกุลเงินที่เพิ่มเอง
+🧾 ใบแจ้งหนี้ขายและซื้อ ติดตามยอดจ่ายสดและยอดค้างชำระอัตโนมัติ
+🔁 รายการเกิดซ้ำอัตโนมัติสำหรับค่าเช่า เงินเดือน และค่าสมาชิก
+💻 เชื่อมต่อคอมพิวเตอร์ผ่าน Wi-Fi ดูรายงานบนจอใหญ่ได้สะดวก
+🔒 ล็อกด้วยลายนิ้วมือหรือรหัส PIN โหมดมืด และรองรับ 29 ภาษา
+
+📥 ดาวน์โหลด My Smart Wallet เลยตอนนี้ แล้วจัดการการเงินของคุณอย่างมั่นใจ!
+```
+
+---
+
+## 24. الهندية (`hi-IN`)
+
+**اسم التطبيق (29 / 30):**
+```text
+Smart Wallet: बजट व उधार खाता
+```
+
+**الوصف المختصر (70 / 80):**
+```text
+मासिक बजट, दैनिक खर्च, उधार खाता और दूसरों के रिकॉर्ड किए खाते देखें!
+```
+
+**الوصف الكامل:**
+```text
+क्या आप हर महीने सोचते हैं कि पैसा कहाँ चला गया? क्या आपके निजी खर्च और ग्राहकों का उधार खाता आपस में मिल जाते हैं? 🤔💸
+
+अंदाज़ा लगाना बंद करें और अपने पैसों पर पूरा नियंत्रण पाएं!
+My Smart Wallet एक ऑल-इन-वन पर्सनल फाइनेंस मैनेजर, मासिक बजट प्लानर और स्मार्ट उधार खाता है — जो परिवारों, छात्रों, फ्रीलांसरों और दुकानदारों के लिए बनाया गया है।
+
+━━━━━━━━━━━━━━━━
+
+✨ नया फीचर: निजी बजट और उधार खाते का स्मार्ट विभाजन
+अपने रोज़ाना के निजी खर्चों को ग्राहकों, सप्लायर्स और उधार खातों से बिल्कुल अलग रखें — और जब चाहें, एक टैप में किसी भी उधार लेन-देन को मासिक बजट में भी जोड़ें।
+
+📊 1. मासिक बजट और दैनिक खर्च ट्रैकर
+- सेकंडों में आय और खर्च (बिल, किराया, भोजन, यात्रा, स्वास्थ्य या कस्टम श्रेणियाँ) दर्ज करें।
+- हर मुद्रा के लिए मासिक बजट सीमा तय करें और उपयोग प्रतिशत, बचा हुआ बजट व कुल बचत लाइव देखें।
+- इंटरैक्टिव डोनट चार्ट और पिछले 6 महीनों की आय बनाम खर्च तुलना के साथ खर्च समझें।
+
+💎 2. विशेष फीचर: "मेरे खाते ट्रैक करें"
+सिर्फ अपना हिसाब ही न लिखें — देखें कि दूसरों ने आपके नंबर पर क्या दर्ज किया है!
+- व्यापारियों या साथियों द्वारा आपके नाम पर दर्ज खातों में पूरी पारदर्शिता।
+- पूरी गोपनीयता और नियंत्रण: कभी भी चालू या बंद करें।
+
+📒 3. स्मार्ट उधार खाता और लेन-देन डायरी
+- ग्राहकों, सप्लायर्स और असीमित कस्टम श्रेणियों को रंगीन आइकन के साथ व्यवस्थित करें।
+- हर लेन-देन के बाद सटीक बैलेंस दिखाने वाला लेन-देन (जमा / नामे) सिस्टम।
+- इन-बिल्ट कैलकुलेटर, रसीद की फोटो और WhatsApp या SMS से तुरंत स्टेटमेंट भेजें।
+
+📄 4. प्रोफेशनल PDF रिपोर्ट्स (खाते और बजट)
+- खाता रिपोर्ट: विस्तृत स्टेटमेंट, कुल बैलेंस और मासिक सारांश।
+- बजट रिपोर्ट: पूरी आय-व्यय सूची, प्रतिशत के साथ श्रेणी विश्लेषण और बजट सीमा तुलना।
+- अपने प्रोफाइल और लोगो के साथ प्रिंट या शेयर करने के लिए तैयार।
+
+☁️ 5. 2 डिवाइस पर रियल-टाइम क्लाउड सिंक और ऑफलाइन मोड
+- एक ही अकाउंट को दो फोन पर एक साथ इस्तेमाल करें — हर बदलाव तुरंत सिंक होता है।
+- ऑटोमैटिक क्लाउड बैकअप से फोन बदलने पर भी डेटा सुरक्षित।
+- 100% ऑफलाइन काम करता है और पुराने ऐप्स से बैकअप इम्पोर्ट सपोर्ट करता है।
+
+━━━━━━━━━━━━━━━━
+
+🌟 प्रो टूल्स:
+🌍 मल्टी-करेंसी: INR, USD, EUR या अपनी कोई भी मुद्रा जोड़ें।
+🧾 बिक्री और खरीद बिल: नकद भुगतान और बकाया राशि का ऑटोमैटिक हिसाब।
+🔁 आवर्ती भुगतान: किराया, वेतन और सब्सक्रिप्शन के लिए ऑटो-शेड्यूल।
+💻 Wi-Fi द्वारा PC एक्सेस: लैपटॉप स्क्रीन पर आसानी से रिपोर्ट देखें।
+🔒 फिंगरप्रिंट/PIN लॉक, डार्क मोड और 29 भाषाओं का सपोर्ट।
+
+📥 अभी My Smart Wallet डाउनलोड करें और अपने बजट व उधार खाते को स्मार्ट तरीके से संभालें!
+```
+
+---
+
+## 25. الصينية المبسطة (`zh-CN`)
+
+**اسم التطبيق (23 / 30):**
+```text
+My Smart Wallet：预算记账与欠款
+```
+
+**الوصف المختصر (33 / 80):**
+```text
+管理月度预算、日常收支、往来账本，并实时查看他人记在你名下的账目！
+```
+
+**الوصف الكامل:**
+```text
+每个月还没过半就不知道钱花哪儿去了？个人日常开销总是和客户往来账、借款欠款混在一起？🤔💸
+
+别再凭感觉花钱，现在就全面掌控你的财务！
+My Smart Wallet 集个人理财、月度预算规划、日常记账与智能往来欠款本于一体，轻松替代纸质账本与复杂财务软件，适合家庭、学生、自由职业者及个体商户。
+
+━━━━━━━━━━━━━━━━
+
+✨ 全新升级：个人预算与往来欠款智能分离
+将个人日常收支与客户、供应商、亲友借款账目彻底分开；需要时只需一键开关，即可将任意往来账同步计入当月预算。
+
+📊 1. 月度预算与日常收支记账
+- 几秒钟快速记录收入与支出（账单、住房、餐饮、交通、医疗或自定义分类）。
+- 按币种设置月度预算上限，实时掌握已用比例、剩余预算及月度结余/超支。
+- 交互式环形分类图表与近6个月收支对比柱状图，花销结构一目了然。
+
+💎 2. 独家功能：“追踪我的账目”
+不仅记录自己的应收应付，还能查看他人记在你手机号名下的往来账目！
+- 商户或合作伙伴记在你名下的账单完全透明。
+- 隐私完全由你掌控，随时一键开启或暂停。
+
+📒 3. 智能欠款本与客户往来账
+- 客户、供应商及无限自定义分组，搭配专属彩色图标轻松区分。
+- 清晰的应收/应付记录，每笔交易后自动计算最新结余。
+- 内置计算器、票据拍照留存，支持通过 WhatsApp 或短信一键发送对账单。
+
+📄 4. 专业 PDF 报表（账户与预算双报表）
+- 账户报表：明细对账单、汇总余额表及月度统计。
+- 预算报表：收支流水明细、分类占比分析及月度预算执行对比。
+- 支持添加个人资料与商家 Logo，随时打印或一键分享。
+
+☁️ 5. 双设备实时云同步与离线记账
+- 同一账号可在两部手机上同时使用，记账与修改实时同步。
+- 自动云端备份，换新手机登录即可秒速恢复所有账目与预算。
+- 支持 100% 离线使用，并可智能导入旧版记账备份数据。
+
+━━━━━━━━━━━━━━━━
+
+🌟 专业实用工具：
+🌍 多币种管理：支持人民币、美元、欧元及任意自定义币种。
+🧾 销售与采购发票：自动追踪现金已付金额与未结余款。
+🔁 周期性自动入账：轻松管理房租、工资与固定订阅费用。
+💻 Wi-Fi 电脑端查看：在电脑浏览器大屏舒适查看账目和报表。
+🔒 指纹/PIN 密码锁、深色模式，并支持 29 种语言。
+
+📥 立即下载 My Smart Wallet，让预算更清晰、账目更安心！
+```
+
+---
+
+## 26. اليابانية (`ja-JP`)
+
+**اسم التطبيق (24 / 30):**
+```text
+Smart Wallet：家計簿・予算と貸借管理
+```
+
+**الوصف المختصر (37 / 80):**
+```text
+毎月の予算・家計簿、貸し借り管理、相手が記録した取引の確認までこれ一つで！
+```
+
+**الوصف الكامل:**
+```text
+月末になる前にお金がどこへ消えたのか迷っていませんか？日々の生活費と、取引先や友人との貸し借り・売掛管理がごちゃ混ぜになっていませんか？🤔💸
+
+感覚任せの管理をやめて、お金をすっきり見える化しましょう！
+My Smart Wallet は、毎月の予算管理、日々の家計簿、スマートな貸借・売掛帳を一つにまとめたオールインワン資産管理アプリです。ご家庭、学生、フリーランス、個人事業主に最適です。
+
+━━━━━━━━━━━━━━━━
+
+✨ 新機能：個人予算と貸借口座のスマート分離
+毎日の生活費を、顧客・仕入先・個人間の貸し借り口座から完全に分離。必要に応じてワンタップで貸借取引を毎月の予算にも自動反映できます。
+
+📊 1. 毎月の予算管理＆家計簿
+- 収入と支出（光熱費、住居、食費、交通、医療、または独自カテゴリ）を数秒で記録。
+- 通貨ごとに毎月の予算上限を設定し、消化率・残り予算・収支バランスをリアルタイム確認。
+- タップできるドーナツグラフと直近6か月の収支比較バーで使い道が一目瞭然。
+
+💎 2. 独自機能：「自分の口座を追跡」
+自分で記録するだけでなく、相手があなたの電話番号に記録した取引も確認できます！
+- 店舗や取引先が記録した残高を高い透明性で把握。
+- プライバシー完全保護：いつでもオン・オフを切り替え可能。
+
+📒 3. スマート貸借・取引先帳簿
+- 顧客・仕入先・無制限の独自カテゴリをカラフルなバッジで整理。
+- 取引ごとに最新の累計残高を自動計算。
+- 内蔵電卓、レシート写真添付、WhatsAppやSMSでの明細共有に対応。
+
+📄 4. プロ仕様のPDFレポート（口座＆予算）
+- 口座レポート：明細一覧、残高サマリー、月別集計。
+- 予算レポート：収支明細、カテゴリ別割合分析、月間予算との比較。
+- プロフィールとロゴ入りで印刷・共有がすぐ完了。
+
+☁️ 5. 2台同時クラウド同期＆オフライン対応
+- 同じアカウントを2台のスマホで同時利用でき、変更がリアルタイム同期。
+- 自動クラウドバックアップで機種変更時もすぐ復元。
+- オフラインでも100%動作し、旧アプリからのバックアップ移行にも対応。
+
+━━━━━━━━━━━━━━━━
+
+🌟 便利なプロ機能：
+🌍 多通貨対応：JPY、USD、EURなど自由に追加可能。
+🧾 売上・仕入請求書：現金支払額と残高を自動管理。
+🔁 定期取引の自動登録：家賃・給与・サブスク管理に最適。
+💻 Wi-Fi経由のPC閲覧：パソコンの大画面で口座やレポートを確認。
+🔒 指紋・PINロック、ダークモード、29言語対応。
+
+📥 今すぐ My Smart Wallet をダウンロードして、安心でわかりやすいお金の管理を始めましょう！
+```
+
+---
+
+## 27. الكورية (`ko-KR`)
+
+**اسم التطبيق (26 / 30):**
+```text
+Smart Wallet: 가계부·예산 및 장부
+```
+
+**الوصف المختصر (43 / 80):**
+```text
+월별 예산, 지출 관리, 채무·거래처 장부, 상대방이 기록한 내 계좌 확인까지!
+```
+
+**الوصف الكامل:**
+```text
+월말이 되기도 전에 돈이 어디로 사라졌는지 궁금하신가요? 개인 생활비와 거래처·지인 간의 채무 장부가 뒤섞여 헷갈리시나요? 🤔💸
+
+이제 추측을 멈추고 내 돈을 완벽하게 관리하세요!
+My Smart Wallet은 월별 예산 플래너, 데일리 가계부, 스마트 채무·거래처 장부를 하나로 통합한 올인원 자산 관리 앱입니다. 가정, 학생, 프리랜서, 소상공인 모두에게 완벽하게 어울립니다.
+
+━━━━━━━━━━━━━━━━
+
+✨ 신규 기능: 개인 예산과 채무 장부의 스마트 분리
+일상 개인 지출을 고객·공급업체·대여 계좌와 완전히 분리하여 관리하세요. 필요할 때는 원터치 스위치로 채무 거래를 월별 예산에도 자동 반영할 수 있습니다.
+
+📊 1. 월별 예산 플래너 & 지출 가계부
+- 수입과 지출(공과금, 주거, 식비, 교통, 건강 또는 사용자 지정 카테고리)을 몇 초 만에 기록.
+- 통화별 월간 예산 한도를 설정하고 사용률, 남은 예산, 순저축액을 실시간 확인.
+- 인터랙티브 도넛 차트와 최근 6개월 수입·지출 비교 막대 그래프로 소비 패턴 파악.
+
+💎 2. 독점 기능: "내 계좌 추적"
+내가 기록한 내역만 보지 말고, 상대방이 내 번호로 기록한 거래도 투명하게 확인하세요!
+- 상점이나 파트너가 내 이름으로 기록한 잔액을 한눈에 확인.
+- 완벽한 프라이버시 보호: 언제든 자유롭게 켜고 끌 수 있습니다.
+
+📒 3. 스마트 채무 & 거래처 장부
+- 고객, 공급업체 및 무제한 사용자 정의 카테고리를 컬러 아이콘으로 깔끔하게 정리.
+- 매 거래 후 누적 잔액을 정확히 계산하는 받을 돈 / 줄 돈 시스템.
+- 내장 계산기, 영수증 사진 첨부, WhatsApp 및 SMS로 간편한 명세서 전송.
+
+📄 4. 전문 PDF 보고서 (계좌 & 예산)
+- 계좌 보고서: 상세 거래 내역서, 통합 잔액표, 월별 요약.
+- 예산 보고서: 수입·지출 상세 목록, 카테고리별 비율 분석, 월 예산 대비 비교.
+- 내 프로필과 로고를 넣어 바로 인쇄하거나 공유 가능.
+
+☁️ 5. 2대 기기 실시간 클라우드 동기화 & 오프라인 모드
+- 하나의 계정을 두 대의 스마트폰에서 동시에 실시간 동기화로 사용.
+- 자동 클라우드 백업으로 기기 변경 시에도 로그인만으로 즉시 복원.
+- 인터넷 없이 100% 오프라인 작동 및 기존 장부 앱 백업 파일 가져오기 지원.
+
+━━━━━━━━━━━━━━━━
+
+🌟 프로 기능:
+🌍 다중 통화 지원: KRW, USD, EUR 및 원하는 사용자 통화 추가.
+🧾 매출·매입 송장: 현금 결제액과 미수·미지급 잔액 자동 추적.
+🔁 정기 거래 자동화: 월세, 급여, 구독료 자동 예약.
+💻 Wi-Fi PC 웹 보기: 노트북 큰 화면에서 장부와 보고서를 편안하게 열람.
+🔒 지문/PIN 잠금, 다크 모드 및 29개 언어 지원.
+
+📥 지금 My Smart Wallet을 다운로드하고 명확하고 안정적인 재무 관리를 시작하세요!
+```
+
+---
+
+## 28. العبرية (`iw-IL` / `he-IL`)
+
+**اسم التطبيق (26 / 30):**
+```text
+Smart Wallet: תקציב וחובות
+```
+
+**الوصف المختصر (69 / 80):**
+```text
+ניהול תקציב חודשי, הוצאות יומיות, ספר חובות ומעקב אחר חשבונות על שמך!
+```
+
+**الوصف الكامل:**
+```text
+תוהים לאן נעלם הכסף לפני סוף החודש? ההוצאות האישיות מתערבבות עם חובות וחשבונות של לקוחות וחברים? 🤔💸
+
+הפסיקו לנחש וקחו שליטה מלאה על הכסף שלכם!
+My Smart Wallet משלבת באפליקציה אחת מנהל תקציב חודשי, מעקב הוצאות יומי וספר חובות חכם — ללא צורך במחברות נייר או בתוכנות הנהלת חשבונות מסובכות. מושלמת למשפחות, סטודנטים, עצמאים ובעלי עסקים.
+
+━━━━━━━━━━━━━━━━
+
+✨ חדש: הפרדה חכמה בין התקציב האישי לחובות!
+שמרו על ההוצאות היומיות שלכם מופרדות לחלוטין מחשבונות לקוחות, ספקים והלוואות — עם מתג בחירה בלחיצה אחת לשיקוף עסקת חוב גם בתקציב החודשי בכל עת שתרצו.
+
+📊 1. ניהול תקציב חודשי ומעקב הוצאות
+- תיעוד הכנסות והוצאות (חשבונות, דיור, מזון, תחבורה, בריאות או קטגוריות מותאמות אישית) בתוך שניות.
+- הגדרת תקרת תקציב חודשית לכל מטבע ומעקב בזמן אמת אחר אחוז הניצול, היתרה והעודף או הגירעון.
+- גרפים אינטראקטיביים (תרשים טבעת והשוואת הכנסות מול הוצאות ל-6 חודשים אחרונים).
+
+💎 2. בלעדי: "מעקב אחר החשבונות שלי"
+אל תרשמו רק מה שמגיע לכם או שאתם חייבים — ראו גם מה אחרים רושמים על המספר שלכם!
+- שקיפות מלאה לגבי יתרות ועסקאות שנרשמו אצל ספקים או שותפים.
+- פרטיות ושליטה מלאה: הפעילו או השהו את המעקב בכל רגע.
+
+📒 3. ספר חובות וחשבונות חכם (זכות וחובה)
+- ארגון לקוחות, ספקים וקטגוריות ללא הגבלה עם סמלים צבעוניים ייחודיים.
+- מעקב מדויק אחר יתרה מצטברת לאחר כל פעולה.
+- מחשבון מובנה, צירוף תמונות קבלות ושליחת דפי חשבון בוואטסאפ או ב-SMS.
+
+📄 4. דוחות PDF מקצועיים (חשבונות ותקציב)
+- דוחות חשבונות: פירוט תנועות, ריכוז יתרות וסיכום חודשי.
+- דוחות תקציב: יומן הכנסות והוצאות, פילוח קטגוריות באחוזים והשוואה לתקרת התקציב.
+- ממותגים עם הפרופיל והלוגו שלכם, מוכנים להדפסה או לשיתוף מיידי.
+
+☁️ 5. סנכרון ענן בזמן אמת ל-2 מכשירים ועבודה אופליין
+- שימוש באותו חשבון בשני טלפונים במקביל עם עדכון מיידי.
+- גיבוי ענן אוטומטי לשחזור מהיר בעת החלפת טלפון.
+- פועלת 100% ללא אינטרנט ותומכת בייבוא גיבויים מאפליקציות קודמות.
+
+━━━━━━━━━━━━━━━━
+
+🌟 כלים מתקדמים:
+🌍 ריבוי מטבעות: ₪, $, €, ומטבעות מותאמים אישית.
+🧾 חשבוניות מכירה וקנייה עם מעקב תשלום במזומן ויתרה לתשלום.
+🔁 פעולות חוזרות אוטומטיות לשכירות, משכורות ומנויים.
+💻 גישה מהמחשב דרך Wi-Fi לצפייה נוחה בדוחות על מסך גדול.
+🔒 נעילה בטביעת אצבע או קוד PIN, מצב כהה ותמיכה ב-29 שפות.
+
+📥 הורידו את My Smart Wallet עכשיו ונהלו את התקציב והחשבונות בביטחון מלא!
+```
+
+---
+
+## 29. الفارسية (`fa`)
+
+**اسم التطبيق (29 / 30):**
+```text
+Smart Wallet: بودجه و بدهی‌ها
+```
+
+**الوصف المختصر (78 / 80):**
+```text
+مدیریت بودجه ماهانه، هزینه‌ها، دفتر بدهی و مشاهده حساب‌های ثبت‌شده به نام شما!
+```
+
+**الوصف الكامل:**
+```text
+آیا هر ماه از خود می‌پرسید حقوق و درآمدتان قبل از پایان ماه کجا رفته است؟ آیا هزینه‌های شخصی شما با حساب مشتریان و بدهی‌ها قاطی می‌شود؟ 🤔💸
+
+حدس زدن را کنار بگذارید و کنترل کامل پول خود را به دست بگیرید!
+My Smart Wallet یک مدیر مالی همه‌کاره است که برنامه‌ریزی بودجه ماهانه، ثبت هزینه‌های روزانه و دفتر حساب و بدهی هوشمند را در یک اپلیکیشن ساده و مدرن گرد هم می‌آورد؛ مناسب برای خانواده‌ها، دانشجویان، فریلنسرها و صاحبان کسب‌وکار.
+
+━━━━━━━━━━━━━━━━
+
+✨ ویژگی جدید: تفکیک هوشمند بودجه شخصی و بدهی‌ها
+هزینه‌های روزمره شخصی را کاملاً از حساب مشتریان، تأمین‌کنندگان و قرض‌ها جدا نگه دارید و هر زمان که خواستید، تنها با یک لمس هر تراکنش بدهی را به بودجه ماهانه خود نیز متصل کنید.
+
+📊 1. مدیریت بودجه ماهانه و ثبت هزینه‌های روزانه
+- ثبت سریع درآمدها و هزینه‌ها (قبوض، مسکن، خوراک، حمل‌ونقل، سلامت یا دسته‌بندی‌های دلخواه) در چند ثانیه.
+- تعیین سقف بودجه ماهانه برای هر ارز و مشاهده لحظه‌ای درصد مصرف، مبلغ باقی‌مانده و پس‌انداز خالص.
+- نمودار دایره‌ای تعاملی توزیع هزینه‌ها و نمودار ستونی مقایسه ۶ ماه اخیر درآمد و هزینه.
+
+💎 2. ویژگی انحصاری: «پیگیری حساب‌های من»
+فقط بدهی‌ها و طلب‌های خود را ننویسید — ببینید دیگران چه حساب‌هایی با شماره شما ثبت کرده‌اند!
+- شفافیت کامل مالی درباره حساب‌های ثبت‌شده نزد فروشندگان یا همکاران.
+- کنترل و حریم خصوصی کامل: هر زمان که بخواهید فعال یا غیرفعال کنید.
+
+📒 3. دفتر هوشمند بدهی و حساب مشتریان (بدهکار و بستانکار)
+- دسته‌بندی نامحدود مشتریان، تأمین‌کنندگان و حساب‌ها با آیکون‌ها و رنگ‌های متمایز.
+- نمایش دقیق مانده حساب تجمعی پس از هر تراکنش.
+- ماشین‌حساب داخلی، پیوست تصویر رسید و ارسال صورت‌حساب از طریق واتساپ یا پیامک.
+
+📄 4. گزارش‌های حرفه‌ای PDF (حساب‌ها و بودجه)
+- گزارش حساب‌ها: گردش حساب تفصیلی، جمع مانده‌ها و خلاصه ماهانه.
+- گزارش بودجه: فهرست کامل تراکنش‌ها، تحلیل درصدی دسته‌بندی‌ها و مقایسه با سقف بودجه.
+- همراه با نام و لوگوی شما، آماده چاپ یا اشتراک‌گذاری فوری.
+
+☁️ 5. همگام‌سازی ابری لحظه‌ای روی ۲ دستگاه و کارکرد آفلاین
+- استفاده هم‌زمان از یک حساب روی دو گوشی با به‌روزرسانی آنی.
+- پشتیبان‌گیری خودکار ابری برای بازیابی سریع هنگام تعویض گوشی.
+- کارکرد ۱۰۰٪ بدون اینترنت (آفلاین) و قابلیت وارد کردن فایل پشتیبان اپلیکیشن‌های قدیمی.
+
+━━━━━━━━━━━━━━━━
+
+🌟 امکانات حرفه‌ای دیگر:
+🌍 چندارزی: مدیریت حساب‌ها و بودجه با ارز محلی، دلار، یورو یا ارزهای دلخواه.
+🧾 فاکتور فروش و خرید با محاسبه خودکار مبلغ نقدی و مانده حساب.
+🔁 تراکنش‌های دوره‌ای خودکار برای اجاره، حقوق و اشتراک‌ها.
+💻 اتصال به کامپیوتر از طریق Wi-Fi برای مشاهده راحت گزارش‌ها در مرورگر.
+🔒 قفل اثر انگشت یا رمز عبور، حالت تاریک و پشتیبانی از ۲۹ زبان دنیا.
+
+📥 همین حالا My Smart Wallet را دانلود کنید و با آرامش و نظم بر امور مالی خود مسلط شوید!
+```
+
+---
+
+### خيار احتياطي إضافي (إن كانت اللغة الـ 29 لديك في Console هي الأردية `ur`)
+
+**اسم التطبيق (29 / 30):**
+```text
+Smart Wallet: بجٹ اور کھاتہ بک
+```
+
+**الوصف المختصر (77 / 80):**
+```text
+ماہانہ بجٹ، روزانہ اخراجات، ادھار کھاتہ اور دوسروں کے درج کردہ حساب دیکھیں!
+```
+
+**الوصف الكامل:**
+```text
+کیا آپ ہر ماہ سوچتے ہیں کہ تنخواہ مہینہ ختم ہونے سے پہلے کہاں چلی گئی؟ کیا آپ کے ذاتی اخراجات گاہکوں اور قرض کے حساب میں الجھ جاتے ہیں؟ 🤔💸
+
+اندازے لگانا چھوڑیں اور اپنے پیسوں پر مکمل کنٹرول حاصل کریں!
+My Smart Wallet ایک مکمل پرسنل فنانس مینیجر، ماہانہ بجٹ پلانر اور اسمارٹ ادھار کھاتہ ایپ ہے — جو خاندانوں، طلبہ، فری لانسرز اور دکانداروں کے لیے نہایت آسان بنائی گئی ہے۔
+
+━━━━━━━━━━━━━━━━
+
+✨ نیا فیچر: ذاتی بجٹ اور ادھار کھاتے کی اسمارٹ علیحدگی
+اپنے روزمرہ کے ذاتی اخراجات کو گاہکوں، سپلائرز اور قرض کے کھاتوں سے بالکل الگ رکھیں، اور چاہیں تو ایک کلک سے کسی بھی لین دین کو ماہانہ بجٹ میں بھی شامل کریں۔
+
+📊 1. ماہانہ بجٹ اور روزانہ اخراجات کا ریکارڈ
+- آمدنی اور اخراجات (بل، رہائش، خوراک، سفر، صحت یا اپنی کیٹیگریز) چند سیکنڈ میں درج کریں۔
+- ہر کرنسی کے لیے ماہانہ بجٹ حد مقرر کریں اور خرچ کا فیصد، باقی رقم اور بچت براہِ راست دیکھیں۔
+- رنگین پائی چارٹ اور پچھلے 6 ماہ کے آمدنی و اخراجات کا موازنہ۔
+
+💎 2. منفرد فیچر: "میرے کھاتے ٹریک کریں"
+صرف اپنا حساب نہ لکھیں — یہ بھی دیکھیں کہ دوسروں نے آپ کے نمبر پر کیا درج کیا ہے!
+- تاجروں یا شراکت داروں کے پاس درج شدہ حسابات میں مکمل شفافیت۔
+- مکمل پرائیویسی اور اختیار: جب چاہیں آن یا آف کریں۔
+
+📒 3. اسمارٹ ادھار کھاتہ (لینا / دینا)
+- گاہکوں، سپلائرز اور لامحدود کیٹیگریز کو رنگین آئیکنز کے ساتھ منظم کریں۔
+- ہر اندراج کے بعد درست مجموعی بیلنس، بلٹ ان کیلکولیٹر، رسید کی تصویر اور WhatsApp یا SMS پر اسٹیٹمنٹ شیئرنگ۔
+
+📄 4. پروفیشنل PDF رپورٹس (کھاتے اور بجٹ)
+- کھاتہ رپورٹس: تفصیلی اسٹیٹمنٹ، کل بیلنس اور ماہانہ خلاصہ۔
+- بجٹ رپورٹس: آمدنی و اخراجات کی فہرست، فیصد کے ساتھ کیٹیگری تجزیہ اور بجٹ حد کا موازنہ۔
+- آپ کے پروفائل اور لوگو کے ساتھ پرنٹ اور شیئر کرنے کے لیے تیار۔
+
+☁️ 5. دو موبائل پر فوری کلاؤڈ سنک اور آف لائن سہولت
+- ایک ہی اکاؤنٹ دو فون پر بیک وقت استعمال کریں اور تبدیلیاں فوراً دیکھیں۔
+- خودکار کلاؤڈ بیک اپ، 100% آف لائن کارکردگی اور پرانی ایپس سے بیک اپ امپورٹ کی سہولت۔
+
+━━━━━━━━━━━━━━━━
+
+🌟 اضافی پروفیشنل ٹولز:
+🌍 ملٹی کرنسی سپورٹ، 🧾 خرید و فروخت کے انوائس، 🔁 خودکار ماہانہ ادائیگیاں، 💻 Wi-Fi کے ذریعے کمپیوٹر پر رپورٹس دیکھنا، 🔒 فنگر پرنٹ / PIN لاک اور ڈارک موڈ۔
+
+📥 ابھی My Smart Wallet ڈاؤن لوڈ کریں اور اپنے بجٹ اور کھاتوں کو اعتماد کے ساتھ منظم کریں!
+```

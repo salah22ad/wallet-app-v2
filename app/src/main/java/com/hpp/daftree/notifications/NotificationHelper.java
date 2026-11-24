@@ -310,7 +310,7 @@ public class NotificationHelper {
     private void showSummaryNotification(NotificationManager manager, Bitmap largeIcon) {
         NotificationCompat.Builder summaryBuilder = new NotificationCompat.Builder(context, CHANNEL_MAIN)
                 .setContentTitle(context.getString(R.string.app_name))
-                .setContentText("لديك إشعارات جديدة")
+                .setContentText(context.getString(R.string.new_notifications))
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setStyle(new NotificationCompat.InboxStyle()
                         .setSummaryText(context.getString(R.string.noti_summery))) // تأكد من وجود هذا النص في strings
