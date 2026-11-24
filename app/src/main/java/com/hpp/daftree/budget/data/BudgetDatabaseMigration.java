@@ -19,12 +19,48 @@ public final class BudgetDatabaseMigration {
     public static final Migration MIGRATION_19_20 = new Migration(19, 20) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase db) {
-            Log.i(TAG, "Starting MIGRATION_19_20: Creating budget module tables");
+            Log.i(TAG, "Starting MIGRATION_19_20: Budget tables + local account/type icon columns");
+            addLocalVisualColumns(db);
             createBudgetTables(db);
             seedDefaultCategoriesIfNeeded(db);
+            // تسجيل علم المزامنة لرفع بيانات الترقية لمرة واحدة في runMaintenanceTasks
+            db.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('migration_19_20_pending', 1)");
             Log.i(TAG, "Finished MIGRATION_19_20 successfully");
         }
     };
+
+    private static void addLocalVisualColumns(@NonNull SupportSQLiteDatabase db) {
+        if (!hasColumn(db, "account_types", "iconKey")) {
+            db.execSQL("ALTER TABLE account_types ADD COLUMN iconKey TEXT");
+        }
+        if (!hasColumn(db, "account_types", "colorHex")) {
+            db.execSQL("ALTER TABLE account_types ADD COLUMN colorHex TEXT");
+        }
+        if (!hasColumn(db, "accounts", "iconKey")) {
+            db.execSQL("ALTER TABLE accounts ADD COLUMN iconKey TEXT");
+        }
+        if (!hasColumn(db, "accounts", "colorHex")) {
+            db.execSQL("ALTER TABLE accounts ADD COLUMN colorHex TEXT");
+        }
+    }
+
+    private static boolean hasColumn(@NonNull SupportSQLiteDatabase db, String table, String column) {
+        Cursor c = null;
+        try {
+            c = db.query("PRAGMA table_info(" + table + ")");
+            while (c.moveToNext()) {
+                int idx = c.getColumnIndex("name");
+                if (idx != -1 && column.equals(c.getString(idx))) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Error checking column " + table + "." + column, e);
+        } finally {
+            if (c != null) c.close();
+        }
+        return false;
+    }
 
     public static void createBudgetTables(@NonNull SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `budget_categories` (" +
@@ -99,13 +135,11 @@ public final class BudgetDatabaseMigration {
             Log.e(TAG, "Error checking budget_categories count", e);
             return;
         } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
+            if (cursor != null) cursor.close();
         }
 
         long now = System.currentTimeMillis();
-        // فئات المصروفات الافتراضية
+        // فئات المصروفات الافتراضية (حالتها NEW لرفعها إلى Firestore عند الترقية/المزامنة)
         insertDefaultCategory(db, "bills", "EXPENSE", "bills", "#F59E0B", 1, now);
         insertDefaultCategory(db, "housing", "EXPENSE", "housing", "#22C55E", 2, now);
         insertDefaultCategory(db, "food", "EXPENSE", "food", "#F97316", 3, now);
@@ -131,7 +165,7 @@ public final class BudgetDatabaseMigration {
                 DatabaseUtils.sqlEscapeString(type) + ", " +
                 DatabaseUtils.sqlEscapeString(iconKey) + ", " +
                 DatabaseUtils.sqlEscapeString(colorHex) + ", " +
-                "1, " + sortOrder + ", 0, 0, '', " + now + ", 0, 'SYNCED')";
+                "1, " + sortOrder + ", 0, 0, '', " + now + ", 0, 'NEW')";
         db.execSQL(sql);
     }
 }

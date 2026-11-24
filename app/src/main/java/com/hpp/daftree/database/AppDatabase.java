@@ -155,7 +155,8 @@ public abstract class AppDatabase extends RoomDatabase {
                 "migration_8_9_pending",
                 "migration_6_7_pending",
                 "migration_17_18_pending",
-                "migration_18_19_pending"
+                "migration_18_19_pending",
+                "migration_19_20_pending"
         };
 
         boolean needsSync = false;

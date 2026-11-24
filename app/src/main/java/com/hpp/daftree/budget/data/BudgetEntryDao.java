@@ -151,4 +151,13 @@ public interface BudgetEntryDao {
             "FROM budget_entries WHERE currencyId = :currencyId AND isDeleted = 0 " +
             "GROUP BY yearMonth ORDER BY yearMonth ASC")
     List<MonthlyTotals> getMonthlyTotalsAllTimeSync(int currencyId);
+
+    @Query("UPDATE budget_entries SET syncStatus = :status, ownerUID = :ownerUID WHERE isDeleted = 0")
+    void upgradeToOfficialUser(String ownerUID, String status);
+
+    @Query("DELETE FROM budget_entries WHERE isDeleted = 1")
+    void deleteGuestDeletedEntries();
+
+    @Query("DELETE FROM budget_entries")
+    void deleteGuestData();
 }

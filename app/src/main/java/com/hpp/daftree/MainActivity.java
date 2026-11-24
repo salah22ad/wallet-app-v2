@@ -137,6 +137,7 @@ import com.hpp.daftree.dialogs.ReferralRewardDialog;
 import com.hpp.daftree.dialogs.ReportsBottomSheet;
 import com.hpp.daftree.dialogs.UpdateAppDialog;
 import com.hpp.daftree.dialogs.UpdateDialog;
+import com.hpp.daftree.helpers.AccountTypeIconHelper;
 import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.helpers.LanguageManager;
 import com.hpp.daftree.database.AccountWithBalance;
@@ -3390,6 +3391,7 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
                     }
                 }
 
+                AccountType selectedTypeObj = findAccountTypeByFilter(type);
                 if (isNew) {
                     Account newAccount = new Account();
                     newAccount.setOwnerUID(uid);
@@ -3397,17 +3399,17 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
                     newAccount.setPhoneNumber(phone);
                     newAccount.setAccountType(type);
                     if (typeId != null) newAccount.setAcTypeFirestoreId(typeId);
+                    AccountTypeIconHelper.applyTypeVisualsToAccount(this, newAccount, selectedTypeObj);
                     mainViewModel.createAccount(newAccount);
                 } else {
                     accountToEdit.setAccountName(finalName);
                     accountToEdit.setPhoneNumber(phone);
                     accountToEdit.setAccountType(type);
                     if (typeId != null) accountToEdit.setAcTypeFirestoreId(typeId);
+                    AccountTypeIconHelper.applyTypeVisualsToAccount(this, accountToEdit, selectedTypeObj);
                     accountToEdit.setSyncStatus("EDITED");
                     mainViewModel.updateAccount(accountToEdit);
                     mainViewModel.refreshData();
-
-                    //   recreateIfNeeded();
                 }
 
                 dialog.dismiss();

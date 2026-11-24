@@ -28,6 +28,7 @@ import com.hpp.daftree.R;
 import com.hpp.daftree.models.UUIDGenerator;
 import com.hpp.daftree.adapters.AccountsTypeAdapter;
 import com.hpp.daftree.database.AccountType;
+import com.hpp.daftree.helpers.AccountTypeIconHelper;
 import com.hpp.daftree.database.AppDatabase;
 import com.hpp.daftree.databinding.ActivityAccountsTypeBinding;
 import com.hpp.daftree.models.DaftreeRepository;
@@ -301,6 +302,7 @@ public class AccountsTypeActivity extends BaseActivity implements AccountsTypeAd
                     newAccountType.setSyncStatus("NEW");
                     newAccountType.setLastModified(System.currentTimeMillis());
                     newAccountType.setDefault(false);
+                    AccountTypeIconHelper.ensureTypeVisuals(this, newAccountType);
                     accountTypeViewModel.insert(newAccountType);
 
                     Toast.makeText(this, getString(R.string._303), Toast.LENGTH_SHORT).show();

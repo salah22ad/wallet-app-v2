@@ -47,6 +47,7 @@ import com.hpp.daftree.database.Transaction;
 import com.hpp.daftree.database.TransactionDao;
 import com.hpp.daftree.database.User;
 import com.hpp.daftree.database.UserDao;
+import com.hpp.daftree.helpers.AccountTypeIconHelper;
 import com.hpp.daftree.helpers.LanguageManager;
 import com.hpp.daftree.syncmanagers.SyncPreferences;
 import com.hpp.daftree.syncmanagers.SyncWorker;
@@ -355,6 +356,7 @@ public class DaftreeRepository {
                         existing.setSyncStatus("SYNCED");
                         existing.setDeletedBy((String) data.get("deletedBy"));
                         existing.setDeleted(isDeletedRemote);
+                        AccountTypeIconHelper.applyTypeVisualsToAccount(context, existing, accountTypeDao.getAccountTypeByFirestoreId(existing.getAcTypeFirestoreId()));
                         mAccountDao.update(existing);
                     }
                 } else {
@@ -373,6 +375,7 @@ public class DaftreeRepository {
                     newAccount.setAcTypeFirestoreId(acTypeFsId != null ? acTypeFsId : "");
                     newAccount.setDeletedBy((String) data.get("deletedBy"));
                     newAccount.setDeleted(isDeletedRemote);
+                    AccountTypeIconHelper.applyTypeVisualsToAccount(context, newAccount, accountTypeDao.getAccountTypeByFirestoreId(newAccount.getAcTypeFirestoreId()));
                     mAccountDao.insert(newAccount);
                 }
             }
@@ -600,6 +603,7 @@ public class DaftreeRepository {
                     newType.setDefault(isDefaultRemote);
                     newType.setDeletedBy((String) data.get("deletedBy"));
                     newType.setDeleted(isDeletedRemote);
+                    AccountTypeIconHelper.ensureTypeVisuals(context, newType);
                     accountTypeDao.insert(newType);
                 }
             }

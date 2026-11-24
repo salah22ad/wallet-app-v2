@@ -56,6 +56,7 @@ import com.hpp.daftree.models.TransactionItem;
 import com.hpp.daftree.adapters.TransactionHistoryAdapter;
 import com.hpp.daftree.database.Account;
 import com.hpp.daftree.database.AccountType;
+import com.hpp.daftree.helpers.AccountTypeIconHelper;
 import com.hpp.daftree.database.AppDatabase;
 import com.hpp.daftree.database.Currency;
 import com.hpp.daftree.database.RecurringOperation;
@@ -917,6 +918,13 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
                 newAccount.setPhoneNumber(phone);
                 newAccount.setAccountType(type);
                 if (typeId != null) newAccount.setAcTypeFirestoreId(typeId);
+                AccountType matchedType = null;
+                if (availableAccountTypes != null) {
+                    for (AccountType t : availableAccountTypes) {
+                        if (type.equals(t.getName())) { matchedType = t; break; }
+                    }
+                }
+                AccountTypeIconHelper.applyTypeVisualsToAccount(this, newAccount, matchedType);
 
                 viewModel.createAccount(newAccount);
                 binding.accountNameAutoComplete.setText(finalName);

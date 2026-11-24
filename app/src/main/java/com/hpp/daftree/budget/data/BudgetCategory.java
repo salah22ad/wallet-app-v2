@@ -95,7 +95,7 @@ public class BudgetCategory {
         this.lastSyncDate = 0L;
         this.deleteDate = 0L;
         this.deletedBy = "";
-        this.syncStatus = isDefault ? "SYNCED" : "NEW";
+        this.syncStatus = "NEW";
     }
 
     // --- Getters & Setters ---

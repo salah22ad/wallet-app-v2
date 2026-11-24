@@ -1774,6 +1774,30 @@ public class LoginActivity extends BaseActivity {
 
                 if (isNewUser) {
                     checkLocationPermission();
+                } else if (isRegisterGuestMode && isGuest) {
+                    isOldUser = true;
+                    deleteDatabaseCompletely().thenAccept(success -> runOnUiThread(() -> {
+                        if (success) {
+                            if (!guestUID.isEmpty()) {
+                                deleteGuestAccountsWithSameDevice();
+                            }
+                            AppDatabase.destroyInstance();
+                            db = AppDatabase.getDatabase(getApplicationContext());
+                            repository.setUserUID(userId);
+                            new SyncPreferencesLicence(LoginActivity.this).setFirstSyncComplete(false);
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                SecureLicenseManager.getInstance(LoginActivity.this).setGuest(false);
+                                isGuest = false;
+                                hideProgressDialog();
+                                navigateToSyncData();
+                            }, 1000);
+                        } else {
+                            hideProgressDialog();
+                            SnackbarHelper.showSnackbar(binding.getRoot(),
+                                    "فشل في مسح البيانات القديمة، يرجى إعادة المحاولة",
+                                    SnackbarHelper.SnackbarType.ERROR);
+                        }
+                    }));
                 } else {
                     navigateToSyncData();
                 }
@@ -2038,12 +2062,18 @@ public class LoginActivity extends BaseActivity {
                                     db.accountTypeDao().deleteGuestDeletedAccountTypes();
                                     db.currencyDao().deleteGuestDeletedCurrencies();
                                     db.transactionDao().deleteGuestDeletedTransactions();
+                                    db.budgetEntryDao().deleteGuestDeletedEntries();
+                                    db.monthlyBudgetLimitDao().deleteGuestDeletedLimits();
+                                    db.budgetCategoryDao().deleteGuestDeletedCategories();
 
                                     // 2. ترقية البيانات المتبقية للمستخدم الرسمي
                                     db.accountDao().upgradeToOfficialUser(uid, "NEW");
                                     db.accountTypeDao().upgradeToOfficialUser(uid, "NEW");
                                     db.currencyDao().upgradeToOfficialUser(uid, "NEW");
                                     db.transactionDao().upgradeToOfficialUser(uid, "NEW");
+                                    db.budgetCategoryDao().upgradeToOfficialUser(uid, "NEW");
+                                    db.monthlyBudgetLimitDao().upgradeToOfficialUser(uid, "NEW");
+                                    db.budgetEntryDao().upgradeToOfficialUser(uid, "NEW");
                                 });
                                 Log.d("Migration", "Local database upgraded successfully for UID: " + uid);
                             } catch (IllegalStateException e) {

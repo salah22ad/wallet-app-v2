@@ -50,4 +50,13 @@ public interface MonthlyBudgetLimitDao {
     List<MonthlyBudgetLimit> getOldDeletedLimits(long threshold);
     @Query("SELECT * FROM monthly_budget_limits WHERE currencyId = :currencyId AND isDeleted = 0 ORDER BY yearMonth ASC")
     List<MonthlyBudgetLimit> getAllActiveLimitsForCurrencySync(int currencyId);
+
+    @Query("UPDATE monthly_budget_limits SET syncStatus = :status, ownerUID = :ownerUID WHERE isDeleted = 0")
+    void upgradeToOfficialUser(String ownerUID, String status);
+
+    @Query("DELETE FROM monthly_budget_limits WHERE isDeleted = 1")
+    void deleteGuestDeletedLimits();
+
+    @Query("DELETE FROM monthly_budget_limits")
+    void deleteGuestData();
 }

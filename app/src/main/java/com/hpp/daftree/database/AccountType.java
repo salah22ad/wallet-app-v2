@@ -59,6 +59,14 @@ public class AccountType {
     @PropertyName("deletedBy")
     private String deletedBy= "";
 
+    @Exclude
+    @ColumnInfo(name = "iconKey")
+    private String iconKey = "";
+
+    @Exclude
+    @ColumnInfo(name = "colorHex")
+    private String colorHex = "";
+
     public AccountType() {}
 
     @Ignore
@@ -117,4 +125,14 @@ public class AccountType {
     public long getLastSyncDate() { return lastSyncDate; }
     @PropertyName("lastSyncDate")
     public void setLastSyncDate(long lastSyncDate) { this.lastSyncDate = lastSyncDate; }
+
+    @Exclude
+    public String getIconKey() { return iconKey; }
+    @Exclude
+    public void setIconKey(String iconKey) { this.iconKey = iconKey; }
+
+    @Exclude
+    public String getColorHex() { return colorHex; }
+    @Exclude
+    public void setColorHex(String colorHex) { this.colorHex = colorHex; }
 }
