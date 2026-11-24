@@ -176,6 +176,58 @@ public class NotificationHelper {
         return stackBuilder.getPendingIntent((int) System.currentTimeMillis(), getSafePendingIntentFlags());
     }
 
+    /**
+     * توجيه المستخدم عند النقر على إشعار أندرويد العام (عندما يكون التطبيق مغلقاً في الخلفية)
+     */
+    public static boolean handleNotificationIntent(Context context, Intent intent) {
+        if (context == null || intent == null || intent.getExtras() == null) return false;
+        String type = intent.getStringExtra("type");
+        String webUrl = intent.getStringExtra("webUrl");
+
+        if ((type == null || type.isEmpty()) && (webUrl == null || webUrl.isEmpty())) {
+            return false;
+        }
+
+        // مسح القيم حتى لا تتكرر عند تدوير الشاشة
+        intent.removeExtra("type");
+        intent.removeExtra("webUrl");
+
+        try {
+            if ("web".equalsIgnoreCase(type) && webUrl != null && !webUrl.isEmpty()) {
+                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webUrl));
+                webIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(webIntent);
+                return true;
+            }
+
+            Intent targetIntent = null;
+            if ("purchase".equalsIgnoreCase(type)) {
+                targetIntent = new Intent(context, SubscriptionActivity.class);
+            } else if ("transaction_alert".equalsIgnoreCase(type)) {
+                targetIntent = new Intent(context, DebtSummaryActivity.class);
+            } else if (type != null && !type.isEmpty() && !"home".equalsIgnoreCase(type)) {
+                try {
+                    targetIntent = new Intent(context, Class.forName("com.hpp.daftree.ui." + type));
+                } catch (ClassNotFoundException e1) {
+                    try {
+                        targetIntent = new Intent(context, Class.forName("com.hpp.daftree." + type));
+                    } catch (ClassNotFoundException ignored) {
+                        return false;
+                    }
+                }
+            }
+
+            if (targetIntent != null) {
+                targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(targetIntent);
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e("NotificationHelper", "Failed to route notification intent", e);
+        }
+        return false;
+    }
+
     @SuppressLint("MissingPermission")
     public void showPromoNotification5(String title, String body, String imageUrl, String webUrl, String type, String btnText, int modelType) {
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -350,7 +402,7 @@ public class NotificationHelper {
                 Bitmap bitmap = null;
                 if (imageUrl != null && !imageUrl.isEmpty()) {
                     try {
-                        bitmap = getBitmapFromUrl(imageUrl);
+                        bitmap = getBitmapFromUrl(imageUrl, modelType == 2);
                     } catch (Exception imgErr) {
                         android.util.Log.e("NotificationHelper", "Failed to load promo image", imgErr);
                     }
@@ -520,8 +572,9 @@ public class NotificationHelper {
                             .bigLargeIcon((Bitmap) null)); // <--- تم التعديل هنا
                 }
                 manager.notify(notificationId, builder.build());
-//                showSummaryNotification(manager);
             });
+        } else {
+            manager.notify(notificationId, builder.build());
         }
     }
 

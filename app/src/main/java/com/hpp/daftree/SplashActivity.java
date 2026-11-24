@@ -562,16 +562,27 @@ if(!isNetworkAvailable()){
 
     void proceedToActivity() {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            Intent launchIntent = getIntent();
+            String notifType = (launchIntent != null) ? launchIntent.getStringExtra("type") : null;
+            String notifWebUrl = (launchIntent != null) ? launchIntent.getStringExtra("webUrl") : null;
+
             AppLockManager lockManager = new AppLockManager(this);
+            Intent nextIntent;
             if (lockManager.isLockEnabled()) {
-                startActivity(new Intent(this, LockScreenActivity.class));
+                nextIntent = new Intent(this, LockScreenActivity.class);
             } else {
-                Intent mainIntent = new Intent(this, MainActivity.class);
+                nextIntent = new Intent(this, MainActivity.class);
                 if (referrerUid != null) {
-                    mainIntent.putExtra("REFERRER_UID", referrerUid);
+                    nextIntent.putExtra("REFERRER_UID", referrerUid);
                 }
-                startActivity(mainIntent);
             }
+            if (notifType != null && !notifType.isEmpty()) {
+                nextIntent.putExtra("type", notifType);
+            }
+            if (notifWebUrl != null && !notifWebUrl.isEmpty()) {
+                nextIntent.putExtra("webUrl", notifWebUrl);
+            }
+            startActivity(nextIntent);
             finish();
         }, 100);
     }

@@ -114,6 +114,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.hpp.daftree.models.DeviceBanManager;
 import com.hpp.daftree.notifications.NotificationService;
+import com.hpp.daftree.notifications.NotificationHelper;
 import com.hpp.daftree.adapters.AccountTypesPagerAdapter;
 import com.hpp.daftree.adapters.AccountsAdapter;
 import com.hpp.daftree.dailyreminder.DailyReminderManager;
@@ -637,7 +638,7 @@ public class MainActivity extends BaseActivity implements
         if (getIntent().getExtras() != null) {
             String type = getIntent().getExtras().getString("type");
             if ("transaction_alert".equals(type)) {
-
+                getIntent().removeExtra("type");
                 Intent intent;
                 if (licenceData.isLinkedAccount()) {
                     intent = new Intent(this, DebtSummaryActivity.class);
@@ -646,11 +647,12 @@ public class MainActivity extends BaseActivity implements
                 }
                 startActivity(intent);
             } else if ("purchase".equals(type)) {
-//                Intent intent = new Intent(this, SubscriptionActivity.class);
-//                startActivity(intent);
+                getIntent().removeExtra("type");
                 Intent subscribeIntent = new Intent(MainActivity.this, SubscriptionActivity.class);
                 subscribeIntent.putExtra("purchase", true);
                 subscribeLauncher.launch(subscribeIntent);
+            } else if (type != null && !type.isEmpty()) {
+                NotificationHelper.handleNotificationIntent(this, getIntent());
             }
         }
         sharedPrefsManager = new SyncPreferences(this);
@@ -4435,6 +4437,23 @@ private void handlePurchaseApp() {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        if (intent != null && intent.getExtras() != null) {
+            String type = intent.getExtras().getString("type");
+            if ("transaction_alert".equals(type)) {
+                intent.removeExtra("type");
+                Intent debtIntent = licenceData.isLinkedAccount()
+                        ? new Intent(this, DebtSummaryActivity.class)
+                        : new Intent(this, DebtActivationActivity.class);
+                startActivity(debtIntent);
+            } else if ("purchase".equals(type)) {
+                intent.removeExtra("type");
+                Intent subscribeIntent = new Intent(MainActivity.this, SubscriptionActivity.class);
+                subscribeIntent.putExtra("purchase", true);
+                subscribeLauncher.launch(subscribeIntent);
+            } else if (type != null && !type.isEmpty()) {
+                NotificationHelper.handleNotificationIntent(this, intent);
+            }
+        }
 
         // معالجة الروابط العميقة عندما يكون التطبيق مفتوحًا بالفعل
         Uri data = intent.getData();

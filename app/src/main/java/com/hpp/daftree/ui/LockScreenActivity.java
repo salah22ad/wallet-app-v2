@@ -420,7 +420,11 @@ public class LockScreenActivity extends AppCompatActivity {
     }
 
     private void navigateToMain() {
-        startActivity(new Intent(this, MainActivity.class));
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        if (getIntent() != null && getIntent().getExtras() != null) {
+            mainIntent.putExtras(getIntent().getExtras());
+        }
+        startActivity(mainIntent);
         finish();
     }
 }
