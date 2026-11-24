@@ -11,18 +11,19 @@
         android:orientation="horizontal"
         android:layout_marginBottom="2dp">
 
-        <!-- الصورة الجانبية بابعاد ثابتة 96dp وتقليص تلقائي (centerCrop) -->
+        <!-- الصورة الجانبية -->
         <ImageView
             android:id="@+id/ivNotifImage"
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:scaleType="fitCenter"
-            android:layout_marginEnd="4dp"
-            android:visibility="gone"/>
+            android:layout_marginEnd="8dp"
+            android:visibility="gone" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical">
 
             <TextView
@@ -33,22 +34,24 @@
                 android:textStyle="bold"
                 android:maxLines="1"
                 android:ellipsize="end"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginBottom="4dp" />
 
-            <!-- التفاصيل هنا تتمدد حسب الحاجة -->
+            <!-- التفاصيل -->
             <TextView
                 android:id="@+id/tvNotifBody"
                 style="@style/TextAppearance.Compat.Notification.Line2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="10"
-                android:ellipsize="end"/>
+                android:maxLines="5"
+                android:ellipsize="end" />
         </LinearLayout>
     </LinearLayout>
 
+    <!-- حاوية الأزرار -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <TextView
@@ -61,8 +64,11 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:background="#D97706"
-            android:layout_marginEnd="8dp"/>
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingHorizontal="8dp"
+            android:background="@drawable/bg_notif_btn_amber"
+            android:layout_marginEnd="8dp" />
 
         <TextView
             android:id="@+id/btnRemindLater"
@@ -74,6 +80,7 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:background="#64748B"/>
+            android:maxLines="1"
+            android:background="@drawable/bg_notif_btn_secondary" />
     </LinearLayout>
 </LinearLayout>

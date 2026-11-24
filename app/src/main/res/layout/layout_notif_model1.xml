@@ -14,31 +14,33 @@
         android:textStyle="bold"
         android:maxLines="1"
         android:ellipsize="end"
-        android:layout_marginBottom="4dp"/>
+        android:layout_marginBottom="4dp" />
 
-    <!-- التفاصيل (تتمدد حتى 10 أسطر، وإذا زاد المحتوى يظهر '...') -->
+    <!-- التفاصيل -->
     <TextView
         android:id="@+id/tvNotifBody"
         style="@style/TextAppearance.Compat.Notification.Line2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="15"
+        android:maxLines="6"
         android:ellipsize="end"
-        android:layout_marginBottom="2dp"/>
+        android:layout_marginBottom="4dp" />
 
-    <!-- الصورة الكبيرة (أبعاد ثابتة 120dp مثل جوجل، مع centerCrop لتقليص الصور الكبيرة بدون تشويه) -->
+    <!-- الصورة الكبيرة -->
     <ImageView
         android:id="@+id/ivNotifImage"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:scaleType="fitCenter"
         android:visibility="gone"
-        android:layout_marginBottom="2dp"/>
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp" />
 
-    <!-- حاوية الأزرار (ثابتة في الأسفل ولا تأخذ مساحة فارغة إضافية) -->
+    <!-- حاوية الأزرار -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:orientation="horizontal">
 
         <TextView
@@ -51,8 +53,11 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:background="#2563EB"
-            android:layout_marginEnd="8dp"/>
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:paddingHorizontal="8dp"
+            android:background="@drawable/bg_notif_btn_primary"
+            android:layout_marginEnd="8dp" />
 
         <TextView
             android:id="@+id/btnRemindLater"
@@ -64,6 +69,7 @@
             android:textSize="13sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:background="#64748B"/>
+            android:maxLines="1"
+            android:background="@drawable/bg_notif_btn_secondary" />
     </LinearLayout>
 </LinearLayout>
