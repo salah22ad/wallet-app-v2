@@ -1,0 +1,232 @@
+<en-US>
+✨ Major Update in My Smart Wallet!
+- New Monthly Budget Module: Keep personal income & daily expenses separate from your debt ledger.
+- Set monthly spending limits per currency with interactive donut & 6-month comparison charts.
+- Optional 1-tap toggle to mirror debt transactions into your budget.
+- Unified Reports with 3 new Budget PDF reports.
+- Modern colorful icons, color-coded account badges, full cloud sync & performance fixes.
+</en-US>
+<ar>
+✨ تحديث كبير في محفظتي الذكية!
+- ميزة الميزانية الشهرية الجديدة: افصل مصاريفك الشخصية ودخلك عن دفتر الديون والحسابات.
+- سقف شهري للميزانية لكل عملة مع رسوم بيانية تفاعلية (دائري + مقارنة 6 أشهر).
+- ربط اختياري لعمليات الديون بالميزانية بضغطة زر.
+- تقارير PDF احترافية للميزانية ضمن نافذة تقارير موحّدة.
+- أيقونات عصرية ملونة وشارات مميزة لتصنيفات الحسابات، مع مزامنة سحابية كاملة وتحسينات عامة.
+</ar>
+<es-ES>
+✨ ¡Gran actualización en My Smart Wallet!
+- Nuevo módulo de Presupuesto Mensual: separa gastos e ingresos personales de tus deudas.
+- Límites mensuales por moneda con gráficos circulares y comparativa de 6 meses.
+- Opción de 1 toque para reflejar movimientos de deuda en el presupuesto.
+- Informes unificados con 3 nuevos reportes PDF de presupuesto.
+- Iconos modernos a color, insignias por categoría, sincronización cloud y mejoras generales.
+</es-ES>
+<fr-FR>
+✨ Grande mise à jour de My Smart Wallet !
+- Nouveau module Budget Mensuel : séparez revenus et dépenses personnels de vos dettes.
+- Plafonds mensuels par devise avec graphiques circulaires et comparaison sur 6 mois.
+- Option en 1 clic pour refléter une dette dans votre budget mensuel.
+- Rapports unifiés avec 3 nouveaux rapports PDF Budget.
+- Icônes modernes colorées, badges par catégorie, synchro cloud complète et améliorations.
+</fr-FR>
+<de-DE>
+✨ Großes Update für My Smart Wallet!
+- Neues Monatsbudget-Modul: Trenne private Einnahmen & Ausgaben sauber von Schuldenkonten.
+- Monatliche Limits pro Währung mit interaktiven Kreis- & 6-Monats-Diagrammen.
+- Optionale 1-Klick-Verknüpfung von Schuldenbuchungen ins Monatsbudget.
+- Einheitliches Berichtsmenü mit 3 neuen Budget-PDF-Berichten.
+- Moderne farbige Symbole, farbige Kategorie-Badges, Cloud-Sync & Leistungsverbesserungen.
+</de-DE>
+<tr-TR>
+✨ My Smart Wallet'ta Büyük Güncelleme!
+- Yeni Aylık Bütçe Modülü: Kişisel gelir ve giderlerinizi borç defterinden tamamen ayırın.
+- Para birimine göre aylık limit, etkileşimli pasta ve 6 aylık karşılaştırma grafikleri.
+- Borç işlemlerini tek dokunuşla bütçeye yansıtma seçeneği.
+- 3 yeni Bütçe PDF raporuyla birleşik rapor ekranı.
+- Modern renkli simgeler, renkli kategori rozetleri, tam bulut senkronizasyonu ve iyileştirmeler.
+</tr-TR>
+<ru-RU>
+✨ Крупное обновление My Smart Wallet!
+- Новый раздел «Месячный бюджет»: отделите личные доходы и расходы от книги долгов.
+- Месячные лимиты по валютам, интерактивные круговые и 6-месячные графики.
+- Опция в 1 касание для переноса долговой операции в бюджет.
+- Единый экран отчетов с 3 новыми PDF-отчетами по бюджету.
+- Современные цветные иконки, значки категорий, полная облачная синхронизация и ускорение.
+</ru-RU>
+<pt-BR>
+✨ Grande atualização no My Smart Wallet!
+- Novo módulo de Orçamento Mensal: separe ganhos e gastos pessoais das suas dívidas.
+- Limites mensais por moeda com gráficos interativos de rosca e comparativo de 6 meses.
+- Opção em 1 toque para espelhar lançamentos de dívidas no orçamento.
+- Relatórios unificados com 3 novos relatórios PDF de orçamento.
+- Ícones coloridos modernos, badges por categoria, sincronização na nuvem e melhorias.
+</pt-BR>
+<it-IT>
+✨ Grande aggiornamento di My Smart Wallet!
+- Nuovo modulo Budget Mensile: separa entrate e spese personali dal registro debiti.
+- Limiti mensili per valuta con grafici a ciambella interattivi e confronto a 6 mesi.
+- Opzione in 1 tocco per riflettere un debito nel budget mensile.
+- Report unificati con 3 nuovi report PDF per il budget.
+- Icone moderne a colori, badge di categoria, sincronizzazione cloud completa e miglioramenti.
+</it-IT>
+<nl-NL>
+✨ Grote update in My Smart Wallet!
+- Nieuwe Maandbudget-module: houd privé-inkomsten & uitgaven gescheiden van schulden.
+- Maandlimieten per valuta met interactieve cirkel- en 6-maandengrafieken.
+- Optionele 1-tik koppeling om schulden ook in je budget op te nemen.
+- Gecombineerd rapportscherm met 3 nieuwe Budget PDF-rapporten.
+- Moderne gekleurde iconen, kleurcodes voor categorieën, volledige cloud-sync & verbeteringen.
+</nl-NL>
+<pl-PL>
+✨ Duża aktualizacja My Smart Wallet!
+- Nowy moduł Budżetu Miesięcznego: oddziel prywatne przychody i wydatki od księgi długów.
+- Miesięczne limity dla każdej waluty oraz interaktywne wykresy kołowe i 6-miesięczne.
+- Opcja 1 kliknięciem, aby ująć operację długu w budżecie.
+- Zunifikowane raporty z 3 nowymi raportami PDF dla budżetu.
+- Nowoczesne kolorowe ikony, oznaczenia kategorii, pełna synchronizacja w chmurze i poprawki.
+</pl-PL>
+<uk>
+✨ Велике оновлення My Smart Wallet!
+- Новий розділ «Місячний бюджет»: відокремте особисті доходи й витрати від книги боргів.
+- Місячні ліміти для валют, інтерактивні кругові та 6-місячні графіки.
+- Опція в 1 дотик для дублювання боргової операції в бюджет.
+- Єдиний екран звітів із 3 новими PDF-звітами по бюджету.
+- Сучасні кольорові іконки, значки категорій, повна хмарна синхронізація та покращення.
+</uk>
+<ro>
+✨ Actualizare majoră My Smart Wallet!
+- Modul nou Buget Lunar: separă veniturile și cheltuielile personale de registrul datoriilor.
+- Limite lunare pe monedă cu grafice circulare interactive și comparație pe 6 luni.
+- Opțiune dintr-o atingere pentru a include o datorie și în buget.
+- Rapoarte unificate cu 3 noi rapoarte PDF pentru buget.
+- Pictograme moderne colorate, insigne de categorii, sincronizare cloud completă și optimizări.
+</ro>
+<cs-CZ>
+✨ Velká aktualizace My Smart Wallet!
+- Nový modul Měsíční rozpočet: oddělte osobní příjmy a výdaje od deníku dluhů.
+- Měsíční limity pro každou měnu s interaktivními koláčovými a 6měsíčními grafy.
+- Volitelné propojení dluhových transakcí s rozpočtem jedním klepnutím.
+- Sjednocené přehledy se 3 novými PDF zprávami pro rozpočet.
+- Moderní barevné ikony, odznaky kategorií, plná cloudová synchronizace a vylepšení výkonu.
+</cs-CZ>
+<hu-HU>
+✨ Nagy frissítés a My Smart Wallet alkalmazásban!
+- Új Havi Költségvetés modul: válaszd külön a magánkiadásokat a tartozásoktól.
+- Havi limitek pénznemenként interaktív kördiagrammal és 6 havi összehasonlítással.
+- Opcionális, 1 érintéses kapcsolat a tartozások és a költségvetés között.
+- Egységes jelentések 3 új PDF költségvetési riporttal.
+- Modern színes ikonok, színes kategória-jelvények, teljes felhőszinkron és fejlesztések.
+</hu-HU>
+<sk>
+✨ Veľká aktualizácia My Smart Wallet!
+- Nový modul Mesačný rozpočet: oddeľte osobné príjmy a výdavky od knihy dlhov.
+- Mesačné limity podľa meny s interaktívnymi koláčovými a 6-mesačnými grafmi.
+- Voliteľné prepojenie dlhových operácií s rozpočtom jedným ťuknutím.
+- Zjednotené prehľady s 3 novými PDF správami pre rozpočet.
+- Moderné farebné ikony, odznaky kategórií, plná cloudová synchronizácia a vylepšenia.
+</sk>
+<sv-SE>
+✨ Stor uppdatering i My Smart Wallet!
+- Ny modul för Månadsbudget: håll privata inkomster och utgifter separata från skulder.
+- Månadsgränser per valuta med interaktiva cirkel- och 6-månadersdiagram.
+- Valfritt 1-trycksval för att spegla skuldposter i din månadsbudget.
+- Samlad rapportvy med 3 nya PDF-rapporter för budget.
+- Moderna färgglada ikoner, färgkodade kategorier, full molnsynk och prestandaförbättringar.
+</sv-SE>
+<da-DK>
+✨ Stor opdatering i My Smart Wallet!
+- Nyt Månedsbudget-modul: hold personlige indtægter og udgifter adskilt fra gæld.
+- Månedlige grænser pr. valuta med interaktive cirkel- og 6-månedersdiagrammer.
+- Valgfri 1-tryks funktion til at medtage gældsposter i budgettet.
+- Samlet rapportvisning med 3 nye Budget PDF-rapporter.
+- Moderne farverige ikoner, farvede kategorimærker, fuld cloud-synk og forbedringer.
+</da-DK>
+<no-NO>
+✨ Stor oppdatering i My Smart Wallet!
+- Ny Månedsbudsjett-modul: hold personlige inntekter og utgifter adskilt fra gjeld.
+- Månedlige grenser per valuta med interaktive smultring- og 6-månedersdiagrammer.
+- Valgfri 1-trykks kobling for å speile gjeldsposter i budsjettet.
+- Samlet rapportmeny med 3 nye Budsjett PDF-rapporter.
+- Moderne fargerike ikoner, fargekodede kategorier, full skysynk og ytelsesforbedringer.
+</no-NO>
+<fi-FI>
+✨ Suuri päivitys My Smart Walletiin!
+- Uusi Kuukausibudjetti-moduuli: pidä henkilökohtaiset tulot ja menot erillään veloista.
+- Valuuttakohtaiset kuukausirajat sekä interaktiiviset donitsi- ja 6 kk -kaaviot.
+- Valinnainen 1 napautuksen kytkin velkatapahtumien liittämiseen budjettiin.
+- Yhtenäinen raporttinäkymä ja 3 uutta Budjetti PDF-raporttia.
+- Modernit värikkäät kuvakkeet, kategoria-tunnukset, täysi pilvisynkronointi ja parannukset.
+</fi-FI>
+<id>
+✨ Pembaruan Besar My Smart Wallet!
+- Fitur Baru Anggaran Bulanan: pisahkan pemasukan & pengeluaran pribadi dari catatan utang.
+- Batas anggaran per mata uang dengan grafik donat interaktif & perbandingan 6 bulan.
+- Opsi 1 ketuk untuk menyinkronkan transaksi utang ke anggaran bulanan.
+- Layar laporan terpadu dengan 3 laporan PDF Anggaran baru.
+- Ikon modern berwarna, lencana kategori akun berwarna, sinkronisasi cloud penuh & peningkatan.
+</id>
+<vi>
+✨ Bản cập nhật lớn cho My Smart Wallet!
+- Tính năng Ngân Sách Hàng Tháng mới: tách biệt thu chi cá nhân khỏi sổ nợ.
+- Đặt hạn mức tháng theo từng tiền tệ với biểu đồ tròn & so sánh 6 tháng trực quan.
+- Tùy chọn 1 chạm để ghi nhận giao dịch nợ vào ngân sách tháng.
+- Màn hình báo cáo hợp nhất với 3 báo cáo PDF Ngân sách mới.
+- Biểu tượng màu hiện đại, huy hiệu danh mục tài khoản, đồng bộ đám mây đầy đủ & tối ưu hiệu năng.
+</vi>
+<th>
+✨ อัปเดตใหญ่ My Smart Wallet!
+- ฟีเจอร์ใหม่ งบประมาณรายเดือน: แยกรายรับรายจ่ายส่วนตัวออกจากสมุดหนี้ชัดเจน
+- ตั้งวงเงินงบแยกตามสกุลเงิน พร้อมกราฟวงกลมและกราฟเทียบ 6 เดือนแบบโต้ตอบ
+- ตัวเลือก 1 แตะเพื่อเชื่อมรายการหนี้เข้าสู่งบรายเดือน
+- หน้าจอรายงานรวมพร้อมรายงาน PDF งบประมาณใหม่ 3 แบบ
+- ไอคอนสีสันทันสมัย สัญลักษณ์หมวดหมู่บัญชีแบบสี ซิงก์คลาวด์ครบถ้วน และปรับปรุงประสิทธิภาพ
+</th>
+<hi-IN>
+✨ My Smart Wallet का बड़ा अपडेट!
+- नया मासिक बजट फीचर: निजी आय और दैनिक खर्चों को उधार खाते से अलग रखें।
+- हर मुद्रा के लिए मासिक बजट सीमा, इंटरैक्टिव डोनट व 6-महीने के तुलना चार्ट।
+- एक टैप में उधार लेन-देन को मासिक बजट से जोड़ने का विकल्प।
+- 3 नई बजट PDF रिपोर्ट्स के साथ एकीकृत रिपोर्ट स्क्रीन।
+- आधुनिक रंगीन आइकन, रंग-कोडित खाता श्रेणी बैज, पूर्ण क्लाउड सिंक और प्रदर्शन सुधार।
+</hi-IN>
+<zh-CN>
+✨ My Smart Wallet 重磅更新！
+- 全新「月度预算」模块：将个人收支与往来欠款账本彻底分离。
+- 按币种设置月度预算上限，支持交互式环形图与近6个月收支对比图。
+- 一键可选开关，将往来欠款记录同步计入月度预算。
+- 统一报表中心，新增3种专业预算 PDF 报表。
+- 全新多彩现代图标、彩色账户分类徽章、完整云同步及性能优化。
+</zh-CN>
+<ja-JP>
+✨ My Smart Wallet 大型アップデート！
+- 新機能「毎月の予算」：個人の収支と貸借帳簿をきれいに分離管理。
+- 通貨ごとの月間予算上限、インタラクティブなドーナツグラフ＆6か月比較グラフ。
+- ワンタップで貸借取引を予算にも反映できる選択リンク機能。
+- 統合レポート画面に3種類の新しい予算PDFレポートを追加。
+- モダンなカラーアイコン、カテゴリ別カラーバッジ、完全クラウド同期と動作改善。
+</ja-JP>
+<ko-KR>
+✨ My Smart Wallet 대규모 업데이트!
+- 새로운 '월별 예산' 모듈: 개인 수입·지출을 채무 장부와 깔끔하게 분리 관리.
+- 통화별 월간 예산 한도 설정, 인터랙티브 도넛 차트 및 6개월 비교 그래프.
+- 원터치 옵션으로 채무 거래를 월별 예산에 자동 연동.
+- 통합 보고서 화면에 3가지 신규 예산 PDF 보고서 추가.
+- 모던 컬러 아이콘, 색상별 계좌 카테고리 배지, 전체 클라우드 동기화 및 성능 개선.
+</ko-KR>
+<iw-IL>
+✨ עדכון גדול ב-My Smart Wallet!
+- מודול תקציב חודשי חדש: הפרידו הוצאות והכנסות אישיות מספר החובות.
+- תקרת תקציב חודשית לכל מטבע עם גרף טבעת אינטראקטיבי והשוואה ל-6 חודשים.
+- מתג בלחיצה אחת לשיקוף עסקת חוב גם בתקציב החודשי.
+- מסך דוחות מאוחד עם 3 דוחות PDF חדשים לתקציב.
+- אייקונים צבעוניים מודרניים, תגי צבע לקטגוריות, סנכרון ענן מלא ושיפורי ביצועים.
+</iw-IL>
+<fa>
+✨ به‌روزرسانی بزرگ My Smart Wallet!
+- بخش جدید بودجه ماهانه: هزینه‌ها و درآمدهای شخصی را کاملاً از دفتر بدهی جدا کنید.
+- تعیین سقف بودجه ماهانه برای هر ارز با نمودار دایره‌ای تعاملی و مقایسه ۶ ماهه.
+- اتصال اختیاری تراکنش‌های بدهی به بودجه با یک لمس.
+- صفحه گزارش‌های یکپارچه با ۳ گزارش PDF جدید برای بودجه.
+- آیکون‌های رنگی مدرن، نشان‌های رنگی دسته‌بندی حساب‌ها، همگام‌سازی کامل ابری و بهبود عملکرد.
+</fa>
