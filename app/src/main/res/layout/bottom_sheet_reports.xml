@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:fillViewport="true"
-    android:background="@drawable/dialog_background_2">
+    android:background="@drawable/budget_bg_bottom_sheet">
 
     <LinearLayout
         android:id="@+id/contentContainer"
@@ -14,105 +14,231 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingHorizontal="20dp"
-        android:paddingTop="16dp"
+        android:paddingTop="14dp"
         android:paddingBottom="24dp">
 
+        <!-- مقبض السحب العلوي -->
         <View
-            android:layout_width="40dp"
+            android:layout_width="42dp"
             android:layout_height="4dp"
             android:layout_gravity="center"
             android:layout_marginBottom="14dp"
-            android:background="@drawable/bg_search_input" />
+            android:background="@drawable/budget_bg_handle_bar" />
 
+        <!-- عنوان يظهر فقط عند فتح الشيت لحساب مفرد -->
         <TextView
+            android:id="@+id/tvReportSheetTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="14dp"
+            android:layout_marginBottom="12dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:text="@string/reports_title"
             android:textColor="?attr/colorOnSurface"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
-        <HorizontalScrollView
+        <!-- شريط التبديل المقسّم: تقارير الحسابات / تقارير الميزانية -->
+        <LinearLayout
+            android:id="@+id/layoutReportCategoryTabs"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginBottom="14dp"
+            android:background="@drawable/budget_bg_pill_segmented"
+            android:orientation="horizontal"
+            android:padding="4dp">
+
+            <LinearLayout
+                android:id="@+id/tabReportAccounts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/budget_bg_tab_active"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTabReportAccounts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/budget_report_tab_accounts"
+                    android:textColor="@color/budget_text_on_card"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tabReportBudget"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTabReportBudget"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/budget_report_tab_budget"
+                    android:textColor="@color/budget_text_secondary"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- قسم نطاق الحسابات (يُخفى عند اختيار تقارير الميزانية) -->
+        <LinearLayout
+            android:id="@+id/containerAccountScopeSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fillViewport="true"
-            android:scrollbars="none">
+            android:orientation="vertical">
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chipGroupScope"
-                android:layout_width="wrap_content"
+            <HorizontalScrollView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:selectionRequired="true"
-                app:singleLine="true"
-                app:singleSelection="true">
+                android:fillViewport="true"
+                android:scrollbars="none">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipScopeSingleAccount"
-                    style="@style/Widget.Material3.Chip.Filter"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupScope"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/account_name_hint" />
+                    app:selectionRequired="true"
+                    app:singleLine="true"
+                    app:singleSelection="true">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipScopeAccountType"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipScopeSingleAccount"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/account_name_hint" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipScopeAccountType"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/menu_account_types" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipScopeAllAccounts"
+                        style="@style/Widget.Material3.Chip.Filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/all" />
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutAccountSpinner"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/menu_account_types" />
+                    android:hint="@string/main_title_accounts"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp">
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipScopeAllAccounts"
-                    style="@style/Widget.Material3.Chip.Filter"
-                    android:layout_width="wrap_content"
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerAccounts"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/layoutAccountTypeSpinner"
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/all" />
-            </com.google.android.material.chip.ChipGroup>
-        </HorizontalScrollView>
+                    android:hint="@string/menu_account_types"
+                    android:visibility="gone"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp">
 
-        <FrameLayout
+                    <AutoCompleteTextView
+                        android:id="@+id/spinnerAccountType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none" />
+                </com.google.android.material.textfield.TextInputLayout>
+            </FrameLayout>
+        </LinearLayout>
+
+        <!-- فلتر نوع العمليات الخاص بتقارير الميزانية (الكل / مصروفات / دخل) -->
+        <LinearLayout
+            android:id="@+id/layoutBudgetFilterPills"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            >
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutAccountSpinner"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/main_title_accounts">
+            <TextView
+                android:id="@+id/btnReportBudgetFilterAll"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/budget_bg_tab_active"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/budget_filter_all"
+                android:textColor="@color/budget_chip_selected_text"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-                <AutoCompleteTextView
-                    android:id="@+id/spinnerAccounts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <TextView
+                android:id="@+id/btnReportBudgetFilterExpense"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginHorizontal="3dp"
+                android:layout_weight="1"
+                android:background="@drawable/budget_bg_currency_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/budget_filter_expenses"
+                android:textColor="@color/budget_chip_unselected_text"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/layoutAccountTypeSpinner"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/menu_account_types"
-                android:visibility="gone">
-
-                <AutoCompleteTextView
-                    android:id="@+id/spinnerAccountType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </FrameLayout>
+            <TextView
+                android:id="@+id/btnReportBudgetFilterIncome"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="6dp"
+                android:layout_weight="1"
+                android:background="@drawable/budget_bg_currency_chip"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="@string/budget_filter_income"
+                android:textColor="@color/budget_chip_unselected_text"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="14dp" />
+            android:layout_marginVertical="12dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -121,6 +247,8 @@
             android:text="@string/report_type_title"
             android:textColor="?attr/colorOnSurfaceVariant"
             android:textSize="14sp" />
+
+        <!-- بطاقات أنواع التقارير الثلاثة (تتبدل عناوينها وأيقوناتها الملونة حسب القسم) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -148,18 +276,19 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:paddingHorizontal="6dp"
-                    android:paddingVertical="10dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:src="@drawable/ic_account_balance_modern"
-                        app:tint="?attr/colorPrimary" />
+                        android:id="@+id/ivCardStatement"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_modern_report_statement" />
 
                     <TextView
+                        android:id="@+id/tvCardStatement"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="7dp"
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="3"
@@ -194,18 +323,19 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:paddingHorizontal="6dp"
-                    android:paddingVertical="10dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:src="@drawable/ic_balance"
-                        app:tint="?attr/colorPrimary" />
+                        android:id="@+id/ivCardBalance"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_modern_report_balance" />
 
                     <TextView
+                        android:id="@+id/tvCardBalance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="7dp"
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="3"
@@ -240,18 +370,19 @@
                     android:gravity="center"
                     android:orientation="vertical"
                     android:paddingHorizontal="6dp"
-                    android:paddingVertical="10dp">
+                    android:paddingVertical="12dp">
 
                     <ImageView
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:src="@drawable/ic_calendar_today"
-                        app:tint="?attr/colorPrimary" />
+                        android:id="@+id/ivCardMonthly"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_modern_report_monthly" />
 
                     <TextView
+                        android:id="@+id/tvCardMonthly"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginTop="7dp"
                         android:ellipsize="end"
                         android:gravity="center"
                         android:maxLines="3"
@@ -265,18 +396,17 @@
                         app:autoSizeTextType="uniform" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
         </LinearLayout>
 
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="14dp" />
+            android:layout_marginVertical="12dp" />
 
+        <!-- خيارات الفلترة -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            
             android:orientation="vertical">
 
             <LinearLayout
@@ -292,8 +422,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_account_gray"
-                    app:tint="?attr/colorOnSurfaceVariant" />
+                    android:src="@drawable/ic_modern_split_accounts" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -321,8 +450,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_calendar"
-                    app:tint="?attr/colorOnSurfaceVariant" />
+                    android:src="@drawable/ic_modern_calendar" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -356,7 +484,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
-                    android:hint="@string/start_date_hint">
+                    android:hint="@string/start_date_hint"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etStartDate"
@@ -373,7 +505,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_weight="1"
-                    android:hint="@string/end_date_hint">
+                    android:hint="@string/end_date_hint"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etEndDate"
@@ -388,12 +524,11 @@
 
         <Space
             android:layout_width="match_parent"
-            android:layout_height="12dp" />
+            android:layout_height="10dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            
             android:orientation="vertical">
 
             <LinearLayout
@@ -405,8 +540,7 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_attach_money"
-                    app:tint="?attr/colorOnSurfaceVariant" />
+                    android:src="@drawable/ic_modern_currency" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -433,6 +567,10 @@
                 android:layout_marginTop="8dp"
                 android:hint="@string/currency_hint"
                 android:visibility="gone"
+                app:boxCornerRadiusBottomEnd="14dp"
+                app:boxCornerRadiusBottomStart="14dp"
+                app:boxCornerRadiusTopEnd="14dp"
+                app:boxCornerRadiusTopStart="14dp"
                 tools:visibility="visible">
 
                 <AutoCompleteTextView
@@ -443,6 +581,7 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
+        <!-- أزرار إنشاء ومشاركة PDF بأيقونات ملونة -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -451,67 +590,58 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnGenerateReport"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="5dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:paddingHorizontal="8dp"
                 android:text="@string/button_generate_pdf"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
-                android:visibility="gone"
                 app:autoSizeMaxTextSize="13sp"
                 app:autoSizeMinTextSize="10sp"
                 app:autoSizeStepGranularity="1sp"
                 app:autoSizeTextType="uniform"
-                app:icon="@drawable/ic_pdf"
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_modern_pdf"
                 app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:iconSize="18dp" />
+                app:iconPadding="6dp"
+                app:iconSize="20dp"
+                app:iconTint="@null" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnShareReport"
+                style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:paddingHorizontal="8dp"
                 android:text="@string/share_report"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 android:textStyle="bold"
                 app:autoSizeMaxTextSize="13sp"
                 app:autoSizeMinTextSize="10sp"
                 app:autoSizeStepGranularity="1sp"
                 app:autoSizeTextType="uniform"
-                app:icon="@android:drawable/ic_menu_share"
+                app:cornerRadius="14dp"
+                app:icon="@drawable/ic_modern_share"
                 app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:iconSize="18dp" />
+                app:iconPadding="6dp"
+                app:iconSize="20dp"
+                app:iconTint="@null" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSharePng"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
                 android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:paddingHorizontal="8dp"
-                android:text="@string/share_png"
-                android:textSize="13sp"
-                android:textStyle="bold"
-                app:autoSizeMaxTextSize="13sp"
-                app:autoSizeMinTextSize="10sp"
-                app:autoSizeStepGranularity="1sp"
-                app:autoSizeTextType="uniform"
-                app:icon="@android:drawable/ic_menu_share"
-                app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:iconSize="18dp" />
+                android:visibility="gone" />
         </LinearLayout>
 
     </LinearLayout>

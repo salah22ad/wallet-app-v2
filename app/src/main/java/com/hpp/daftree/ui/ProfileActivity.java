@@ -227,6 +227,9 @@ public class ProfileActivity extends BaseActivity {
                             db.accountDao().deleteGuestData();
                             db.accountTypeDao().deleteGuestData();
                             db.currencyDao().deleteGuestData();
+                            db.budgetEntryDao().deleteGuestData();
+                            db.monthlyBudgetLimitDao().deleteGuestData();
+                            db.budgetCategoryDao().deleteGuestData();
 
                             Log.d("ProfileActivity", "تم حذف جميع البيانات من قاعدة البيانات المحلية");
                         } catch (Exception e) {

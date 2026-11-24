@@ -14,6 +14,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.hpp.daftree.MyApplication;
 import com.hpp.daftree.R;
 import com.hpp.daftree.models.UUIDGenerator;
+import com.hpp.daftree.budget.data.BudgetCategory;
+import com.hpp.daftree.budget.data.BudgetEntry;
+import com.hpp.daftree.budget.data.MonthlyBudgetLimit;
+import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.database.Account;
 import com.hpp.daftree.database.AccountType;
 import com.hpp.daftree.database.AppDatabase;
@@ -32,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -125,6 +130,9 @@ public class RestoreHelper {
                     .collect(Collectors.toMap(c -> c.name, c -> c.id));
 
             importTransactions(oldDb, type, accountIdMap, currencyMap, transactionsImported, currencyNameToIdMap);
+            if (type == SourceType.SOURCE_FOUR) {
+                importBudgetDataForSourceFour(oldDb, currencyMap, currencyNameToIdMap);
+            }
         });
 
         return new int[]{accountsImported[0], transactionsImported[0]};
@@ -567,7 +575,15 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
                     }
                     finalCurrencyId = newCurrencyMap.get(currency);
                 } else {
-                    finalCurrencyId = c.getInt(c.getColumnIndexOrThrow("currencyId"));
+                    int oldCurId = c.getInt(c.getColumnIndexOrThrow("currencyId"));
+                    String mappedCurName = currencyMap.get(oldCurId);
+                    finalCurrencyId = mappedCurName != null ? newCurrencyMap.get(mappedCurName) : null;
+                    if (finalCurrencyId == null && newCurrencyMap.containsValue(oldCurId)) {
+                        finalCurrencyId = oldCurId;
+                    }
+                    if (finalCurrencyId == null) {
+                        finalCurrencyId = appDb.currencyDao().getFirstIdCurrency();
+                    }
                 }
                 Log.d(TAG, "details: " + details);
 
@@ -809,12 +825,18 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
         for (Transaction tx : existing) {
             // مقارنة أكثر دقة لتجنب التكرار
             try {
-                if (tx.getAmount() == amount && tx.getType() == type &&
-                        tx.getTimestamp().getTime() == timestamp.getTime() && tx.getDetails().equals(details) && tx.getImportID() == id && tx.getBillType().equals(billType)) {
+                long txTime = tx.getTimestamp() != null ? tx.getTimestamp().getTime() : 0L;
+                long targetTime = timestamp != null ? timestamp.getTime() : 0L;
+                if (tx.getAmount() == amount
+                        && tx.getType() == type
+                        && txTime == targetTime
+                        && Objects.equals(tx.getDetails(), details)
+                        && tx.getImportID() == id
+                        && Objects.equals(tx.getBillType(), billType)) {
                     return true;
                 }
             } catch (Exception e) {
-                return true;
+                Log.w(TAG, "Error comparing transaction for duplicates", e);
             }
         }
         return false;
@@ -1242,6 +1264,177 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
         CurrencyCodeSymbol(String code, String symbol) {
             this.code = code;
             this.symbol = symbol;
+        }
+    }
+
+    private void importBudgetDataForSourceFour(SQLiteDatabase oldDb,
+                                               Map<Integer, String> oldCurrencyMap,
+                                               Map<String, Integer> newCurrencyNameToIdMap) {
+        String uid = isGuest ? guestUID : currentUserId;
+        if (uid == null) uid = "";
+        int fallbackCurId = appDb.currencyDao().getFirstIdCurrency();
+        Map<Integer, Integer> oldToNewCategoryId = new HashMap<>();
+
+        // 1. استيراد تصنيفات الميزانية
+        if (tableExists(oldDb, "budget_categories")) {
+            try (Cursor c = oldDb.rawQuery("SELECT * FROM budget_categories ORDER BY id ASC", null)) {
+                int idCol = c.getColumnIndex("id");
+                int fsCol = c.getColumnIndex("firestoreId");
+                int codeCol = c.getColumnIndex("code");
+                int nameCol = c.getColumnIndex("name");
+                int typeCol = c.getColumnIndex("type");
+                int iconCol = c.getColumnIndex("iconKey");
+                int colorCol = c.getColumnIndex("colorHex");
+                int defCol = c.getColumnIndex("isDefault");
+                int sortCol = c.getColumnIndex("sortOrder");
+                int delCol = c.getColumnIndex("isDeleted");
+
+                while (c.moveToNext()) {
+                    if (delCol != -1 && c.getInt(delCol) == 1) continue;
+                    int oldId = idCol != -1 ? c.getInt(idCol) : -1;
+                    String oldFsId = fsCol != -1 ? c.getString(fsCol) : null;
+                    String code = codeCol != -1 ? c.getString(codeCol) : "";
+                    boolean isDef = defCol != -1 && c.getInt(defCol) == 1;
+
+                    BudgetCategory existing = null;
+                    if (isDef && code != null && !code.isEmpty()) {
+                        existing = appDb.budgetCategoryDao().getByCodeSync(code);
+                    }
+                    if (existing == null && oldFsId != null && !oldFsId.isEmpty()) {
+                        existing = appDb.budgetCategoryDao().getByFirestoreIdSync(oldFsId);
+                    }
+
+                    if (existing != null) {
+                        if (oldId > 0) oldToNewCategoryId.put(oldId, existing.getId());
+                    } else {
+                        BudgetCategory cat = new BudgetCategory();
+                        cat.setFirestoreId(UUIDGenerator.generateSequentialUUID());
+                        cat.setOwnerUID(uid);
+                        cat.setCode(code != null ? code : "");
+                        cat.setName(nameCol != -1 && c.getString(nameCol) != null ? c.getString(nameCol) : "");
+                        cat.setType(typeCol != -1 && c.getString(typeCol) != null ? c.getString(typeCol) : BudgetCategory.TYPE_EXPENSE);
+                        cat.setIconKey(iconCol != -1 && c.getString(iconCol) != null ? c.getString(iconCol) : "other");
+                        cat.setColorHex(colorCol != -1 && c.getString(colorCol) != null ? c.getString(colorCol) : "#06B6D4");
+                        cat.setDefault(isDef);
+                        cat.setSortOrder(sortCol != -1 ? c.getInt(sortCol) : 100);
+                        cat.setDeleted(false);
+                        cat.setLastModified(System.currentTimeMillis());
+                        cat.setLastSyncDate(0L);
+                        cat.setSyncStatus(isDef ? "SYNCED" : "NEW");
+                        long newId = appDb.budgetCategoryDao().insert(cat);
+                        if (oldId > 0) oldToNewCategoryId.put(oldId, (int) newId);
+                    }
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error importing budget_categories from SOURCE_FOUR", e);
+            }
+        }
+
+        // 2. استيراد حدود الميزانية الشهرية
+        if (tableExists(oldDb, "monthly_budget_limits")) {
+            try (Cursor c = oldDb.rawQuery("SELECT * FROM monthly_budget_limits ORDER BY id ASC", null)) {
+                int curCol = c.getColumnIndex("currencyId");
+                int ymCol = c.getColumnIndex("yearMonth");
+                int limCol = c.getColumnIndex("limitAmount");
+                int delCol = c.getColumnIndex("isDeleted");
+
+                while (c.moveToNext()) {
+                    if (delCol != -1 && c.getInt(delCol) == 1) continue;
+                    String ym = ymCol != -1 ? c.getString(ymCol) : null;
+                    if (ym == null || ym.isEmpty()) continue;
+
+                    int oldCurId = curCol != -1 ? c.getInt(curCol) : fallbackCurId;
+                    String curName = oldCurrencyMap.get(oldCurId);
+                    Integer resolvedCurId = curName != null ? newCurrencyNameToIdMap.get(curName) : null;
+                    int finalCurId = resolvedCurId != null ? resolvedCurId : fallbackCurId;
+                    if (finalCurId <= 0) continue;
+
+                    if (appDb.monthlyBudgetLimitDao().getExactLimitSync(ym, finalCurId) != null) {
+                        continue;
+                    }
+                    String curFsId = appDb.currencyDao().getCurrencyFirestoreId(finalCurId);
+                    MonthlyBudgetLimit limit = new MonthlyBudgetLimit();
+                    limit.setFirestoreId(UUIDGenerator.generateSequentialUUID());
+                    limit.setOwnerUID(uid);
+                    limit.setCurrencyId(finalCurId);
+                    limit.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                    limit.setYearMonth(ym);
+                    limit.setLimitAmount(limCol != -1 ? c.getDouble(limCol) : 0.0);
+                    limit.setDeleted(false);
+                    limit.setLastModified(System.currentTimeMillis());
+                    limit.setLastSyncDate(0L);
+                    limit.setSyncStatus("NEW");
+                    appDb.monthlyBudgetLimitDao().insert(limit);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error importing monthly_budget_limits from SOURCE_FOUR", e);
+            }
+        }
+
+        // 3. استيراد عمليات الدخل والمصروفات
+        if (tableExists(oldDb, "budget_entries")) {
+            try (Cursor c = oldDb.rawQuery("SELECT * FROM budget_entries ORDER BY id ASC", null)) {
+                int fsCol = c.getColumnIndex("firestoreId");
+                int catCol = c.getColumnIndex("categoryId");
+                int curCol = c.getColumnIndex("currencyId");
+                int typeCol = c.getColumnIndex("type");
+                int amtCol = c.getColumnIndex("amount");
+                int noteCol = c.getColumnIndex("note");
+                int dateCol = c.getColumnIndex("entryDate");
+                int ymCol = c.getColumnIndex("yearMonth");
+                int delCol = c.getColumnIndex("isDeleted");
+
+                while (c.moveToNext()) {
+                    if (delCol != -1 && c.getInt(delCol) == 1) continue;
+                    String oldFsId = fsCol != -1 ? c.getString(fsCol) : null;
+                    if (oldFsId != null && !oldFsId.isEmpty()
+                            && appDb.budgetEntryDao().getByFirestoreIdSync(oldFsId) != null) {
+                        continue;
+                    }
+
+                    int oldCurId = curCol != -1 ? c.getInt(curCol) : fallbackCurId;
+                    String curName = oldCurrencyMap.get(oldCurId);
+                    Integer resolvedCurId = curName != null ? newCurrencyNameToIdMap.get(curName) : null;
+                    int finalCurId = resolvedCurId != null ? resolvedCurId : fallbackCurId;
+                    if (finalCurId <= 0) continue;
+
+                    String entryType = typeCol != -1 && c.getString(typeCol) != null
+                            ? c.getString(typeCol) : BudgetEntry.TYPE_EXPENSE;
+                    int oldCatId = catCol != -1 ? c.getInt(catCol) : -1;
+                    Integer mappedCatId = oldToNewCategoryId.get(oldCatId);
+                    if (mappedCatId == null || mappedCatId <= 0) {
+                        String fallbackCode = BudgetEntry.TYPE_INCOME.equals(entryType) ? "income_other" : "other";
+                        mappedCatId = appDb.budgetCategoryDao().getCategoryIdByCodeSync(fallbackCode);
+                    }
+                    if (mappedCatId == null || mappedCatId <= 0) mappedCatId = 1;
+
+                    long entryDate = dateCol != -1 ? c.getLong(dateCol) : System.currentTimeMillis();
+                    String ym = ymCol != -1 && c.getString(ymCol) != null
+                            ? c.getString(ymCol) : BudgetUtils.toYearMonth(entryDate);
+                    String curFsId = appDb.currencyDao().getCurrencyFirestoreId(finalCurId);
+                    String catFsId = appDb.budgetCategoryDao().getCategoryFirestoreIdSync(mappedCatId);
+
+                    BudgetEntry entry = new BudgetEntry();
+                    entry.setFirestoreId(UUIDGenerator.generateSequentialUUID());
+                    entry.setOwnerUID(uid);
+                    entry.setCategoryId(mappedCatId);
+                    entry.setCategoryFirestoreId(catFsId != null ? catFsId : "");
+                    entry.setCurrencyId(finalCurId);
+                    entry.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                    entry.setType(entryType);
+                    entry.setAmount(amtCol != -1 ? c.getDouble(amtCol) : 0.0);
+                    entry.setNote(noteCol != -1 && c.getString(noteCol) != null ? c.getString(noteCol) : "");
+                    entry.setEntryDate(entryDate);
+                    entry.setYearMonth(ym);
+                    entry.setDeleted(false);
+                    entry.setLastModified(System.currentTimeMillis());
+                    entry.setLastSyncDate(0L);
+                    entry.setSyncStatus("NEW");
+                    appDb.budgetEntryDao().insert(entry);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error importing budget_entries from SOURCE_FOUR", e);
+            }
         }
     }
 }

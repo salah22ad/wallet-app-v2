@@ -208,4 +208,7 @@ dependencies {
     implementation("com.android.installreferrer:installreferrer:2.1")
     implementation("com.google.android.ump:user-messaging-platform:3.1.0")
     implementation("com.google.android.gms:play-services-ads-identifier:18.3.0")
+
+    // الرسوم البيانية لوحدة الميزانية والنفقات
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

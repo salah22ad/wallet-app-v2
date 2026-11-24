@@ -12,12 +12,13 @@
         android:layout_height="match_parent"
         android:background="?attr/colorSurface">
 
-        <!-- المحتوى الرئيسي -->
+        <!-- المحتوى الرئيسي (الديون والحسابات) -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="80dp">
+
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="@style/Widget.AppCompat.ProgressBar"
@@ -28,19 +29,19 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-            <!-- باقي المحتوى كما هو -->
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/floating_toolbar_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="0dp"
+                app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="0dp"
                 app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/white"
-                app:strokeWidth="0dp"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -65,55 +66,53 @@
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@drawable/ic_menu"
-                            app:tint="?attr/colorOnSurface" />
+                            android:src="@drawable/ic_modern_menu" />
 
                         <TextView
                             android:id="@+id/tvScreenTitle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="@string/filter_all"
-                            android:textSize="18sp"
+                            android:gravity="center_vertical|start"
                             android:maxLines="1"
+                            android:paddingStart="12dp"
+                            android:text="@string/filter_all"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
                             app:autoSizeMaxTextSize="22sp"
                             app:autoSizeMinTextSize="10sp"
                             app:autoSizeStepGranularity="1sp"
-                            app:autoSizeTextType="uniform"
-                            android:textStyle="bold"
-                            android:gravity="center_vertical|start"
-                            android:paddingStart="12dp"
-                            android:textColor="?attr/colorOnSurface" />
+                            app:autoSizeTextType="uniform" />
 
                         <EditText
                             android:id="@+id/et_search"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:hint="@string/search_for_account"
                             android:background="@null"
-                            android:visibility="gone"
-							android:tag="exclude_global_filter"
-                            android:inputType="text"
+                            android:hint="@string/search_for_account"
                             android:imeOptions="actionSearch"
-                            android:textColor="?attr/colorOnSurface"/>
+                            android:inputType="text"
+                            android:tag="exclude_global_filter"
+                            android:textColor="?attr/colorOnSurface"
+                            android:visibility="gone" />
 
                         <ImageButton
                             android:id="@+id/btnSearch"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@drawable/ic_search_white"
-                            app:tint="?attr/colorOnSurface" />
+                            android:src="@drawable/ic_modern_search" />
 
                         <ImageButton
                             android:id="@+id/btnCloseSearch"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:visibility="gone"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:src="@drawable/ic_close"
-                            app:tint="?attr/colorOnSurface"/>
+                            android:visibility="gone"
+                            app:tint="?attr/colorOnSurface" />
 
                         <LinearLayout
                             android:id="@+id/iconsContainer"
@@ -126,46 +125,47 @@
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:src="@drawable/ic_pc_server"
-                                app:tint="?attr/colorOnSurface"/>
+                                android:src="@drawable/ic_modern_pc_server" />
+
                             <ImageButton
                                 android:id="@+id/btnSort"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
                                 android:background="?attr/selectableItemBackgroundBorderless"
-                                android:src="@drawable/ic_sort"
-                                app:tint="?attr/colorOnSurface"/>
+                                android:src="@drawable/ic_modern_sort" />
+
                             <ImageButton
                                 android:id="@+id/btnReports"
                                 android:layout_width="40dp"
                                 android:layout_height="40dp"
-                                android:visibility="gone"
                                 android:background="?attr/selectableItemBackgroundBorderless"
                                 android:src="@drawable/ic_reports"
-                                app:tint="?attr/colorOnSurface"/>
+                                android:visibility="gone"
+                                app:tint="?attr/colorOnSurface" />
                         </LinearLayout>
 
                     </LinearLayout>
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
             <LinearLayout
                 android:id="@+id/smart_cards_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:animateLayoutChanges="true"
-
-                app:layout_constraintTop_toBottomOf="@id/floating_toolbar_card"
+                android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/view_pager"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" >
+                app:layout_constraintTop_toBottomOf="@id/floating_toolbar_card">
 
                 <include
                     android:id="@+id/layout_rating_card"
                     layout="@layout/card_rating_promo"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
             </LinearLayout>
+
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/view_pager"
                 android:layout_width="match_parent"
@@ -173,26 +173,27 @@
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="6dp"
                 android:saveEnabled="false"
-                app:layout_constraintTop_toBottomOf="@id/smart_cards_container"
                 app:layout_constraintBottom_toTopOf="@id/warning_text"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/smart_cards_container" />
 
             <TextView
                 android:id="@+id/warning_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:background="@color/warning_color"
-                android:textColor="@color/warning_text_color"
                 android:gravity="center"
                 android:padding="4dp"
-                android:visibility="visible"
                 android:text="@string/guest_warning"
                 android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="@color/warning_text_color"
+                android:visibility="visible"
                 app:drawableStartCompat="@drawable/ic_alert"
                 app:layout_constraintBottom_toTopOf="@id/adContainer"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
             <FrameLayout
                 android:id="@+id/adContainer"
                 android:layout_width="match_parent"
@@ -200,55 +201,58 @@
                 android:minHeight="50dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/bottomSummaryCard"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/bottomSummaryCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                app:cardBackgroundColor="?attr/colorSurface"
                 app:cardCornerRadius="20dp"
                 app:cardElevation="0dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorOutlineVariant"
-                app:cardBackgroundColor="?attr/colorSurface"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:strokeColor="?attr/colorOutlineVariant"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:gravity="center_vertical"
+                    android:orientation="horizontal"
                     android:padding="4dp">
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/summary_debit"
-                            android:textSize="13sp"
                             android:maxLines="1"
-                            app:autoSizeTextType="uniform"
-                            app:autoSizeMinTextSize="10sp"
-                            app:autoSizeMaxTextSize="13sp"
-                            app:autoSizeStepGranularity="1sp"
+                            android:text="@string/summary_debit"
+                            android:textColor="@color/error_color"
+                            android:textSize="13sp"
                             android:textStyle="bold"
-                            android:textColor="@color/error_color" />
+                            app:autoSizeMaxTextSize="13sp"
+                            app:autoSizeMinTextSize="10sp"
+                            app:autoSizeStepGranularity="1sp"
+                            app:autoSizeTextType="uniform" />
+
                         <TextView
                             android:id="@+id/totalCreditTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0.00"
+                            android:textColor="@color/error_color"
                             android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/error_color" />
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <View
@@ -260,28 +264,30 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="vertical">
+
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/summary_credit"
-                            android:textSize="13sp"
                             android:maxLines="1"
-                            app:autoSizeTextType="uniform"
-                            app:autoSizeMinTextSize="10sp"
-                            app:autoSizeMaxTextSize="13sp"
-                            app:autoSizeStepGranularity="1sp"
+                            android:text="@string/summary_credit"
+                            android:textColor="@color/success_color"
+                            android:textSize="13sp"
                             android:textStyle="bold"
-                            android:textColor="@color/success_color" />
+                            app:autoSizeMaxTextSize="13sp"
+                            app:autoSizeMinTextSize="10sp"
+                            app:autoSizeStepGranularity="1sp"
+                            app:autoSizeTextType="uniform" />
+
                         <TextView
                             android:id="@+id/totalDebitTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0.00"
+                            android:textColor="@color/success_color"
                             android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/success_color" />
+                            android:textStyle="bold" />
                     </LinearLayout>
 
                     <View
@@ -305,16 +311,25 @@
                 layout="@layout/dialog_welcome_back"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="100dp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginBottom="100dp"
-                android:layout_marginHorizontal="16dp"/>
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- القائمة السفلية المخصصة - التصميم المعدل -->
+        <!-- حاوية وحدة الميزانية والنفقات (معزولة وتُحمّل عند الطلب) -->
+        <FrameLayout
+            android:id="@+id/budget_fragment_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="50dp"
+            android:background="@color/budget_card_bg"
+            android:visibility="gone" />
+
+        <!-- القائمة السفلية الموحدة -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottom_nav_container"
             android:layout_width="match_parent"
@@ -323,59 +338,58 @@
             android:background="@android:color/transparent"
             android:elevation="8dp">
 
-            <!-- خلفية مع منحنى في المنتصف فقط -->
             <View
                 android:id="@+id/curved_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
-            <!--            android:background="@drawable/bottom_nav_background_curved"-->
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <!-- زر الإضافة الدائري في الوسط -->
+            <!-- زر الإضافة الموحد في المنتصف -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/addTransactionButton"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="?attr/colorPrimary"
                 app:cardCornerRadius="32dp"
                 app:cardElevation="12dp"
-                app:cardBackgroundColor="?attr/colorPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginBottom="16dp">
+                app:layout_constraintStart_toStartOf="parent">
 
                 <ImageView
                     android:layout_width="28dp"
                     android:layout_height="28dp"
+                    android:layout_gravity="center"
                     android:src="@drawable/ic_add"
-                    app:tint="?attr/colorOnPrimary"
-                    android:layout_gravity="center" />
+                    app:tint="?attr/colorOnPrimary" />
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- عناصر القائمة الأربعة -->
+            <!-- عناصر القائمة الأربعة: الرئيسية | الميزانية | [+] | متابعة حساباتي | التقارير -->
             <LinearLayout
                 android:id="@+id/nav_items_container"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
+                android:background="?attr/colorSurface"
                 android:orientation="horizontal"
                 android:weightSum="4"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
 
-                <!-- العنصر 1: الصفحة الرئيسية -->
+                <!-- العنصر 1: الرئيسية -->
                 <LinearLayout
                     android:id="@+id/navItemHome"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
                         android:id="@+id/nav_icon_home"
@@ -388,56 +402,61 @@
                         android:id="@+id/nav_text_home"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingTop="2dp"
                         android:text="@string/home"
-                        android:textSize="10sp"
                         android:textColor="?attr/colorPrimary"
-                        android:paddingTop="2dp" />
+                        android:textSize="10sp" />
                 </LinearLayout>
 
-                <!-- العنصر 2: إضافة حساب -->
+                <!-- العنصر 2: الميزانية -->
                 <LinearLayout
-                    android:id="@+id/nav_item_add_account"
+                    android:id="@+id/navItemBudget"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
-                        android:id="@+id/nav_icon_add_account"
+                        android:id="@+id/nav_icon_budget"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_person"
+                        android:src="@drawable/ic_budget_tab"
                         app:tint="?attr/colorOnSurfaceVariant" />
 
                     <TextView
-                        android:id="@+id/nav_text_add_account"
+                        android:id="@+id/nav_text_budget"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/add_account"
-                        android:textSize="10sp"
+                        android:maxLines="1"
+                        android:paddingTop="2dp"
+                        android:text="@string/budget_nav_title"
                         android:textColor="?attr/colorOnSurfaceVariant"
-                        android:paddingTop="2dp" />
+                        android:textSize="10sp"
+                        app:autoSizeMaxTextSize="10sp"
+                        app:autoSizeMinTextSize="8sp"
+                        app:autoSizeStepGranularity="1sp"
+                        app:autoSizeTextType="uniform" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="50dp"
-                    android:layout_height="wrap_content">
-                </View>
-                <!-- العنصر 3: الحسابات المرتبطة -->
+                    android:layout_height="wrap_content" />
+
+                <!-- العنصر 3: متابعة حساباتي -->
                 <LinearLayout
                     android:id="@+id/navItemLinkedAccounts"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
                         android:id="@+id/nav_icon_linked_accounts"
@@ -450,15 +469,15 @@
                         android:id="@+id/nav_text_linked_accounts"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/linked_account"
-                        android:textSize="10sp"
                         android:maxLines="1"
-                        app:autoSizeTextType="uniform"
-                        app:autoSizeMinTextSize="8sp"
-                        app:autoSizeMaxTextSize="10sp"
-                        app:autoSizeStepGranularity="1sp"
+                        android:paddingTop="2dp"
+                        android:text="@string/linked_account"
                         android:textColor="?attr/colorOnSurfaceVariant"
-                        android:paddingTop="2dp" />
+                        android:textSize="10sp"
+                        app:autoSizeMaxTextSize="10sp"
+                        app:autoSizeMinTextSize="8sp"
+                        app:autoSizeStepGranularity="1sp"
+                        app:autoSizeTextType="uniform" />
                 </LinearLayout>
 
                 <!-- العنصر 4: التقارير -->
@@ -467,11 +486,11 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
+                    android:background="?attr/selectableItemBackgroundBorderless"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <ImageView
                         android:id="@+id/nav_icon_reports"
@@ -484,10 +503,10 @@
                         android:id="@+id/nav_text_reports"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:paddingTop="2dp"
                         android:text="@string/reports"
-                        android:textSize="10sp"
                         android:textColor="?attr/colorOnSurfaceVariant"
-                        android:paddingTop="2dp" />
+                        android:textSize="10sp" />
                 </LinearLayout>
 
             </LinearLayout>

@@ -1,4 +1,6 @@
-package com.hpp.daftree.utils; // تأكد من اسم الباكيج
+package com.hpp.daftree.utils;
+
+import com.hpp.daftree.helpers.AppFontHelper; // تأكد من اسم الباكيج
 
 import android.app.Activity;
 import android.content.Context;
@@ -122,5 +124,6 @@ public class DialogHelper {
         });
 
         dialog.show();
+        AppFontHelper.applyFontToDialog(context, dialog);
     }
 }

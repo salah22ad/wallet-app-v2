@@ -6,6 +6,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.PropertyName;
 
@@ -72,6 +73,14 @@ public class Account {
     @ColumnInfo(name = "deleteDate")
     @PropertyName("deleteDate")
     private long deleteDate = 0L;
+
+    @Exclude
+    @ColumnInfo(name = "iconKey")
+    private String iconKey = "";
+
+    @Exclude
+    @ColumnInfo(name = "colorHex")
+    private String colorHex = "";
     public Account() {
     }
     // أضف هذا داخل كلاس Account
@@ -87,6 +96,8 @@ public class Account {
         this.acTypeFirestoreId = other.acTypeFirestoreId;
         this.isDeleted = other.isDeleted;
         this.deletedBy = other.deletedBy;
+        this.iconKey = other.iconKey;
+        this.colorHex = other.colorHex;
     }
     // --- Getters ---
     public int getId() { return id; }
@@ -171,4 +182,14 @@ public class Account {
     public int hashCode() {
         return Objects.hash(id, accountName, acTypeFirestoreId, phoneNumber, lastModified);
     }
+
+    @Exclude
+    public String getIconKey() { return iconKey; }
+    @Exclude
+    public void setIconKey(String iconKey) { this.iconKey = iconKey; }
+
+    @Exclude
+    public String getColorHex() { return colorHex; }
+    @Exclude
+    public void setColorHex(String colorHex) { this.colorHex = colorHex; }
 }

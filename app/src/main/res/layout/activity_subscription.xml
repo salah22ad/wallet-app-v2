@@ -37,10 +37,9 @@
                     android:id="@+id/btnBack"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@android:drawable/ic_menu_revert"
+                    android:src="@drawable/ic_modern_back"
                     android:layout_centerVertical="true"
-                    android:layout_alignParentStart="true"
-                    app:tint="@color/black" />
+                    android:layout_alignParentStart="true" />
 
                 <TextView
                     android:layout_width="wrap_content"

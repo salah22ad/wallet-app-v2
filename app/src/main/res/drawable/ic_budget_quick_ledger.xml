@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="26dp" android:height="26dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- الغلاف البرتقالي/الذهبي للدفتر -->
+    <path
+        android:fillColor="#F59E0B"
+        android:pathData="M6,2h12c1.1,0 2,0.9 2,2v15.5c0,1.1 -0.9,2 -2,2H6c-1.1,0 -2,-0.9 -2,-2V4c0,-1.1 0.9,-2 2,-2z"/>
+    <!-- كعب الدفتر الجانبي بلون أغمق -->
+    <path
+        android:fillColor="#D97706"
+        android:pathData="M6,2h2.2v19.5H6c-1.1,0 -2,-0.9 -2,-2V4c0,-1.1 0.9,-2 2,-2z"/>
+    <!-- شريط الصفحات السفلي -->
+    <path
+        android:fillColor="#FEF3C7"
+        android:pathData="M6.2,18.2h12.2v2.1H6.2c-0.6,0 -1,-0.45 -1,-1.05s0.4,-1.05 1,-1.05z"/>
+    <!-- سطر العنوان الصغير على الغلاف -->
+    <path
+        android:fillColor="#FFFBEB"
+        android:pathData="M10.5,6.5h6.5c0.4,0 0.7,0.3 0.7,0.7v1.6c0,0.4 -0.3,0.7 -0.7,0.7h-6.5c-0.4,0 -0.7,-0.3 -0.7,-0.7V7.2c0,-0.4 0.3,-0.7 0.7,-0.7z"/>
+    <!-- سطر فرعي خفيف -->
+    <path
+        android:fillColor="#FDE68A"
+        android:pathData="M10.5,11.2h5.2c0.35,0 0.6,0.25 0.6,0.6s-0.25,0.6 -0.6,0.6h-5.2c-0.35,0 -0.6,-0.25 -0.6,-0.6s0.25,-0.6 0.6,-0.6z"/>
+</vector>

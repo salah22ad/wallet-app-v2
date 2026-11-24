@@ -86,9 +86,8 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_back"
-                android:rotation="180"
-                app:tint="#BDBDBD" />
+                android:src="@drawable/ic_modern_back"
+                android:rotation="180" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -152,9 +151,8 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_arrow_back"
-                android:rotation="180"
-                app:tint="#BDBDBD" />
+                android:src="@drawable/ic_modern_back"
+                android:rotation="180" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

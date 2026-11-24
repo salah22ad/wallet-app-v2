@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>محاكاة دمج محفظتي الذكية + الميزانية والنفقات</title>
+  <!-- خط Cairo العربي -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+          },
+          colors: {
+            brandTeal: '#0D6E7A',
+            brandBlue: '#1A5F9E',
+            semGreen: '#16A34A',
+            semRed: '#DC2626',
+            semAmber: '#F59E0B',
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    * {
+      font-family: 'Cairo', sans-serif;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #e2ecf4 0%, #eef2f6 45%, #e5e9f0 100%);
+      min-height: 100vh;
+    }
+
+    body.workspace-dark {
+      background: radial-gradient(circle at top right, #0f1b26 0%, #0b1118 55%, #070b10 100%);
+    }
+
+    /* إخفاء شريط التمرير مع إبقاء التمرير السلس داخل الهاتف */
+    .phone-scroll::-webkit-scrollbar {
+      width: 3px;
+      height: 3px;
+    }
+    .phone-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .phone-scroll::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.25);
+      border-radius: 9999px;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* متغيرات الثيم داخل الهاتف */
+    .phone-shell {
+      --bg-canvas: #F4F6F9;
+      --bg-card: #FFFFFF;
+      --bg-card-subtle: #F8FAFC;
+      --bg-elevated: #FFFFFF;
+      --bg-chip: #FFFFFF;
+      --border-soft: #E5E9F0;
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --text-muted: #94A3B8;
+      --nav-bg: #FFFFFF;
+      --nav-shadow: 0 -6px 24px rgba(15, 23, 42, 0.08);
+      --card-shadow: 0 3px 12px rgba(15, 23, 42, 0.05);
+      --totals-bg: rgba(255, 255, 255, 0.96);
+      --badge-purple-bg: #EDE9FE;
+      --badge-purple-text: #5B21B6;
+      --icon-circle-bg: #EEF2F6;
+      --input-bg: #F8FAFC;
+    }
+
+    .phone-shell.dark-theme {
+      --bg-canvas: #121820;
+      --bg-card: #1B2430;
+      --bg-card-subtle: #222D3B;
+      --bg-elevated: #202B38;
+      --bg-chip: #1E2936;
+      --border-soft: #2A3646;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --nav-bg: #1B2430;
+      --nav-shadow: 0 -8px 28px rgba(0, 0, 0, 0.45);
+      --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+      --totals-bg: rgba(27, 36, 48, 0.96);
+      --badge-purple-bg: rgba(139, 92, 246, 0.2);
+      --badge-purple-text: #C4B5FD;
+      --icon-circle-bg: #263241;
+      --input-bg: #151E28;
+    }
+
+    .app-canvas {
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .app-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      box-shadow: var(--card-shadow);
+      border-radius: 16px;
+      transition: background-color 0.25s ease, border-color 0.25s ease, transform 0.15s ease;
+    }
+
+    .app-text-primary { color: var(--text-primary); }
+    .app-text-secondary { color: var(--text-secondary); }
+    .app-text-muted { color: var(--text-muted); }
+
+    .hero-gradient {
+      background: linear-gradient(135deg, #0D6E7A 0%, #14678C 52%, #1A5F9E 100%);
+    }
+
+    /* حركة ناعمة للـ Bottom Sheet و Modals */
+    @keyframes slideUpSheet {
+      from { transform: translateY(100%); opacity: 0.4; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes fadeInOverlay {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes popIn {
+      from { transform: scale(0.94); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .animate-sheet {
+      animation: slideUpSheet 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .animate-overlay {
+      animation: fadeInOverlay 0.2s ease forwards;
+    }
+    .animate-pop {
+      animation: popIn 0.2s ease forwards;
+    }
+
+    /* شريط التنقل المنحني */
+    .curved-nav-svg path {
+      fill: var(--nav-bg);
+      transition: fill 0.25s ease;
+    }
+
+    /* تحسين لمس العناصر */
+    .tap-scale:active {
+      transform: scale(0.96);
+    }
+
+    /* رسم الدائرة التفاعلية */
+    .donut-segment {
+      transition: stroke-width 0.2s ease, opacity 0.2s ease;
+      cursor: pointer;
+    }
+    .donut-segment:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body class="py-5 px-3 md:px-6 transition-colors duration-300">
+
+  <!-- الحاوية الرئيسية -->
+  <div class="max-w-6xl mx-auto flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6">
+
+    <!-- لوحة التحكم التفاعلية للمطور (فوق الهاتف على الجوال وبجانبه على سطح المكتب) -->
+   <!--   <aside id="devControlsPanel" class="w-full max-w-[420px] lg:max-w-[360px] bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl shadow-lg p-5 transition-colors duration-300 lg:sticky lg:top-6">
+      <div class="flex items-center justify-between gap-3 pb-3.5 mb-4 border-b border-slate-200/80 dev-border">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl hero-gradient flex items-center justify-center text-white shadow-md">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
+            </svg>
+          </div>
+          <div>-->
+         <!--   <h1 class="text-base font-extrabold text-slate-800 dev-title leading-tight">محاكاة الدمج الموحّد</h1>
+            <p class="text-xs text-slate-500 dev-subtitle">محفظتي الذكية + وحدة الميزانية والنفقات</p>
+       -->  
+          </div>
+        </div>
+      <!--    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 text-teal-700 border border-teal-200/70">v2.0 معاينة</span>
+    -->
+      <!--  </div>-->
+
+      <!-- 1. مبدّل الثيم -->
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-slate-600 dev-label mb-2">1. المظهر البصري (Theme)</label>
+        <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-100 dev-toggle-bg">
+          <button onclick="setTheme('light')" id="btnThemeLight" class="tap-scale flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+            فاتح (Light)
+          </button>
+          <button onclick="setTheme('dark')" id="btnThemeDark" class="tap-scale flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+            داكن (Dark)
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. مبدّل معمارية التنقل -->
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-slate-600 dev-label mb-2">2. معمارية التنقل (Navigation Architecture)</label>
+        <div class="flex flex-col gap-2">
+          <button onclick="setNavMode('unified_bar')" id="btnNavUnified" class="tap-scale text-right p-2.5 rounded-xl border transition-all flex items-start gap-2.5">
+            <span id="dotNavUnified" class="mt-1 w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center"></span>
+            <div>
+              <div class="text-xs font-bold leading-snug">الخيار الموصى به: الشريط السفلي الموحّد</div>
+              <div class="text-[11px] opacity-75 mt-0.5">4 تبويبات (الرئيسية، الميزانية، متابعة حساباتي، التقارير) + زر (+) سياقي</div>
+            </div>
+          </button>
+          <button onclick="setNavMode('top_switch')" id="btnNavTopSwitch" class="tap-scale text-right p-2.5 rounded-xl border transition-all flex items-start gap-2.5">
+            <span id="dotNavTopSwitch" class="mt-1 w-3.5 h-3.5 rounded-full border-2 flex-shrink-0 flex items-center justify-center"></span>
+            <div>
+              <div class="text-xs font-bold leading-snug">الخيار البديل: مبدّل علوي في الرئيسية</div>
+              <div class="text-[11px] opacity-75 mt-0.5">إبقاء الشريط القديم وإضافة مبدّل أعلى الرئيسية بين الديون والميزانية</div>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. مبدّل العملة الموحّد -->
+      <div class="mb-4">
+        <label class="block text-xs font-bold text-slate-600 dev-label mb-2">3. العملة الموحّدة (تتحدث في الديون والميزانية معاً)</label>
+        <div class="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-slate-100 dev-toggle-bg">
+          <button onclick="setCurrency('YER')" id="btnCurrYER" class="tap-scale py-2 px-2 rounded-lg text-xs font-bold transition-all">ريال يمني</button>
+          <button onclick="setCurrency('SAR')" id="btnCurrSAR" class="tap-scale py-2 px-2 rounded-lg text-xs font-bold transition-all">ريال سعودي</button>
+          <button onclick="setCurrency('USD')" id="btnCurrUSD" class="tap-scale py-2 px-2 rounded-lg text-xs font-bold transition-all">دولار ($)</button>
+        </div>
+      </div>
+
+      <!-- ملاحظات اختبار سريعة -->
+    <!--  <div class="rounded-xl p-3 bg-teal-50/70 border border-teal-200/60 dev-tip-box text-[11.5px] leading-relaxed text-slate-700">
+        <div class="font-bold text-teal-800 dev-tip-title mb-1 flex items-center gap-1.5">
+          <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          جرّب هذه السيناريوهات داخل المحاكي:
+        </div>
+        <ul class="space-y-1 pr-4 list-disc text-slate-600 dev-tip-list">
+          <li>انتقل إلى تبويب <strong>الميزانية</strong> وجرّب التبديل بين شهور (نوفمبر، أكتوبر، سبتمبر) لرؤية إصلاح ألوان شريط التجاوز.</li>
+          <li>اضغط الزر الدائري <strong>(+)</strong> بالأسفل لإضافة مصروف أو دخل أو عملية دين ومشاهدة تحديث المخططات فورياً.</li>
+          <li>المس أي شريحة في المخطط الدائري أو عمود في المقارنة الشهرية لعرض التفاصيل.</li>
+        </ul>
+      </div>
+    </aside>-->
+
+    <!-- إطار الهاتف الأندرويد المحاكي -->
+    <main class="flex flex-col items-center">
+      <div id="phoneFrame" class="phone-shell relative w-[390px] max-w-[96vw] h-[815px] rounded-[42px] p-[10px] bg-slate-900 shadow-[0_24px_60px_rgba(15,23,42,0.32)] ring-1 ring-slate-700/70 select-none overflow-hidden">
+        <!-- أزرار جانبية زخرفية -->
+        <div class="hidden sm:block absolute -left-[2px] top-28 w-[3px] h-12 bg-slate-700 rounded-r"></div>
+        <div class="hidden sm:block absolute -left-[2px] top-44 w-[3px] h-16 bg-slate-700 rounded-r"></div>
+
+        <!-- الشاشة الداخلية للتطبيق -->
+        <div class="app-canvas relative w-full h-full rounded-[33px] overflow-hidden flex flex-col">
+
+          <!-- شريط الحالة الواقعي (Android Status Bar) -->
+          <div id="statusBar" class="flex items-center justify-between px-5 pt-2.5 pb-1.5 text-[11px] font-bold app-text-primary flex-shrink-0 z-20" style="background-color: var(--bg-card);">
+            <!-- يسار (الوقت وسرعة الشبكة) في RTL يكون باليسار بصرياً عند وضعه ثانياً -->
+            <div class="flex items-center gap-1.5" dir="ltr">
+              <!-- البطارية -->
+              <div class="flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold">
+                <span>84%</span>
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M16 6H4c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-1h2v-6h-2V8c0-1.1-.9-2-2-2zm-1 10H5V8h10v8z"/></svg>
+              </div>
+              <!-- WiFi & Signal -->
+              <svg class="w-3.5 h-3.5 opacity-80" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21l3.6-4.8C14.7 15.4 13.4 15 12 15s-2.7.4-3.6 1.2L12 21zm0-12c-3.1 0-5.9 1.2-8.1 3.1l1.8 2.4C7.4 13 9.6 12 12 12s4.6 1 6.3 2.5l1.8-2.4C17.9 10.2 15.1 9 12 9zm0-6C7.3 3 3.1 4.9 0 8l1.8 2.4C4.4 7.7 8 6 12 6s7.6 1.7 10.2 4.4L24 8c-3.1-3.1-7.3-5-12-5z"/></svg>
+              <svg class="w-3.5 h-3.5 opacity-80" fill="currentColor" viewBox="0 0 24 24"><path d="M2 22h20V2L2 22z"/></svg>
+            </div>
+            <!-- كاميرا الثقب -->
+            <div class="w-3.5 h-3.5 rounded-full bg-slate-950 ring-2 ring-slate-800/40"></div>
+            <div class="flex items-center gap-1.5 opacity-85 text-[10.5px]" dir="ltr">
+              <span>12:28 AM</span>
+              <span class="opacity-50">|</span>
+              <span>8.6KB/s</span>
+            </div>
+          </div>
+
+          <!-- المحتوى المتغير حسب التبويب -->
+          <div id="screenContainer" class="flex-1 flex flex-col overflow-hidden relative">
+            <!-- يُحقن ديناميكياً بواسطة JavaScript -->
+          </div>
+
+          <!-- الشريط السفلي المنحني + الزر العائم المركزي (+) -->
+          <div class="relative flex-shrink-0 h-[74px] z-30">
+            <!-- خلفية الشريط المنحنية SVG -->
+            <svg class="curved-nav-svg absolute bottom-0 left-0 w-full h-[64px] drop-shadow-[0_-4px_14px_rgba(15,23,42,0.09)]" viewBox="0 0 390 64" preserveAspectRatio="none">
+              <path d="M0,0 L143,0 C156,0 161,6 167,16 C173,26 182,32 195,32 C208,32 217,26 223,16 C229,6 234,0 247,0 L390,0 L390,64 L0,64 Z"></path>
+            </svg>
+
+            <!-- الزر الدائري المركزي (+) -->
+            <button onclick="openFabSheet()" aria-label="إضافة سريعة" class="tap-scale absolute left-1/2 -translate-x-1/2 -top-[14px] w-[58px] h-[58px] rounded-full hero-gradient text-white shadow-[0_8px_22px_rgba(13,110,122,0.45)] flex items-center justify-center ring-4 ring-transparent hover:brightness-110 transition-all z-40">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </button>
+
+            <!-- عناصر التنقل السفلية -->
+            <nav id="bottomNavItems" class="relative z-30 h-[64px] mt-[10px] grid grid-cols-5 items-center px-1">
+              <!-- يُحقن ديناميكياً حسب نمط التنقل -->
+            </nav>
+          </div>
+
+          <!-- شريط الإيماءة السفلي للأندرويد -->
+          <div class="h-[14px] flex items-center justify-center flex-shrink-0" style="background-color: var(--nav-bg);">
+            <div class="w-28 h-1 rounded-full bg-slate-400/50"></div>
+          </div>
+
+          <!-- القائمة الجانبية المنزلقة (Navigation Drawer Preview) -->
+          <div id="drawerOverlay" class="hidden absolute inset-0 z-50">
+            <div onclick="closeDrawer()" class="absolute inset-0 bg-slate-950/50 backdrop-blur-[1px] animate-overlay"></div>
+            <div class="absolute top-0 bottom-0 right-0 w-[285px] shadow-2xl flex flex-col animate-pop" style="background-color: var(--bg-card);">
+              <div class="hero-gradient p-5 pt-9 text-white">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center mb-3 font-extrabold text-lg">م</div>
+                <div class="font-extrabold text-base">محفظتي الذكية</div>
+                <div class="text-xs text-white/80 mt-0.5">نظام مالي موحّد: ديون + ميزانية</div>
+                <div class="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/15 text-[11px] font-bold">
+                  <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                  نسخ سحابي نشط (Offline-First)
+                </div>
+              </div>
+              <div class="p-3 space-y-1 flex-1 overflow-y-auto phone-scroll text-xs font-bold app-text-primary">
+                <button onclick="closeDrawer(); showToast('شاشة العملات وأسعار الصرف الموحّدة');" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-500/10 transition">
+                  <span class="text-brandTeal">💱</span> إدارة العملات الموحّدة
+                </button>
+                <button onclick="closeDrawer(); openBudgetLimitModal();" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-500/10 transition">
+                  <span class="text-brandTeal">🎯</span> ضبط حد الميزانية الشهرية
+                </button>
+                <button onclick="closeDrawer(); showToast('العمليات المتكررة التلقائية (ديون ومصاريف)');" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-500/10 transition">
+                  <span class="text-brandTeal">🔁</span> العمليات المتكررة والتذكيرات
+                </button>
+                <button onclick="closeDrawer(); showToast('خادم الويب المحلي للكمبيوتر (LocalWebServer)');" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-500/10 transition">
+                  <span class="text-brandTeal">💻</span> العرض على الكمبيوتر
+                </button>
+                <button onclick="closeDrawer(); setTheme(appState.theme === 'light' ? 'dark' : 'light');" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-slate-500/10 transition">
+                  <span class="text-brandTeal">🌓</span> تبديل الوضع الليلي / النهاري
+                </button>
+                <div class="my-2 border-t" style="border-color: var(--border-soft);"></div>
+                <div class="px-3 py-2 text-[11px] app-text-secondary font-medium">
+                  الإصدار الموحّد التجريبي 2.0 • Haddad Inc
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- حاوية الـ Bottom Sheet والـ Modals داخل شاشة الهاتف -->
+          <div id="modalContainer" class="hidden absolute inset-0 z-50"></div>
+
+          <!-- إشعار Toast أنيق داخل الهاتف -->
+          <div id="phoneToast" class="pointer-events-none opacity-0 transition-all duration-300 absolute top-14 left-4 right-4 z-[60] flex justify-center">
+            <div id="phoneToastInner" class="px-4 py-2.5 rounded-xl bg-slate-900/95 text-white text-xs font-bold shadow-xl flex items-center gap-2 border border-white/10">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span id="phoneToastMsg">تم الحفظ بنجاح</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // =========================================================================
+    // 1. إعدادات العملات والتصنيفات والبيانات الأولية الموحّدة (مصدر حقيقة واحد)
+    // =========================================================================
+    const CURRENCIES = {
+      YER: { code: 'YER', name: 'ريال يمني', symbol: 'ر.ي', rate: 1, decimals: 0 },
+      SAR: { code: 'SAR', name: 'ريال سعودي', symbol: 'ر.س', rate: 1 / 140, decimals: 1 },
+      USD: { code: 'USD', name: 'دولار أمريكي', symbol: '$', rate: 1 / 530, decimals: 2 }
+    };
+
+    const MONTHS = [
+      { id: 0, short: 'يونيو', label: 'يونيو 2026' },
+      { id: 1, short: 'يوليو', label: 'يوليو 2026' },
+      { id: 2, short: 'أغسطس', label: 'أغسطس 2026' },
+      { id: 3, short: 'سبتمبر', label: 'سبتمبر 2026' },
+      { id: 4, short: 'أكتوبر', label: 'أكتوبر 2026' },
+      { id: 5, short: 'نوفمبر', label: 'نوفمبر 2026' }
+    ];
+
+    const EXPENSE_CATEGORIES = [
+      { id: 'bills', name: 'فواتير', color: '#F59E0B', icon: '🧾' },
+      { id: 'housing', name: 'سكن وإيجار', color: '#22C55E', icon: '🏠' },
+      { id: 'food', name: 'طعام وشراب', color: '#F97316', icon: '🍽️' },
+      { id: 'transport', name: 'مواصلات', color: '#3B82F6', icon: '🚗' },
+      { id: 'health', name: 'صحة', color: '#A855F7', icon: '🩺' },
+      { id: 'other', name: 'أخرى', color: '#06B6D4', icon: '📦' }
+    ];
+
+    const INCOME_CATEGORIES = [
+      { id: 'salary', name: 'راتب وإيرادات', color: '#16A34A', icon: '💼' },
+      { id: 'network', name: 'مبيعات الشبكة', color: '#0D6E7A', icon: '📡' },
+      { id: 'freelance', name: 'تطبيقات وبرمجة', color: '#1A5F9E', icon: '💻' },
+      { id: 'other_in', name: 'دخل آخر', color: '#10B981', icon: '✨' }
+    ];
+
+    // الحالة الرئيسية للتطبيق المحاكى
+    const appState = {
+      theme: 'light',            // 'light' | 'dark'
+      navMode: 'unified_bar',    // 'unified_bar' | 'top_switch'
+      currency: 'YER',           // 'YER' | 'SAR' | 'USD'
+      activeTab: 'home',         // 'home' | 'budget' | 'tracking' | 'reports'
+      homeSubView: 'debts',      // 'debts' | 'budget' (لخيار المبدّل العلوي)
+      budgetSubTab: 'summary',   // 'summary' | 'logs'
+      debtFilter: 'الكل',
+      debtSearchOpen: false,
+      debtSearchQuery: '',
+      budgetLogFilter: 'all',    // 'all' | 'expense' | 'income'
+      currentMonthIdx: 5,        // نوفمبر 2026
+      selectedDonutCat: null,
+      selectedBarMonth: null,
+      monthlyBudgetLimitBase: 50000, // الحد الشهري بالعملة الأساسية (ريال يمني)
+
+      // حسابات الديون (مطابقة للقطة الشاشة + إمكانية الإضافة والتحديث الحي)
+      accounts: [
+        { id: 1, name: 'نبيل الشامل', category: 'عملاء الشبكة', balanceBase: -29360, txCount: 29 },
+        { id: 2, name: 'زياد مبيدات', category: 'عملاء الشبكة', balanceBase: -1000, txCount: 5 },
+        { id: 3, name: 'رصيد الانترنت', category: 'خطوط انترنت', balanceBase: 303200, txCount: 18 },
+        { id: 4, name: 'عدنان بقالة الاتحاد', category: 'عملاء الشبكة', balanceBase: -15080, txCount: 43 }
+      ],
+
+      // عمليات الميزانية والنفقات (تغطي 6 أشهر لتغذية المخططين والسجل من مصدر واحد)
+      budgetEntries: [
+        // يونيو (0)
+        { id: 101, monthIdx: 0, type: 'income', categoryId: 'salary', amountBase: 62000, note: 'إيرادات يونيو', date: '2026-06-05' },
+        { id: 102, monthIdx: 0, type: 'expense', categoryId: 'bills', amountBase: 28000, note: 'كهرباء وإنترنت', date: '2026-06-14' },
+        { id: 103, monthIdx: 0, type: 'expense', categoryId: 'food', amountBase: 11000, note: 'مقاضي الشهر', date: '2026-06-20' },
+        // يوليو (1)
+        { id: 104, monthIdx: 1, type: 'income', categoryId: 'network', amountBase: 74000, note: 'تحصيل كروت الشبكة', date: '2026-07-04' },
+        { id: 105, monthIdx: 1, type: 'expense', categoryId: 'housing', amountBase: 18000, note: 'صيانة ومستلزمات', date: '2026-07-12' },
+        { id: 106, monthIdx: 1, type: 'expense', categoryId: 'bills', amountBase: 24500, note: 'فواتير تشغيلية', date: '2026-07-22' },
+        // أغسطس (2)
+        { id: 107, monthIdx: 2, type: 'income', categoryId: 'network', amountBase: 68500, note: 'إيرادات أغسطس', date: '2026-08-06' },
+        { id: 108, monthIdx: 2, type: 'expense', categoryId: 'bills', amountBase: 31000, note: 'فواتير ووقود مولد', date: '2026-08-18' },
+        { id: 109, monthIdx: 2, type: 'expense', categoryId: 'transport', amountBase: 8200, note: 'تنقلات ومواصلات', date: '2026-08-25' },
+        // سبتمبر (3) -> استهلاك 89% (تحذير برتقالي Amber)
+        { id: 110, monthIdx: 3, type: 'income', categoryId: 'network', amountBase: 72000, note: 'إيرادات سبتمبر', date: '2026-09-03' },
+        { id: 111, monthIdx: 3, type: 'expense', categoryId: 'bills', amountBase: 26500, note: 'فاتورة خط رئيسي', date: '2026-09-10' },
+        { id: 112, monthIdx: 3, type: 'expense', categoryId: 'food', amountBase: 11000, note: 'طعام ومستلزمات', date: '2026-09-17' },
+        { id: 113, monthIdx: 3, type: 'expense', categoryId: 'health', amountBase: 7000, note: 'صيدلية وفحوصات', date: '2026-09-24' },
+        // أكتوبر (4) -> استهلاك 64% (آمن أخضر Green)
+        { id: 114, monthIdx: 4, type: 'income', categoryId: 'freelance', amountBase: 85000, note: 'عوائد التطبيقات والشبكة', date: '2026-10-02' },
+        { id: 115, monthIdx: 4, type: 'expense', categoryId: 'bills', amountBase: 16500, note: 'فواتير شهرية', date: '2026-10-09' },
+        { id: 116, monthIdx: 4, type: 'expense', categoryId: 'housing', amountBase: 8000, note: 'مستلزمات منزلية', date: '2026-10-15' },
+        { id: 117, monthIdx: 4, type: 'expense', categoryId: 'food', amountBase: 5500, note: 'مطاعم ومقاضي', date: '2026-10-21' },
+        { id: 118, monthIdx: 4, type: 'expense', categoryId: 'transport', amountBase: 2000, note: 'وقود وتنقل', date: '2026-10-27' },
+        // نوفمبر (5) -> يطابق أرقام لقطة الشاشة (114,848 مصروف و 30,500 دخل مع إصلاح عرض التجاوز والرصيد!)
+        { id: 119, monthIdx: 5, type: 'income', categoryId: 'network', amountBase: 30500, note: 'دفعة مبيعات كروت نوفمبر', date: '2026-11-05' },
+        { id: 120, monthIdx: 5, type: 'expense', categoryId: 'bills', amountBase: 96548, note: 'سداد فواتير الخطوط والطاقة', date: '2026-11-12' },
+        { id: 121, monthIdx: 5, type: 'expense', categoryId: 'housing', amountBase: 5000, note: 'صيانة وسكن', date: '2026-11-15' },
+        { id: 122, monthIdx: 5, type: 'expense', categoryId: 'other', amountBase: 5000, note: 'مصاريف متنوعة', date: '2026-11-17' },
+        { id: 123, monthIdx: 5, type: 'expense', categoryId: 'food', amountBase: 3000, note: 'طعام وشراب', date: '2026-11-19' },
+        { id: 124, monthIdx: 5, type: 'expense', categoryId: 'health', amountBase: 3000, note: 'علاج وصيدلية', date: '2026-11-20' },
+        { id: 125, monthIdx: 5, type: 'expense', categoryId: 'transport', amountBase: 2300, note: 'مواصلات', date: '2026-11-22' }
+      ]
+    };
+
+    // =========================================================================
+    // 2. دوال مساعدة للتنسيق وتحويل العملات
+    // =========================================================================
+    function convertFromBase(amountBase) {
+      const curr = CURRENCIES[appState.currency];
+      return amountBase * curr.rate;
+    }
+
+    function convertToBase(amountInCurrentCurrency) {
+      const curr = CURRENCIES[appState.currency];
+      return amountInCurrentCurrency / curr.rate;
+    }
+
+    function formatNumber(amountBase, includeSymbol = false) {
+      const curr = CURRENCIES[appState.currency];
+      const converted = convertFromBase(amountBase);
+      const absVal = Math.abs(converted);
+      const formatted = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: curr.decimals === 0 ? 0 : (absVal < 10 && absVal > 0 ? 2 : 0),
+        maximumFractionDigits: curr.decimals
+      }).format(absVal);
+      return includeSymbol ? `${formatted} ${curr.symbol}` : formatted;
+    }
+
+    function formatSigned(amountBase, includeSymbol = true) {
+      const sign = amountBase < 0 ? '-' : (amountBase > 0 ? '+' : '');
+      return `${sign}${formatNumber(amountBase, includeSymbol)}`;
+    }
+
+    function getCategoryMeta(type, categoryId) {
+      const list = type === 'expense' ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+      return list.find(c => c.id === categoryId) || { id: 'other', name: 'أخرى', color: '#64748B', icon: '📌' };
+    }
+
+    function cycleCurrency() {
+      const order = ['YER', 'SAR', 'USD'];
+      const next = order[(order.indexOf(appState.currency) + 1) % order.length];
+      setCurrency(next);
+      showToast(`تم التحويل إلى ${CURRENCIES[next].name} (${CURRENCIES[next].symbol})`);
+    }
+
+    // إظهار إشعار Toast داخل الهاتف (بديل عن alert)
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('phoneToast');
+      const txt = document.getElementById('phoneToastMsg');
+      txt.textContent = msg;
+      el.classList.remove('opacity-0', '-translate-y-2');
+      el.classList.add('opacity-100', 'translate-y-0');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.remove('opacity-100', 'translate-y-0');
+        el.classList.add('opacity-0', '-translate-y-2');
+      }, 2400);
+    }
+
+    // =========================================================================
+    // 3. التحكم بلوحة المطور الخارجية
+    // =========================================================================
+    function setTheme(theme) {
+      appState.theme = theme;
+      const phone = document.getElementById('phoneFrame');
+      const panel = document.getElementById('devControlsPanel');
+
+      if (theme === 'dark') {
+        phone.classList.add('dark-theme');
+        document.body.classList.add('workspace-dark');
+        panel.classList.remove('bg-white/95', 'border-slate-200/80');
+        panel.classList.add('bg-slate-900/95', 'border-slate-700/80', 'text-slate-100');
+      } else {
+        phone.classList.remove('dark-theme');
+        document.body.classList.remove('workspace-dark');
+        panel.classList.add('bg-white/95', 'border-slate-200/80');
+        panel.classList.remove('bg-slate-900/95', 'border-slate-700/80', 'text-slate-100');
+      }
+      syncDevPanelUI();
+      renderApp();
+    }
+
+    function setNavMode(mode) {
+      appState.navMode = mode;
+      if (mode === 'top_switch') {
+        // إذا كان المستخدم في تبويب الميزانية، ننقله للرئيسية على عرض الميزانية العلوي
+        if (appState.activeTab === 'budget') {
+          appState.activeTab = 'home';
+          appState.homeSubView = 'budget';
+        }
+      } else {
+        if (appState.activeTab === 'home' && appState.homeSubView === 'budget') {
+          appState.activeTab = 'budget';
+          appState.homeSubView = 'debts';
+        }
+      }
+      syncDevPanelUI();
+      renderApp();
+    }
+
+    function setCurrency(code) {
+      appState.currency = code;
+      syncDevPanelUI();
+      renderApp();
+    }
+
+    function syncDevPanelUI() {
+      const isDark = appState.theme === 'dark';
+
+      // تحديث نصوص لوحة المطور في الوضع الداكن
+      document.querySelectorAll('.dev-title').forEach(el => {
+        el.className = `text-base font-extrabold leading-tight dev-title ${isDark ? 'text-white' : 'text-slate-800'}`;
+      });
+      document.querySelectorAll('.dev-subtitle').forEach(el => {
+        el.className = `text-xs dev-subtitle ${isDark ? 'text-slate-400' : 'text-slate-500'}`;
+      });
+      document.querySelectorAll('.dev-label').forEach(el => {
+        el.className = `block text-xs font-bold mb-2 dev-label ${isDark ? 'text-slate-300' : 'text-slate-600'}`;
+      });
+      document.querySelectorAll('.dev-border').forEach(el => {
+        el.className = `flex items-center justify-between gap-3 pb-3.5 mb-4 border-b dev-border ${isDark ? 'border-slate-700/80' : 'border-slate-200/80'}`;
+      });
+      document.querySelectorAll('.dev-toggle-bg').forEach(el => {
+        el.className = el.className.replace(/bg-slate-\d+/g, '') + (isDark ? ' bg-slate-800' : ' bg-slate-100');
+      });
+      document.querySelectorAll('.dev-tip-box').forEach(el => {
+        el.className = `rounded-xl p-3 border dev-tip-box text-[11.5px] leading-relaxed ${isDark ? 'bg-teal-950/40 border-teal-800/50 text-slate-300' : 'bg-teal-50/70 border-teal-200/60 text-slate-700'}`;
+      });
+      document.querySelectorAll('.dev-tip-title').forEach(el => {
+        el.className = `font-bold mb-1 flex items-center gap-1.5 dev-tip-title ${isDark ? 'text-teal-300' : 'text-teal-800'}`;
+      });
+      document.querySelectorAll('.dev-tip-list').forEach(el => {
+        el.className = `space-y-1 pr-4 list-disc dev-tip-list ${isDark ? 'text-slate-300' : 'text-slate-600'}`;
+      });
+
+      // أزرار الثيم
+      const activePill = 'bg-brandTeal text-white shadow-sm';
+      const inactivePill = isDark ? 'text-slate-300 hover:bg-slate-700/60' : 'text-slate-600 hover:bg-white/70';
+
+      document.getElementById('btnThemeLight').className = `tap-scale flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all ${!isDark ? activePill : inactivePill}`;
+      document.getElementById('btnThemeDark').className = `tap-scale flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-bold transition-all ${isDark ? activePill : inactivePill}`;
+
+      // أزرار معمارية التنقل
+      const navModes = [
+        { id: 'unified_bar', btn: 'btnNavUnified', dot: 'dotNavUnified' },
+        { id: 'top_switch', btn: 'btnNavTopSwitch', dot: 'dotNavTopSwitch' }
+      ];
+      navModes.forEach(item => {
+        const active = appState.navMode === item.id;
+        const btn = document.getElementById(item.btn);
+        const dot = document.getElementById(item.dot);
+        if (active) {
+          btn.className = `tap-scale text-right p-2.5 rounded-xl border-2 transition-all flex items-start gap-2.5 ${isDark ? 'border-teal-500 bg-teal-950/50 text-white' : 'border-brandTeal bg-teal-50/70 text-slate-900'}`;
+          dot.className = 'mt-1 w-3.5 h-3.5 rounded-full border-2 border-brandTeal flex-shrink-0 flex items-center justify-center bg-brandTeal';
+          dot.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-white"></span>';
+        } else {
+          btn.className = `tap-scale text-right p-2.5 rounded-xl border transition-all flex items-start gap-2.5 ${isDark ? 'border-slate-700 bg-slate-800/40 text-slate-300 hover:border-slate-600' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'}`;
+          dot.className = 'mt-1 w-3.5 h-3.5 rounded-full border-2 border-slate-400 flex-shrink-0';
+          dot.innerHTML = '';
+        }
+      });
+
+      // أزرار العملة
+      ['YER', 'SAR', 'USD'].forEach(code => {
+        const el = document.getElementById(`btnCurr${code}`);
+        const active = appState.currency === code;
+        el.className = `tap-scale py-2 px-2 rounded-lg text-xs font-bold transition-all ${active ? activePill : inactivePill}`;
+      });
+    }
+
+    // =========================================================================
+    // 4. حسابات الميزانية للشهر المحدد والـ 6 أشهر
+    // =========================================================================
+    function getMonthMetrics(monthIdx) {
+      const entries = appState.budgetEntries.filter(e => e.monthIdx === monthIdx);
+      let income = 0;
+      let expense = 0;
+      const byCategory = {};
+      EXPENSE_CATEGORIES.forEach(c => byCategory[c.id] = 0);
+
+      entries.forEach(e => {
+        if (e.type === 'income') income += e.amountBase;
+        else {
+          expense += e.amountBase;
+          byCategory[e.categoryId] = (byCategory[e.categoryId] || 0) + e.amountBase;
+        }
+      });
+
+      const net = income - expense;
+      const limit = appState.monthlyBudgetLimitBase;
+      const pct = limit > 0 ? Math.round((expense / limit) * 100) : 0;
+      const diff = limit - expense; // موجب = متبقي، سالب = تجاوز
+
+      return { entries, income, expense, net, limit, pct, diff, byCategory };
+    }
+
+    // =========================================================================
+    // 5. بناء شريط التنقل السفلي
+    // =========================================================================
+    function renderBottomNav() {
+      const nav = document.getElementById('bottomNavItems');
+      const isUnified = appState.navMode === 'unified_bar';
+
+      const items = isUnified
+        ? [
+            { id: 'home', label: 'الرئيسية', icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />` },
+            { id: 'budget', label: 'الميزانية', icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z" /><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z" />` },
+            { spacer: true },
+            { id: 'tracking', label: 'متابعة حساباتي', icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />` },
+            { id: 'reports', label: 'التقارير', icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />` }
+          ]
+        : [
+            { id: 'home', label: 'الرئيسية', icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75" />` },
+            { id: 'add_acc_action', label: 'إضافة الحساب', action: () => openAddAccountModal(), icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />` },
+            { spacer: true },
+            { id: 'tracking', label: 'متابعة حساباتي', icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />` },
+            { id: 'reports', label: 'التقارير', icon: `<path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />` }
+          ];
+
+      nav.innerHTML = items.map(item => {
+        if (item.spacer) return '<div></div>';
+        const isActive = appState.activeTab === item.id;
+        const colorStyle = isActive
+          ? 'color: #0D6E7A;'
+          : 'color: var(--text-secondary);';
+        const clickHandler = item.action ? 'openAddAccountModal()' : `switchTab('${item.id}')`;
+        return `
+          <button onclick="${clickHandler}" class="tap-scale flex flex-col items-center justify-center gap-0.5 py-1 transition-all" style="${colorStyle}">
+            <svg class="w-[21px] h-[21px]" fill="none" stroke="currentColor" stroke-width="${isActive ? '2.3' : '1.8'}" viewBox="0 0 24 24">
+              ${item.icon}
+            </svg>
+            <span class="text-[10px] ${isActive ? 'font-extrabold' : 'font-semibold'} leading-tight truncate max-w-[74px]">${item.label}</span>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function switchTab(tabId) {
+      appState.activeTab = tabId;
+      renderApp();
+    }
+
+    // =========================================================================
+    // 6. شاشة التبويب 1: الرئيسية (الحسابات والديون — مطابقة لمحفظتي الذكية)
+    // =========================================================================
+    function renderTopSwitchBarIfNeeded() {
+      if (appState.navMode !== 'top_switch') return '';
+      const isDebts = appState.homeSubView === 'debts';
+      return `
+        <div class="px-3.5 pt-2.5 pb-1 flex-shrink-0">
+          <div class="grid grid-cols-2 p-1 rounded-2xl border" style="background-color: var(--bg-card-subtle); border-color: var(--border-soft);">
+            <button onclick="appState.homeSubView='debts'; renderApp();" class="tap-scale py-1.5 rounded-xl text-xs font-extrabold transition-all ${isDebts ? 'hero-gradient text-white shadow-sm' : 'app-text-secondary'}">
+              الديون والحسابات
+            </button>
+            <button onclick="appState.homeSubView='budget'; renderApp();" class="tap-scale py-1.5 rounded-xl text-xs font-extrabold transition-all ${!isDebts ? 'hero-gradient text-white shadow-sm' : 'app-text-secondary'}">
+              الميزانية والنفقات
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDebtsScreen() {
+      const curr = CURRENCIES[appState.currency];
+
+      // تصفية الحسابات حسب الشريحة والبحث
+      const filtered = appState.accounts.filter(acc => {
+        const matchCat = appState.debtFilter === 'الكل' || acc.category === appState.debtFilter;
+        const matchQuery = !appState.debtSearchQuery || acc.name.includes(appState.debtSearchQuery) || acc.category.includes(appState.debtSearchQuery);
+        return matchCat && matchQuery;
+      });
+
+      // حساب إجمالي لك وإجمالي عليك ديناميكياً
+      let totalForYou = 0;
+      let totalOnYou = 0;
+      appState.accounts.forEach(acc => {
+        if (acc.balanceBase >= 0) totalForYou += acc.balanceBase;
+        else totalOnYou += Math.abs(acc.balanceBase);
+      });
+
+      const chips = ['الكل', 'عملاء الشبكة', 'خطوط انترنت'];
+
+      return `
+        <!-- الشريط العلوي -->
+        <header class="px-4 py-2.5 flex items-center justify-between border-b flex-shrink-0" style="background-color: var(--bg-card); border-color: var(--border-soft);">
+          <div class="flex items-center gap-3">
+            <button onclick="openDrawer()" class="tap-scale p-1.5 rounded-lg hover:bg-slate-500/10 app-text-primary" aria-label="القائمة">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+            </button>
+            <h2 class="text-[16px] font-extrabold app-text-primary">كل الحسابات</h2>
+          </div>
+          <div class="flex items-center gap-1">
+            <button onclick="appState.debtSearchOpen = !appState.debtSearchOpen; if(!appState.debtSearchOpen) appState.debtSearchQuery=''; renderApp();" class="tap-scale p-2 rounded-lg hover:bg-slate-500/10 app-text-primary" title="بحث">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+            </button>
+            <button onclick="showToast('خادم الويب المحلي جاهز على الشبكة (LocalWebServer)');" class="tap-scale p-2 rounded-lg hover:bg-slate-500/10 app-text-primary" title="خادم الويب">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"/></svg>
+            </button>
+            <button onclick="showToast('الفرز الحالي: أحدث المعاملات');" class="tap-scale p-2 rounded-lg hover:bg-slate-500/10 app-text-primary" title="فرز">
+              <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12"/></svg>
+            </button>
+          </div>
+        </header>
+
+        ${renderTopSwitchBarIfNeeded()}
+
+        ${appState.debtSearchOpen ? `
+          <div class="px-3.5 pt-2 flex-shrink-0">
+            <input type="text" value="${appState.debtSearchQuery}" oninput="appState.debtSearchQuery=this.value; renderApp();" placeholder="ابحث باسم الحساب أو التصنيف..." class="w-full px-3.5 py-2 rounded-xl text-xs font-semibold border outline-none focus:border-brandTeal" style="background-color: var(--bg-card); border-color: var(--border-soft); color: var(--text-primary);" />
+          </div>
+        ` : ''}
+
+        <!-- شرائح التصفية الأفقية -->
+        <div class="px-3.5 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar flex-shrink-0">
+          ${chips.map(ch => {
+            const active = appState.debtFilter === ch;
+            return `
+              <button onclick="appState.debtFilter='${ch}'; renderApp();" class="tap-scale px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap border transition-all ${active ? 'bg-brandTeal text-white border-brandTeal shadow-sm' : 'app-text-secondary'}" style="${!active ? 'background-color: var(--bg-chip); border-color: var(--border-soft);' : ''}">
+                ${ch}
+              </button>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- قائمة بطاقات الحسابات -->
+        <div class="flex-1 overflow-y-auto phone-scroll px-3.5 pb-24 space-y-2.5">
+          ${filtered.length === 0 ? `
+            <div class="app-card p-8 text-center mt-4">
+              <div class="text-3xl mb-2">🔍</div>
+              <div class="text-sm font-bold app-text-primary">لا توجد حسابات مطابقة</div>
+              <div class="text-xs app-text-secondary mt-1">جرّب تغيير شريحة التصفية أو البحث</div>
+            </div>
+          ` : filtered.map(acc => {
+            const isCredit = acc.balanceBase >= 0; // لك = أخضر، عليك = أحمر
+            const balColor = isCredit ? 'text-semGreen' : 'text-semRed';
+            return `
+              <div class="app-card p-3.5 flex items-center justify-between gap-2.5">
+                <!-- اليمين: أيقونة المحفظة الدائرية + اسم الحساب والتصنيف والرصيد -->
+                <div class="flex items-center gap-3 min-w-0 flex-1">
+                  <div class="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 border" style="background-color: var(--icon-circle-bg); border-color: var(--border-soft);">
+                    <!-- أيقونة المحفظة الزرقاء المطابقة للتطبيق -->
+                    <svg class="w-6 h-6 text-[#3B6B9B]" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="3" y="6" width="18" height="12" rx="3" fill="#476B8E"/>
+                      <rect x="3" y="9" width="18" height="2.2" fill="#2B4865"/>
+                      <circle cx="17" cy="14" r="1.3" fill="#6EE7B7"/>
+                    </svg>
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="text-[14px] font-extrabold app-text-primary truncate">${acc.name}</div>
+                    <div class="text-[11px] font-semibold app-text-secondary mt-0.5">${acc.category}</div>
+                    <div class="flex items-center gap-1.5 mt-1 text-[12px] font-bold">
+                      <span class="app-text-secondary">الرصيد</span>
+                      <span class="${balColor} font-extrabold" dir="ltr">${formatNumber(acc.balanceBase)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- اليسار: زر الإضافة الأزرق + قلم التعديل + سهم الاتجاه + شارة عدد العمليات البنفسجية -->
+                <div class="flex items-center gap-2.5 flex-shrink-0">
+                  <button onclick="openAddDebtTxModal(${acc.id})" title="إضافة عملية سريعة" class="tap-scale w-9 h-9 rounded-full bg-[#1976D2] hover:bg-[#1565C0] text-white flex items-center justify-center shadow-sm">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                  </button>
+                  <div class="flex flex-col items-center gap-1">
+                    <button onclick="showToast('تعديل بيانات حساب: ${acc.name}');" class="tap-scale p-0.5 app-text-secondary hover:text-brandTeal">
+                      <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 000-1.42l-2.34-2.34a1.003 1.003 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.82z"/></svg>
+                    </button>
+                    ${isCredit
+                      ? `<svg class="w-4 h-4 text-semGreen" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"/></svg>`
+                      : `<svg class="w-4 h-4 text-semRed" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181"/></svg>`
+                    }
+                    <span class="px-2 py-0.5 rounded-full text-[10.5px] font-extrabold" style="background-color: var(--badge-purple-bg); color: var(--badge-purple-text);">${acc.txCount}</span>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- شريط الإجماليات العائم فوق شريط التنقل السفلي -->
+        <div class="absolute bottom-2.5 left-3 right-3 z-20">
+          <div class="rounded-2xl border shadow-lg px-2.5 py-2 grid grid-cols-[1fr_1fr_auto] items-center gap-1.5 backdrop-blur-md" style="background-color: var(--totals-bg); border-color: var(--border-soft);">
+            <div class="text-center border-l pl-1.5" style="border-color: var(--border-soft);">
+              <div class="text-[10px] font-bold text-semRed/90">إجمالي المبلغ عليك</div>
+              <div class="text-[13.5px] font-extrabold text-semRed leading-tight mt-0.5" dir="ltr">${formatNumber(totalOnYou)}</div>
+            </div>
+            <div class="text-center border-l pl-1.5" style="border-color: var(--border-soft);">
+              <div class="text-[10px] font-bold text-semGreen/90">إجمالي المبلغ لك</div>
+              <div class="text-[13.5px] font-extrabold text-semGreen leading-tight mt-0.5" dir="ltr">${formatNumber(totalForYou)}</div>
+            </div>
+            <button onclick="cycleCurrency()" class="tap-scale px-2.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[11px] font-extrabold flex items-center gap-1 whitespace-nowrap transition">
+              <span>${curr.name}</span>
+              <svg class="w-3 h-3 opacity-75" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 7. شاشة التبويب 2: الميزانية (المصاريف والدخل — موحّدة ومطوّرة)
+    // =========================================================================
+    function renderBudgetScreen(embeddedInTopSwitch = false) {
+      const curr = CURRENCIES[appState.currency];
+      const month = MONTHS[appState.currentMonthIdx];
+      const metrics = getMonthMetrics(appState.currentMonthIdx);
+
+      // تحديد حالة شريط تقدم الميزانية (إصلاح الخلل القديم بالكامل!)
+      let barColor = '#22C55E'; // أخضر <= 75%
+      let statusBadgeBg = 'bg-emerald-400/20 text-emerald-100 border-emerald-300/30';
+      let statusLabel = `المتبقي من الميزانية: ${formatNumber(metrics.diff, true)}`;
+
+      if (metrics.pct > 100) {
+        barColor = '#EF4444'; // أحمر > 100%
+        statusBadgeBg = 'bg-red-500/30 text-white border-red-300/50';
+        statusLabel = `⚠️ تجاوز الميزانية بمقدار ${formatNumber(Math.abs(metrics.diff), true)}`;
+      } else if (metrics.pct > 75) {
+        barColor = '#F59E0B'; // برتقالي 76-100%
+        statusBadgeBg = 'bg-amber-400/25 text-amber-50 border-amber-300/40';
+        statusLabel = `اقتربت من الحد — المتبقي: ${formatNumber(metrics.diff, true)}`;
+      }
+
+      const barFillWidth = Math.min(metrics.pct, 100);
+
+      // الرأس العلوي للشاشة
+      const headerHtml = embeddedInTopSwitch
+        ? `
+          <header class="px-4 py-2.5 flex items-center justify-between border-b flex-shrink-0" style="background-color: var(--bg-card); border-color: var(--border-soft);">
+            <div class="flex items-center gap-2.5">
+              <button onclick="openDrawer()" class="tap-scale p-1.5 rounded-lg hover:bg-slate-500/10 app-text-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+              </button>
+              <div class="flex items-center gap-1.5">
+                <button onclick="changeMonth(-1)" class="tap-scale p-1 rounded-lg hover:bg-slate-500/10 app-text-secondary ${appState.currentMonthIdx === 0 ? 'opacity-30 pointer-events-none' : ''}">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+                </button>
+                <span class="text-sm font-extrabold app-text-primary min-w-[92px] text-center">${month.label}</span>
+                <button onclick="changeMonth(1)" class="tap-scale p-1 rounded-lg hover:bg-slate-500/10 app-text-secondary ${appState.currentMonthIdx === MONTHS.length - 1 ? 'opacity-30 pointer-events-none' : ''}">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+                </button>
+              </div>
+            </div>
+            <button onclick="cycleCurrency()" class="tap-scale px-2.5 py-1 rounded-full bg-brandTeal/12 text-brandTeal text-[11px] font-extrabold border border-brandTeal/25">
+              ${curr.symbol} ▾
+            </button>
+          </header>
+          ${renderTopSwitchBarIfNeeded()}
+        `
+        : `
+          <header class="px-4 py-2.5 flex items-center justify-between border-b flex-shrink-0" style="background-color: var(--bg-card); border-color: var(--border-soft);">
+            <button onclick="openDrawer()" class="tap-scale p-1.5 rounded-lg hover:bg-slate-500/10 app-text-primary">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="changeMonth(-1)" class="tap-scale p-1 rounded-lg hover:bg-slate-500/10 app-text-secondary ${appState.currentMonthIdx === 0 ? 'opacity-30 pointer-events-none' : ''}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>
+              </button>
+              <span class="text-[15px] font-extrabold app-text-primary min-w-[100px] text-center">${month.label}</span>
+              <button onclick="changeMonth(1)" class="tap-scale p-1 rounded-lg hover:bg-slate-500/10 app-text-secondary ${appState.currentMonthIdx === MONTHS.length - 1 ? 'opacity-30 pointer-events-none' : ''}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>
+              </button>
+            </div>
+            <button onclick="cycleCurrency()" class="tap-scale px-2.5 py-1 rounded-full bg-brandTeal/12 text-brandTeal text-[11px] font-extrabold border border-brandTeal/25">
+              ${curr.symbol} ▾
+            </button>
+          </header>
+        `;
+
+      // تبويبات فرعية موحدة (لوحة الملخص | سجل العمليات) لإلغاء الحاجة لشريط تنقل ثانٍ
+      const subTabsHtml = `
+        <div class="px-3.5 pt-2.5 pb-1.5 flex-shrink-0">
+          <div class="grid grid-cols-2 p-1 rounded-xl border" style="background-color: var(--bg-card); border-color: var(--border-soft);">
+            <button onclick="appState.budgetSubTab='summary'; renderApp();" class="tap-scale py-1.5 rounded-lg text-xs font-extrabold transition-all ${appState.budgetSubTab === 'summary' ? 'bg-brandTeal text-white shadow-sm' : 'app-text-secondary'}">
+              لوحة الملخص
+            </button>
+            <button onclick="appState.budgetSubTab='logs'; renderApp();" class="tap-scale py-1.5 rounded-lg text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 ${appState.budgetSubTab === 'logs' ? 'bg-brandTeal text-white shadow-sm' : 'app-text-secondary'}">
+              <span>سجل العمليات</span>
+              <span class="px-1.5 py-0.2 rounded-full text-[10px] ${appState.budgetSubTab === 'logs' ? 'bg-white/20 text-white' : 'bg-slate-500/15'}">${metrics.entries.length}</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      // محتوى لوحة الملخص أو سجل العمليات
+      const bodyHtml = appState.budgetSubTab === 'summary'
+        ? renderBudgetSummaryContent(metrics, barColor, statusBadgeBg, statusLabel, barFillWidth)
+        : renderBudgetLogsContent(metrics);
+
+      return `${headerHtml}${subTabsHtml}${bodyHtml}`;
+    }
+
+    function changeMonth(delta) {
+      const next = appState.currentMonthIdx + delta;
+      if (next >= 0 && next < MONTHS.length) {
+        appState.currentMonthIdx = next;
+        appState.selectedDonutCat = null;
+        renderApp();
+      }
+    }
+
+    function renderBudgetSummaryContent(metrics, barColor, statusBadgeBg, statusLabel, barFillWidth) {
+      const netColorClass = metrics.net >= 0 ? 'text-white' : 'text-rose-200';
+      const netBadge = metrics.net >= 0
+        ? '<span class="px-2 py-0.5 rounded-full bg-emerald-400/25 text-emerald-100 text-[10px] font-bold">فائض</span>'
+        : '<span class="px-2 py-0.5 rounded-full bg-rose-500/35 text-rose-100 text-[10px] font-bold">عجز شهري</span>';
+
+      return `
+        <div class="flex-1 overflow-y-auto phone-scroll px-3.5 pb-6 space-y-3">
+
+          <!-- البطاقة الرئيسية المطوّرة (تدرج محفظتي الذكية + إصلاح الحسابات وشريط الميزانية) -->
+          <div class="hero-gradient rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
+            <div class="absolute -left-8 -top-8 w-28 h-28 rounded-full bg-white/10 pointer-events-none"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-white/85 font-semibold">صافي الرصيد الشهري (الدخل - المصروفات)</span>
+              ${netBadge}
+            </div>
+            <div class="text-[26px] font-extrabold tracking-tight mt-0.5 ${netColorClass}" dir="ltr" style="text-align: right;">
+              ${formatSigned(metrics.net, true)}
+            </div>
+
+            <!-- شريحتا الدخل والمصروفات المدمجتان بوضوح -->
+            <div class="grid grid-cols-2 gap-2 mt-3">
+              <div class="rounded-xl bg-white/12 backdrop-blur-sm px-3 py-2 border border-white/10">
+                <div class="flex items-center gap-1 text-[10.5px] text-emerald-200 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  إجمالي الدخل
+                </div>
+                <div class="text-[13.5px] font-extrabold text-white mt-0.5" dir="ltr" style="text-align: right;">
+                  ${formatNumber(metrics.income, true)}
+                </div>
+              </div>
+              <div class="rounded-xl bg-white/12 backdrop-blur-sm px-3 py-2 border border-white/10">
+                <div class="flex items-center gap-1 text-[10.5px] text-rose-200 font-bold">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                  إجمالي المصروفات
+                </div>
+                <div class="text-[13.5px] font-extrabold text-white mt-0.5" dir="ltr" style="text-align: right;">
+                  ${formatNumber(metrics.expense, true)}
+                </div>
+              </div>
+            </div>
+
+            <!-- شريط تقدم الميزانية الذكي -->
+            <div class="mt-3.5 pt-3 border-t border-white/15">
+              <div class="flex items-center justify-between text-[11px] font-bold mb-1.5">
+                <button onclick="openBudgetLimitModal()" class="underline decoration-dotted underline-offset-4 text-white/90 hover:text-white flex items-center gap-1">
+                  <span>حد الميزانية: ${formatNumber(metrics.limit, true)}</span>
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487z"/></svg>
+                </button>
+                <span>الاستهلاك ${metrics.pct}%</span>
+              </div>
+              <div class="w-full h-2.5 rounded-full bg-black/25 overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-500" style="width: ${barFillWidth}%; background-color: ${barColor};"></div>
+              </div>
+              <div class="mt-2 inline-flex items-center px-2.5 py-1 rounded-lg border text-[11px] font-bold ${statusBadgeBg}">
+                ${statusLabel}
+              </div>
+            </div>
+          </div>
+
+          <!-- بطاقتا الإجراء السريع: إضافة دخل / إضافة مصروف -->
+          <div class="grid grid-cols-2 gap-2.5">
+            <button onclick="openBudgetEntryModal('income')" class="tap-scale app-card py-3 px-3 flex items-center justify-center gap-2 hover:border-emerald-500/50">
+              <span class="w-7 h-7 rounded-full bg-semGreen text-white flex items-center justify-center shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+              </span>
+              <span class="text-xs font-extrabold text-semGreen">إضافة دخل</span>
+            </button>
+            <button onclick="openBudgetEntryModal('expense')" class="tap-scale app-card py-3 px-3 flex items-center justify-center gap-2 hover:border-red-500/50">
+              <span class="w-7 h-7 rounded-full bg-semRed text-white flex items-center justify-center shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+              </span>
+              <span class="text-xs font-extrabold text-semRed">إضافة مصروف</span>
+            </button>
+          </div>
+
+          <!-- بطاقة المخطط الدائري (توزيع مصروفات الشهر الحالي) -->
+          ${renderDonutChartCard(metrics)}
+
+          <!-- بطاقة المقارنة الشهرية (6 أشهر مع مفتاح علوي نظيف بدون تداخل) -->
+          ${renderMonthlyBarChartCard()}
+
+        </div>
+      `;
+    }
+
+    // رسم المخطط الدائري SVG مع تفاعل اللمس والتفاصيل
+    function renderDonutChartCard(metrics) {
+      const totalExp = metrics.expense;
+      const catsData = EXPENSE_CATEGORIES.map(c => {
+        const val = metrics.byCategory[c.id] || 0;
+        const pct = totalExp > 0 ? (val / totalExp) * 100 : 0;
+        return { ...c, val, pct };
+      }).sort((a, b) => b.val - a.val);
+
+      const radius = 62;
+      const circumference = 2 * Math.PI * radius;
+      let offset = 0;
+
+      const selectedCatObj = appState.selectedDonutCat
+        ? catsData.find(c => c.id === appState.selectedDonutCat)
+        : null;
+
+      const slicesSvg = totalExp > 0
+        ? catsData.filter(c => c.val > 0).map(c => {
+            const segLen = (c.pct / 100) * circumference;
+            const gap = catsData.filter(x => x.val > 0).length > 1 ? 2.2 : 0;
+            const dash = `${Math.max(segLen - gap, 1)} ${circumference}`;
+            const dashOffset = -offset;
+            offset += segLen;
+            const isSel = appState.selectedDonutCat === c.id;
+            const dimmed = appState.selectedDonutCat && !isSel;
+            return `
+              <circle
+                class="donut-segment"
+                cx="84" cy="84" r="${radius}"
+                fill="transparent"
+                stroke="${c.color}"
+                stroke-width="${isSel ? 28 : 23}"
+                stroke-dasharray="${dash}"
+                stroke-dashoffset="${dashOffset}"
+                opacity="${dimmed ? 0.35 : 1}"
+                onclick="selectDonutCategory('${c.id}')"
+              />
+            `;
+          }).join('')
+        : `<circle cx="84" cy="84" r="${radius}" fill="transparent" stroke="var(--border-soft)" stroke-width="22" />`;
+
+      return `
+        <div class="app-card p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-[13.5px] font-extrabold app-text-primary">توزيع مصروفات الشهر الحالي</h3>
+            ${selectedCatObj
+              ? `<button onclick="selectDonutCategory(null)" class="text-[10.5px] font-bold text-brandTeal">عرض الكل</button>`
+              : `<span class="text-[10.5px] app-text-muted font-semibold">المس شريحة للتفاصيل</span>`
+            }
+          </div>
+
+          <!-- SVG Donut -->
+          <div class="relative flex items-center justify-center my-1">
+            <svg width="168" height="168" viewBox="0 0 168 168" class="-rotate-90">
+              ${slicesSvg}
+            </svg>
+            <!-- النص المركزي داخل الدائرة -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none px-8 text-center">
+              ${selectedCatObj ? `
+                <span class="text-base leading-none">${selectedCatObj.icon}</span>
+                <span class="text-[11px] font-bold app-text-secondary mt-1 truncate max-w-[92px]">${selectedCatObj.name}</span>
+                <span class="text-[13px] font-extrabold" style="color: ${selectedCatObj.color};">${selectedCatObj.pct.toFixed(1)}%</span>
+              ` : `
+                <span class="text-[10.5px] font-bold app-text-secondary">الإجمالي</span>
+                <span class="text-[14px] font-extrabold app-text-primary mt-0.5" dir="ltr">${formatNumber(totalExp)}</span>
+                <span class="text-[10px] font-bold app-text-muted">${CURRENCIES[appState.currency].symbol}</span>
+              `}
+            </div>
+          </div>
+
+          <!-- قائمة التصنيفات المحاذية بدقة -->
+          <div class="mt-3 space-y-1.5">
+            ${catsData.map(c => {
+              const isSel = appState.selectedDonutCat === c.id;
+              return `
+                <button onclick="selectDonutCategory('${c.id}')" class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl transition-all text-right ${isSel ? 'ring-1 ring-brandTeal/50' : ''}" style="background-color: ${isSel ? 'var(--bg-card-subtle)' : 'transparent'};">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <span class="w-3 h-3 rounded-sm flex-shrink-0" style="background-color: ${c.color};"></span>
+                    <span class="text-xs font-bold app-text-primary truncate">${c.name}</span>
+                  </div>
+                  <div class="flex items-center gap-3 flex-shrink-0">
+                    <span class="text-[11px] font-bold app-text-secondary w-11 text-left" dir="ltr">${c.pct.toFixed(1)}%</span>
+                    <span class="text-xs font-extrabold app-text-primary min-w-[72px] text-left" dir="ltr">${formatNumber(c.val, true)}</span>
+                  </div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectDonutCategory(catId) {
+      appState.selectedDonutCat = appState.selectedDonutCat === catId ? null : catId;
+      renderApp();
+    }
+
+    // رسم المخطط الشريطي المجمّع للـ 6 أشهر مع إصلاح تداخل المفتاح والمحور
+    function renderMonthlyBarChartCard() {
+      const monthData = MONTHS.map(m => {
+        const met = getMonthMetrics(m.id);
+        return { ...m, income: met.income, expense: met.expense };
+      });
+
+      const maxVal = Math.max(10000, ...monthData.flatMap(m => [m.income, m.expense])) * 1.15;
+      const chartH = 128;
+      const chartW = 310;
+      const groupW = chartW / monthData.length;
+
+      const selectedMonthObj = appState.selectedBarMonth !== null
+        ? monthData[appState.selectedBarMonth]
+        : null;
+
+      // خطوط الشبكة الأفقية (3 مستويات)
+      const gridLines = [0.25, 0.5, 0.75, 1].map(ratio => {
+        const y = chartH - ratio * chartH;
+        return `<line x1="0" y1="${y}" x2="${chartW}" y2="${y}" stroke="var(--border-soft)" stroke-dasharray="3,3" stroke-width="1" />`;
+      }).join('');
+
+      const barsSvg = monthData.map((m, idx) => {
+        const incH = Math.max((m.income / maxVal) * chartH, m.income > 0 ? 3 : 0);
+        const expH = Math.max((m.expense / maxVal) * chartH, m.expense > 0 ? 3 : 0);
+        const xCenter = idx * groupW + groupW / 2;
+        const barW = 11;
+        const isCurrent = idx === appState.currentMonthIdx;
+        const isSelected = idx === appState.selectedBarMonth;
+
+        return `
+          <g class="cursor-pointer" onclick="selectBarMonth(${idx})">
+            <!-- منطقة لمس مريحة -->
+            <rect x="${idx * groupW + 2}" y="0" width="${groupW - 4}" height="${chartH + 22}" rx="6" fill="${isSelected || isCurrent ? 'rgba(13,110,122,0.08)' : 'transparent'}" />
+            <!-- عمود الدخل (أخضر) -->
+            <rect x="${xCenter - barW - 1.5}" y="${chartH - incH}" width="${barW}" height="${incH}" rx="3.5" fill="#16A34A" opacity="${isSelected || isCurrent ? 1 : 0.82}" />
+            <!-- عمود المصروفات (أحمر) -->
+            <rect x="${xCenter + 1.5}" y="${chartH - expH}" width="${barW}" height="${expH}" rx="3.5" fill="#DC2626" opacity="${isSelected || isCurrent ? 1 : 0.82}" />
+            <!-- اسم الشهر بدون أي تداخل -->
+            <text x="${xCenter}" y="${chartH + 15}" text-anchor="middle" font-size="9.5" font-weight="${isCurrent ? '800' : '600'}" fill="${isCurrent ? '#0D6E7A' : 'var(--text-secondary)'}">${m.short}</text>
+          </g>
+        `;
+      }).join('');
+
+      return `
+        <div class="app-card p-4">
+          <!-- رأس البطاقة + مفتاح الألوان في الأعلى (إصلاح تداخل المفتاح مع محور الأشهر) -->
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-[13.5px] font-extrabold app-text-primary">المقارنة الشهرية</h3>
+            <div class="flex items-center gap-3 text-[11px] font-bold app-text-secondary">
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-semGreen"></span>الدخل</span>
+              <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-semRed"></span>المصروفات</span>
+            </div>
+          </div>
+
+          ${selectedMonthObj ? `
+            <div class="mb-2.5 px-3 py-1.5 rounded-xl flex items-center justify-between text-[11px] font-bold animate-pop" style="background-color: var(--bg-card-subtle);">
+              <span class="app-text-primary">${selectedMonthObj.label}</span>
+              <div class="flex items-center gap-2.5">
+                <span class="text-semGreen" dir="ltr">+${formatNumber(selectedMonthObj.income)}</span>
+                <span class="text-semRed" dir="ltr">-${formatNumber(selectedMonthObj.expense)}</span>
+              </div>
+            </div>
+          ` : ''}
+
+          <div class="w-full overflow-hidden">
+            <svg viewBox="0 0 ${chartW} ${chartH + 24}" class="w-full h-auto block">
+              ${gridLines}
+              <line x1="0" y1="${chartH}" x2="${chartW}" y2="${chartH}" stroke="var(--border-soft)" stroke-width="1.2" />
+              ${barsSvg}
+            </svg>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectBarMonth(idx) {
+      appState.selectedBarMonth = appState.selectedBarMonth === idx ? null : idx;
+      renderApp();
+    }
+
+    // شاشة سجل العمليات الفرعية داخل الميزانية
+    function renderBudgetLogsContent(metrics) {
+      const filters = [
+        { id: 'all', label: 'الكل' },
+        { id: 'expense', label: 'مصروفات' },
+        { id: 'income', label: 'دخل' }
+      ];
+
+      const list = metrics.entries.filter(e => {
+        if (appState.budgetLogFilter === 'all') return true;
+        return e.type === appState.budgetLogFilter;
+      }).slice().reverse();
+
+      return `
+        <div class="px-3.5 py-1.5 flex items-center gap-2 flex-shrink-0">
+          ${filters.map(f => {
+            const active = appState.budgetLogFilter === f.id;
+            return `
+              <button onclick="appState.budgetLogFilter='${f.id}'; renderApp();" class="tap-scale px-3.5 py-1 rounded-full text-xs font-bold border transition ${active ? 'bg-brandTeal text-white border-brandTeal' : 'app-text-secondary'}" style="${!active ? 'background-color: var(--bg-card); border-color: var(--border-soft);' : ''}">
+                ${f.label}
+              </button>
+            `;
+          }).join('')}
+        </div>
+
+        <div class="flex-1 overflow-y-auto phone-scroll px-3.5 pb-6 space-y-2 mt-1">
+          ${list.length === 0 ? `
+            <div class="app-card p-8 text-center mt-4">
+              <div class="text-3xl mb-2">🧾</div>
+              <div class="text-sm font-bold app-text-primary">لا توجد عمليات مسجلة</div>
+              <div class="text-xs app-text-secondary mt-1">استخدم زر (+) لإضافة مصروف أو دخل جديد</div>
+            </div>
+          ` : list.map(entry => {
+            const meta = getCategoryMeta(entry.type, entry.categoryId);
+            const isIncome = entry.type === 'income';
+            return `
+              <div class="app-card p-3 flex items-center justify-between gap-2.5">
+                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0" style="background-color: ${meta.color}1F;">
+                    ${meta.icon}
+                  </div>
+                  <div class="min-w-0 flex-1">
+                    <div class="text-[13px] font-extrabold app-text-primary truncate">${meta.name}</div>
+                    <div class="text-[11px] app-text-secondary truncate">${entry.note || 'بدون ملاحظة'}</div>
+                    <div class="text-[10px] app-text-muted mt-0.5">${entry.date}</div>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <div class="text-left">
+                    <div class="text-[13px] font-extrabold ${isIncome ? 'text-semGreen' : 'text-semRed'}" dir="ltr">
+                      ${isIncome ? '+' : '-'}${formatNumber(entry.amountBase, true)}
+                    </div>
+                  </div>
+                  <button onclick="deleteBudgetEntry(${entry.id})" title="حذف العملية" class="tap-scale p-1.5 rounded-lg text-slate-400 hover:text-semRed hover:bg-red-500/10 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/></svg>
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function deleteBudgetEntry(id) {
+      appState.budgetEntries = appState.budgetEntries.filter(e => e.id !== id);
+      showToast('تم حذف العملية وتحديث الميزانية');
+      renderApp();
+    }
+
+    // =========================================================================
+    // 8. شاشة التبويب 3: متابعة حساباتي (استقرار تام للميزة القائمة)
+    // =========================================================================
+    function renderTrackingScreen() {
+      const linked = [
+        { name: 'مركز الشامل للتجارة', phone: '777-xxx-412', balanceBase: -42500, updated: 'منذ 15 دقيقة' },
+        { name: 'مؤسسة الاتصالات المحلية', phone: '771-xxx-890', balanceBase: 118000, updated: 'اليوم 10:12 ص' },
+        { name: 'محل النور للمستلزمات', phone: '733-xxx-204', balanceBase: -9500, updated: 'أمس' }
+      ];
+
+      return `
+        <header class="px-4 py-2.5 flex items-center justify-between border-b flex-shrink-0" style="background-color: var(--bg-card); border-color: var(--border-soft);">
+          <div class="flex items-center gap-2.5">
+            <button onclick="openDrawer()" class="tap-scale p-1.5 rounded-lg hover:bg-slate-500/10 app-text-primary">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+            </button>
+            <h2 class="text-[16px] font-extrabold app-text-primary">متابعة حساباتي</h2>
+          </div>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-500/15 text-semGreen text-[10.5px] font-extrabold">مزامنة فورية</span>
+        </header>
+
+        <div class="flex-1 overflow-y-auto phone-scroll px-3.5 py-3 space-y-3">
+          <div class="hero-gradient rounded-2xl p-4 text-white shadow-md">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-white/85 font-bold">الحسابات المرتبطة لدى الآخرين</span>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-white/15 font-bold">3 جهات نشطة</span>
+            </div>
+            <div class="text-xs text-white/80 mt-2 leading-relaxed">
+              تعمل ميزة <strong>متابعة حساباتي</strong> باستقلالية كاملة وبنفس تجربتك المعتادة دون أي تأثر بإضافة وحدة الميزانية.
+            </div>
+          </div>
+
+          ${linked.map(item => {
+            const isPos = item.balanceBase >= 0;
+            return `
+              <div onclick="showToast('عرض كشف العمليات المشترك مع ${item.name}');" class="tap-scale app-card p-3.5 flex items-center justify-between cursor-pointer">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-full bg-brandTeal/12 text-brandTeal flex items-center justify-center font-extrabold text-sm">
+                    ${item.name.charAt(0)}
+                  </div>
+                  <div>
+                    <div class="text-[13.5px] font-extrabold app-text-primary">${item.name}</div>
+                    <div class="text-[11px] app-text-secondary">${item.phone} • ${item.updated}</div>
+                  </div>
+                </div>
+                <div class="text-left">
+                  <div class="text-[13px] font-extrabold ${isPos ? 'text-semGreen' : 'text-semRed'}" dir="ltr">${formatNumber(item.balanceBase, true)}</div>
+                  <div class="text-[10px] font-bold app-text-muted">${isPos ? 'لك عنده' : 'عليك له'}</div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 9. شاشة التبويب 4: مركز التقارير الموحّد (ديون + ميزانية عبر iText5)
+    // =========================================================================
+    function renderReportsScreen() {
+      const debtReports = [
+        { title: 'كشف حساب تفصيلي (PDF)', sub: 'حركة الدائن والمدين مع التوقيع والختم', icon: '📄' },
+        { title: 'الأرصدة الإجمالية بالعملات', sub: 'ملخص المبالغ لك وعليك لكل عملة', icon: '⚖️' },
+        { title: 'حركة الحسابات الشهرية', sub: 'إحصائية الديون والتسديدات حسب التصنيف', icon: '📊' }
+      ];
+
+      const budgetReports = [
+        { title: 'التقرير الشهري للميزانية (PDF)', sub: 'الدخل، المصروفات، نسبة الالتزام، وتوزيع الفئات', icon: '📑' },
+        { title: 'مقارنة الدخل والمصروفات', sub: 'تحليل اتجاه الصرف لآخر 6 أشهر', icon: '📈' },
+        { title: 'تحليل التصنيفات الأعلى إنفاقاً', sub: 'تحديد بنود الهدر وتوصيات التوفير', icon: '🎯' }
+      ];
+
+      return `
+        <header class="px-4 py-2.5 flex items-center justify-between border-b flex-shrink-0" style="background-color: var(--bg-card); border-color: var(--border-soft);">
+          <div class="flex items-center gap-2.5">
+            <button onclick="openDrawer()" class="tap-scale p-1.5 rounded-lg hover:bg-slate-500/10 app-text-primary">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+            </button>
+            <h2 class="text-[16px] font-extrabold app-text-primary">مركز التقارير الموحّد</h2>
+          </div>
+          <button onclick="cycleCurrency()" class="tap-scale px-2.5 py-1 rounded-full bg-brandTeal/12 text-brandTeal text-[11px] font-extrabold">
+            ${CURRENCIES[appState.currency].symbol} ▾
+          </button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto phone-scroll px-3.5 py-3 space-y-4">
+          <!-- قسم تقارير الديون -->
+          <div>
+            <div class="flex items-center gap-2 mb-2 px-1">
+              <span class="w-2 h-5 rounded-full bg-brandBlue"></span>
+              <h3 class="text-xs font-extrabold app-text-primary">تقارير الديون والحسابات (PDF)</h3>
+            </div>
+            <div class="space-y-2">
+              ${debtReports.map(r => `
+                <button onclick="openReportPreview('${r.title}', 'debts')" class="tap-scale w-full app-card p-3 flex items-center justify-between gap-3 text-right hover:border-brandBlue/50">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-10 h-10 rounded-xl bg-brandBlue/12 flex items-center justify-center text-lg flex-shrink-0">${r.icon}</span>
+                    <div class="min-w-0">
+                      <div class="text-[13px] font-extrabold app-text-primary truncate">${r.title}</div>
+                      <div class="text-[11px] app-text-secondary truncate">${r.sub}</div>
+                    </div>
+                  </div>
+                  <span class="px-2 py-1 rounded-lg bg-red-500/10 text-semRed text-[10px] font-extrabold flex-shrink-0">PDF</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- قسم تقارير الميزانية والنفقات -->
+          <div>
+            <div class="flex items-center gap-2 mb-2 px-1">
+              <span class="w-2 h-5 rounded-full bg-brandTeal"></span>
+              <h3 class="text-xs font-extrabold app-text-primary">تقارير الميزانية والنفقات (PDF & تحليلات)</h3>
+            </div>
+            <div class="space-y-2">
+              ${budgetReports.map(r => `
+                <button onclick="openReportPreview('${r.title}', 'budget')" class="tap-scale w-full app-card p-3 flex items-center justify-between gap-3 text-right hover:border-brandTeal/50">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="w-10 h-10 rounded-xl bg-brandTeal/12 flex items-center justify-center text-lg flex-shrink-0">${r.icon}</span>
+                    <div class="min-w-0">
+                      <div class="text-[13px] font-extrabold app-text-primary truncate">${r.title}</div>
+                      <div class="text-[11px] app-text-secondary truncate">${r.sub}</div>
+                    </div>
+                  </div>
+                  <span class="px-2 py-1 rounded-lg bg-teal-500/12 text-brandTeal text-[10px] font-extrabold flex-shrink-0">معاينة</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // 10. النوافذ المنبثقة والـ Bottom Sheets التفاعلية
+    // =========================================================================
+    function openDrawer() {
+      document.getElementById('drawerOverlay').classList.remove('hidden');
+    }
+    function closeDrawer() {
+      document.getElementById('drawerOverlay').classList.add('hidden');
+    }
+
+    function openModalHtml(innerHtml) {
+      const container = document.getElementById('modalContainer');
+      container.innerHTML = `
+        <div onclick="closeModal()" class="absolute inset-0 bg-slate-950/55 backdrop-blur-[1px] animate-overlay"></div>
+        ${innerHtml}
+      `;
+      container.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      const container = document.getElementById('modalContainer');
+      container.classList.add('hidden');
+      container.innerHTML = '';
+    }
+
+    // Bottom Sheet للزر الدائري المركزي (+)
+    function openFabSheet() {
+      const html = `
+        <div class="absolute bottom-0 left-0 right-0 rounded-t-3xl p-4 pb-6 shadow-2xl animate-sheet" style="background-color: var(--bg-card);">
+          <div class="w-10 h-1 rounded-full bg-slate-400/40 mx-auto mb-3.5"></div>
+          <h3 class="text-sm font-extrabold app-text-primary text-center mb-3.5">إضافة عملية جديدة</h3>
+          <div class="grid grid-cols-2 gap-2.5">
+            <button onclick="openBudgetEntryModal('expense')" class="tap-scale p-3.5 rounded-2xl border flex flex-col items-center gap-2 hover:border-semRed/60" style="background-color: var(--bg-card-subtle); border-color: var(--border-soft);">
+              <span class="w-11 h-11 rounded-full bg-semRed/15 text-semRed flex items-center justify-center text-xl font-bold">−</span>
+              <span class="text-xs font-extrabold app-text-primary">إضافة مصروف</span>
+              <span class="text-[10px] app-text-secondary">للميزانية الشهرية</span>
+            </button>
+            <button onclick="openBudgetEntryModal('income')" class="tap-scale p-3.5 rounded-2xl border flex flex-col items-center gap-2 hover:border-semGreen/60" style="background-color: var(--bg-card-subtle); border-color: var(--border-soft);">
+              <span class="w-11 h-11 rounded-full bg-semGreen/15 text-semGreen flex items-center justify-center text-xl font-bold">+</span>
+              <span class="text-xs font-extrabold app-text-primary">إضافة دخل</span>
+              <span class="text-[10px] app-text-secondary">للميزانية الشهرية</span>
+            </button>
+            <button onclick="openAddDebtTxModal()" class="tap-scale p-3.5 rounded-2xl border flex flex-col items-center gap-2 hover:border-brandBlue/60" style="background-color: var(--bg-card-subtle); border-color: var(--border-soft);">
+              <span class="w-11 h-11 rounded-full bg-brandBlue/15 text-brandBlue flex items-center justify-center text-lg">📒</span>
+              <span class="text-xs font-extrabold app-text-primary">إضافة عملية دين</span>
+              <span class="text-[10px] app-text-secondary">له / عليه في الدفتر</span>
+            </button>
+            <button onclick="openAddAccountModal()" class="tap-scale p-3.5 rounded-2xl border flex flex-col items-center gap-2 hover:border-brandTeal/60" style="background-color: var(--bg-card-subtle); border-color: var(--border-soft);">
+              <span class="w-11 h-11 rounded-full bg-brandTeal/15 text-brandTeal flex items-center justify-center text-lg">👤</span>
+              <span class="text-xs font-extrabold app-text-primary">إضافة حساب جديد</span>
+              <span class="text-[10px] app-text-secondary">عميل أو مورد جديد</span>
+            </button>
+          </div>
+        </div>
+      `;
+      openModalHtml(html);
+    }
+
+    // نموذج إضافة مصروف أو دخل (يحدّث كل المخططات والأرقام فوراً)
+    function openBudgetEntryModal(type) {
+      const isExpense = type === 'expense';
+      const cats = isExpense ? EXPENSE_CATEGORIES : INCOME_CATEGORIES;
+      const curr = CURRENCIES[appState.currency];
+      const month = MONTHS[appState.currentMonthIdx];
+
+      const html = `
+        <div class="absolute bottom-0 left-0 right-0 rounded-t-3xl p-4 pb-6 shadow-2xl animate-sheet" style="background-color: var(--bg-card);">
+          <div class="w-10 h-1 rounded-full bg-slate-400/40 mx-auto mb-3"></div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-extrabold ${isExpense ? 'text-semRed' : 'text-semGreen'}">
+              ${isExpense ? 'إضافة مصروف جديد' : 'إضافة دخل جديد'} (${month.label})
+            </h3>
+            <button onclick="closeModal()" class="p-1 app-text-secondary">✕</button>
+          </div>
+
+          <form onsubmit="submitBudgetEntry(event, '${type}')" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-bold app-text-secondary mb-1">المبلغ (${curr.name})</label>
+              <input id="inpBudgetAmount" type="number" step="any" min="1" required placeholder="مثال: ${curr.code === 'YER' ? '5000' : '50'}" class="w-full px-3.5 py-2.5 rounded-xl text-sm font-extrabold border outline-none focus:border-brandTeal" style="background-color: var(--input-bg); border-color: var(--border-soft); color: var(--text-primary);" />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold app-text-secondary mb-1.5">التصنيف</label>
+              <div class="grid grid-cols-3 gap-1.5" id="catPickerGrid">
+                ${cats.map((c, i) => `
+                  <label class="cursor-pointer">
+                    <input type="radio" name="budgetCat" value="${c.id}" ${i === 0 ? 'checked' : ''} class="peer hidden" />
+                    <div class="py-2 px-1.5 rounded-xl border text-center transition-all peer-checked:border-brandTeal peer-checked:bg-teal-500/12" style="border-color: var(--border-soft);">
+                      <div class="text-base leading-none">${c.icon}</div>
+                      <div class="text-[10.5px] font-bold app-text-primary mt-1 truncate">${c.name}</div>
+                    </div>
+                  </label>
+                `).join('')}
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold app-text-secondary mb-1">ملاحظة / البيان</label>
+              <input id="inpBudgetNote" type="text" placeholder="${isExpense ? 'مثال: فاتورة كهرباء أو مشتريات...' : 'مثال: أرباح مبيعات أو راتب...'}" class="w-full px-3.5 py-2 rounded-xl text-xs font-semibold border outline-none focus:border-brandTeal" style="background-color: var(--input-bg); border-color: var(--border-soft); color: var(--text-primary);" />
+            </div>
+
+            <button type="submit" class="tap-scale w-full py-3 rounded-xl text-white text-xs font-extrabold shadow-md ${isExpense ? 'bg-semRed' : 'bg-semGreen'}">
+              حفظ وتحديث الميزانية فوراً
+            </button>
+          </form>
+        </div>
+      `;
+      openModalHtml(html);
+      setTimeout(() => document.getElementById('inpBudgetAmount')?.focus(), 100);
+    }
+
+    function submitBudgetEntry(e, type) {
+      e.preventDefault();
+      const rawVal = parseFloat(document.getElementById('inpBudgetAmount').value);
+      if (!rawVal || rawVal <= 0) return;
+
+      const catId = document.querySelector('input[name="budgetCat"]:checked')?.value || (type === 'expense' ? 'other' : 'other_in');
+      const note = document.getElementById('inpBudgetNote').value.trim();
+      const amountBase = convertToBase(rawVal);
+
+      const monthNum = String(appState.currentMonthIdx + 6).padStart(2, '0');
+      appState.budgetEntries.push({
+        id: Date.now(),
+        monthIdx: appState.currentMonthIdx,
+        type,
+        categoryId: catId,
+        amountBase,
+        note: note || (type === 'expense' ? 'مصروف جديد' : 'دخل جديد'),
+        date: `2026-${monthNum}-23`
+      });
+
+      closeModal();
+      // التوجيه تلقائياً لشاشة الميزانية ليرى المستخدم التحديث الفوري
+      if (appState.navMode === 'unified_bar') {
+        appState.activeTab = 'budget';
+      } else {
+        appState.activeTab = 'home';
+        appState.homeSubView = 'budget';
+      }
+      renderApp();
+      showToast(type === 'expense' ? 'تم تسجيل المصروف وتحديث الرسوم البيانية' : 'تم تسجيل الدخل وتحديث صافي الرصيد');
+    }
+
+    // نموذج إضافة عملية دين على حساب
+    function openAddDebtTxModal(preselectedAccountId = null) {
+      const curr = CURRENCIES[appState.currency];
+      const html = `
+        <div class="absolute bottom-0 left-0 right-0 rounded-t-3xl p-4 pb-6 shadow-2xl animate-sheet" style="background-color: var(--bg-card);">
+          <div class="w-10 h-1 rounded-full bg-slate-400/40 mx-auto mb-3"></div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-extrabold text-brandBlue">إضافة عملية دين في الدفتر</h3>
+            <button onclick="closeModal()" class="p-1 app-text-secondary">✕</button>
+          </div>
+
+          <form onsubmit="submitDebtTx(event)" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-bold app-text-secondary mb-1">اختر الحساب</label>
+              <select id="inpDebtAccount" class="w-full px-3 py-2.5 rounded-xl text-xs font-bold border outline-none" style="background-color: var(--input-bg); border-color: var(--border-soft); color: var(--text-primary);">
+                ${appState.accounts.map(a => `<option value="${a.id}" ${a.id === preselectedAccountId ? 'selected' : ''}>${a.name} (${a.category})</option>`).join('')}
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold app-text-secondary mb-1">المبلغ (${curr.name})</label>
+              <input id="inpDebtAmount" type="number" step="any" min="1" required placeholder="أدخل المبلغ..." class="w-full px-3.5 py-2.5 rounded-xl text-sm font-extrabold border outline-none focus:border-brandBlue" style="background-color: var(--input-bg); border-color: var(--border-soft); color: var(--text-primary);" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <label class="cursor-pointer">
+                <input type="radio" name="debtDir" value="credit" checked class="peer hidden" />
+                <div class="py-2.5 rounded-xl border text-center text-xs font-extrabold peer-checked:bg-semGreen peer-checked:text-white peer-checked:border-semGreen app-text-primary" style="border-color: var(--border-soft);">
+                  لك (دائن +)
+                </div>
+              </label>
+              <label class="cursor-pointer">
+                <input type="radio" name="debtDir" value="debit" class="peer hidden" />
+                <div class="py-2.5 rounded-xl border text-center text-xs font-extrabold peer-checked:bg-semRed peer-checked:text-white peer-checked:border-semRed app-text-primary" style="border-color: var(--border-soft);">
+                  عليك (مدين −)
+                </div>
+              </label>
+            </div>
+
+            <!-- خيار الربط الذكي الاختياري بالميزانية -->
+            <label class="flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer" style="background-color: var(--bg-card-subtle); border-color: var(--border-soft);">
+              <input id="chkLinkBudget" type="checkbox" class="accent-brandTeal w-4 h-4 rounded" />
+              <span class="text-[11px] font-bold app-text-primary">ربط اختياري: تسجيل هذه العملية أيضاً في الميزانية الشهرية</span>
+            </label>
+
+            <button type="submit" class="tap-scale w-full py-3 rounded-xl hero-gradient text-white text-xs font-extrabold shadow-md">
+              حفظ العملية في الحساب
+            </button>
+          </form>
+        </div>
+      `;
+      openModalHtml(html);
+    }
+
+    function submitDebtTx(e) {
+      e.preventDefault();
+      const accId = parseInt(document.getElementById('inpDebtAccount').value, 10);
+      const rawVal = parseFloat(document.getElementById('inpDebtAmount').value);
+      const dir = document.querySelector('input[name="debtDir"]:checked')?.value || 'credit';
+      const linkBudget = document.getElementById('chkLinkBudget').checked;
+
+      if (!rawVal || rawVal <= 0) return;
+      const amountBase = convertToBase(rawVal);
+      const acc = appState.accounts.find(a => a.id === accId);
+      if (!acc) return;
+
+      acc.balanceBase += (dir === 'credit' ? amountBase : -amountBase);
+      acc.txCount += 1;
+
+      if (linkBudget) {
+        const monthNum = String(appState.currentMonthIdx + 6).padStart(2, '0');
+        appState.budgetEntries.push({
+          id: Date.now(),
+          monthIdx: appState.currentMonthIdx,
+          type: dir === 'credit' ? 'income' : 'expense',
+          categoryId: dir === 'credit' ? 'other_in' : 'other',
+          amountBase,
+          note: `مرتبط بحساب: ${acc.name}`,
+          date: `2026-${monthNum}-23`
+        });
+      }
+
+      closeModal();
+      appState.activeTab = 'home';
+      appState.homeSubView = 'debts';
+      renderApp();
+      showToast(linkBudget ? `تم تحديث ${acc.name} + الميزانية معاً` : `تم تحديث رصيد ${acc.name}`);
+    }
+
+    // نموذج إضافة حساب جديد
+    function openAddAccountModal() {
+      const html = `
+        <div class="absolute bottom-0 left-0 right-0 rounded-t-3xl p-4 pb-6 shadow-2xl animate-sheet" style="background-color: var(--bg-card);">
+          <div class="w-10 h-1 rounded-full bg-slate-400/40 mx-auto mb-3"></div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-extrabold text-brandTeal">إضافة حساب جديد</h3>
+            <button onclick="closeModal()" class="p-1 app-text-secondary">✕</button>
+          </div>
+          <form onsubmit="submitNewAccount(event)" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-bold app-text-secondary mb-1">اسم الحساب</label>
+              <input id="inpAccName" type="text" required placeholder="مثال: سالم للاتصالات" class="w-full px-3.5 py-2.5 rounded-xl text-xs font-bold border outline-none focus:border-brandTeal" style="background-color: var(--input-bg); border-color: var(--border-soft); color: var(--text-primary);" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold app-text-secondary mb-1">التصنيف</label>
+              <select id="inpAccCat" class="w-full px-3 py-2.5 rounded-xl text-xs font-bold border outline-none" style="background-color: var(--input-bg); border-color: var(--border-soft); color: var(--text-primary);">
+                <option value="عملاء الشبكة">عملاء الشبكة</option>
+                <option value="خطوط انترنت">خطوط انترنت</option>
+              </select>
+            </div>
+            <button type="submit" class="tap-scale w-full py-3 rounded-xl hero-gradient text-white text-xs font-extrabold shadow-md">
+              إنشاء الحساب
+            </button>
+          </form>
+        </div>
+      `;
+      openModalHtml(html);
+    }
+
+    function submitNewAccount(e) {
+      e.preventDefault();
+      const name = document.getElementById('inpAccName').value.trim();
+      const category = document.getElementById('inpAccCat').value;
+      if (!name) return;
+      appState.accounts.unshift({
+        id: Date.now(),
+        name,
+        category,
+        balanceBase: 0,
+        txCount: 0
+      });
+      closeModal();
+      appState.activeTab = 'home';
+      appState.homeSubView = 'debts';
+      renderApp();
+      showToast(`تم إنشاء حساب "${name}" بنجاح`);
+    }
+
+    // نافذة تعديل حد الميزانية الشهري لاختبار تغيّر لون الشريط
+    function openBudgetLimitModal() {
+      const curr = CURRENCIES[appState.currency];
+      const currentVal = Math.round(convertFromBase(appState.monthlyBudgetLimitBase));
+      const html = `
+        <div class="absolute inset-x-5 top-1/2 -translate-y-1/2 rounded-2xl p-4 shadow-2xl animate-pop" style="background-color: var(--bg-card);">
+          <h3 class="text-sm font-extrabold app-text-primary mb-1">ضبط حد الميزانية الشهرية</h3>
+          <p class="text-[11px] app-text-secondary mb-3">جرّب رفع أو خفض الحد لمشاهدة تغيّر لون شريط الاستهلاك (أخضر / برتقالي / أحمر)</p>
+          <form onsubmit="submitBudgetLimit(event)" class="space-y-3">
+            <input id="inpLimitVal" type="number" step="any" min="1" required value="${currentVal}" class="w-full px-3.5 py-2.5 rounded-xl text-sm font-extrabold border outline-none focus:border-brandTeal" style="background-color: var(--input-bg); border-color: var(--border-soft); color: var(--text-primary);" />
+            <div class="text-[10.5px] app-text-muted">العملة الحالية: ${curr.name} (${curr.symbol})</div>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" onclick="closeModal()" class="py-2.5 rounded-xl text-xs font-bold app-text-secondary border" style="border-color: var(--border-soft);">إلغاء</button>
+              <button type="submit" class="py-2.5 rounded-xl hero-gradient text-white text-xs font-extrabold">حفظ الحد</button>
+            </div>
+          </form>
+        </div>
+      `;
+      openModalHtml(html);
+    }
+
+    function submitBudgetLimit(e) {
+      e.preventDefault();
+      const val = parseFloat(document.getElementById('inpLimitVal').value);
+      if (!val || val <= 0) return;
+      appState.monthlyBudgetLimitBase = convertToBase(val);
+      closeModal();
+      renderApp();
+      showToast('تم تحديث حد الميزانية الشهرية');
+    }
+
+    // معاينة سريعة لتقرير PDF الموحّد
+    function openReportPreview(title, scope) {
+      const metrics = getMonthMetrics(appState.currentMonthIdx);
+      const html = `
+        <div class="absolute inset-x-4 top-1/2 -translate-y-1/2 rounded-2xl p-4 shadow-2xl animate-pop" style="background-color: var(--bg-card);">
+          <div class="flex items-center justify-between pb-2.5 mb-3 border-b" style="border-color: var(--border-soft);">
+            <span class="text-xs font-extrabold app-text-primary">${title}</span>
+            <button onclick="closeModal()" class="app-text-secondary text-sm">✕</button>
+          </div>
+          <div class="rounded-xl p-3 border text-xs space-y-2" style="background-color: var(--bg-card-subtle); border-color: var(--border-soft);">
+            <div class="flex items-center justify-between">
+              <span class="font-extrabold text-brandTeal">محفظتي الذكية — PDF</span>
+              <span class="text-[10px] app-text-muted">${MONTHS[appState.currentMonthIdx].label}</span>
+            </div>
+            <div class="border-t pt-2 space-y-1.5" style="border-color: var(--border-soft);">
+              ${scope === 'budget' ? `
+                <div class="flex justify-between"><span class="app-text-secondary">إجمالي الدخل:</span><span class="font-extrabold text-semGreen" dir="ltr">${formatNumber(metrics.income, true)}</span></div>
+                <div class="flex justify-between"><span class="app-text-secondary">إجمالي المصروفات:</span><span class="font-extrabold text-semRed" dir="ltr">${formatNumber(metrics.expense, true)}</span></div>
+                <div class="flex justify-between"><span class="app-text-secondary">نسبة الاستهلاك:</span><span class="font-extrabold app-text-primary">${metrics.pct}%</span></div>
+              ` : `
+                <div class="flex justify-between"><span class="app-text-secondary">عدد الحسابات النشطة:</span><span class="font-extrabold app-text-primary">${appState.accounts.length} حسابات</span></div>
+                <div class="flex justify-between"><span class="app-text-secondary">العملة المختارة:</span><span class="font-extrabold app-text-primary">${CURRENCIES[appState.currency].name}</span></div>
+              `}
+            </div>
+          </div>
+          <button onclick="closeModal(); showToast('تم توليد ومشاركة ملف PDF عبر محرك iText5');" class="tap-scale mt-3.5 w-full py-2.5 rounded-xl hero-gradient text-white text-xs font-extrabold">
+            تصدير ومشاركة PDF
+          </button>
+        </div>
+      `;
+      openModalHtml(html);
+    }
+
+    // =========================================================================
+    // 11. دالة الرسم الرئيسية للتطبيق
+    // =========================================================================
+    function renderApp() {
+      const container = document.getElementById('screenContainer');
+      renderBottomNav();
+
+      if (appState.activeTab === 'home') {
+        if (appState.navMode === 'top_switch' && appState.homeSubView === 'budget') {
+          container.innerHTML = renderBudgetScreen(true);
+        } else {
+          container.innerHTML = renderDebtsScreen();
+        }
+      } else if (appState.activeTab === 'budget') {
+        container.innerHTML = renderBudgetScreen(false);
+      } else if (appState.activeTab === 'tracking') {
+        container.innerHTML = renderTrackingScreen();
+      } else if (appState.activeTab === 'reports') {
+        container.innerHTML = renderReportsScreen();
+      }
+    }
+
+    // التشغيل الأولي
+    syncDevPanelUI();
+    renderApp();
+  </script>
+</body>
+</html>

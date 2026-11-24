@@ -2,8 +2,31 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme (Light) -->
     <style name="Base.Theme.Daftree" parent="Theme.Material3.Light.NoActionBar">
-        <!-- Primary brand color -->
+        <!-- Primary brand color & Material 3 Harmonized Tokens -->
         <item name="colorPrimary">@color/md_theme_primary</item>
+        <item name="colorOnPrimary">@color/md_theme_onPrimary</item>
+        <item name="colorPrimaryContainer">@color/md_theme_primaryContainer</item>
+        <item name="colorOnPrimaryContainer">@color/md_theme_onPrimaryContainer</item>
+        <item name="colorSecondary">@color/md_theme_secondary</item>
+        <item name="colorOnSecondary">@color/md_theme_onSecondary</item>
+        <item name="colorSecondaryContainer">@color/md_theme_secondaryContainer</item>
+        <item name="colorOnSecondaryContainer">@color/md_theme_onSecondaryContainer</item>
+        <item name="colorTertiary">@color/md_theme_tertiary</item>
+        <item name="colorOnTertiary">@color/md_theme_onTertiary</item>
+        <item name="colorTertiaryContainer">@color/md_theme_tertiaryContainer</item>
+        <item name="colorOnTertiaryContainer">@color/md_theme_onTertiaryContainer</item>
+        <item name="colorError">@color/md_theme_error</item>
+        <item name="colorOnError">@color/md_theme_onError</item>
+        <item name="colorErrorContainer">@color/md_theme_errorContainer</item>
+        <item name="colorOnErrorContainer">@color/md_theme_onErrorContainer</item>
+        <item name="android:colorBackground">@color/md_theme_background</item>
+        <item name="colorOnBackground">@color/md_theme_onBackground</item>
+        <item name="colorSurface">@color/md_theme_surface</item>
+        <item name="colorOnSurface">@color/md_theme_onSurface</item>
+        <item name="colorSurfaceVariant">@color/md_theme_surfaceVariant</item>
+        <item name="colorOnSurfaceVariant">@color/md_theme_onSurfaceVariant</item>
+        <item name="colorOutline">@color/md_theme_outline</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.App.BottomSheetDialog</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
 
         <!-- Enable edge to edge -->
@@ -246,5 +269,78 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
         <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+    </style>
+
+    <style name="ThemeOverlay.App.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.App.BottomSheet.Modal</item>
+    </style>
+
+    <style name="Widget.App.BottomSheet.Modal" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
+
+    <!-- ثيم خط Cairo الشامل للأنشطة وديالوجات Material 3 (للغات المدعومة فقط) -->
+    <style name="TextAppearance.Daftree.Cairo.HeadlineSmall" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+    </style>
+
+    <style name="TextAppearance.Daftree.Cairo.TitleMedium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+    </style>
+
+    <style name="TextAppearance.Daftree.Cairo.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+    </style>
+
+    <style name="TextAppearance.Daftree.Cairo.BodySmall" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+    </style>
+
+    <style name="TextAppearance.Daftree.Cairo.LabelLarge" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+    </style>
+
+    <style name="Widget.Daftree.Dialog.Title.Cairo" parent="MaterialAlertDialog.Material3.Title.Text">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+    </style>
+
+    <style name="Widget.Daftree.Dialog.Body.Cairo" parent="MaterialAlertDialog.Material3.Body.Text">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+    </style>
+
+    <style name="Widget.Daftree.Dialog.Button.Cairo" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+    </style>
+
+    <style name="ThemeOverlay.Daftree.MaterialAlertDialog.Cairo" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/Widget.Daftree.Dialog.Title.Cairo</item>
+        <item name="materialAlertDialogBodyTextStyle">@style/Widget.Daftree.Dialog.Body.Cairo</item>
+        <item name="buttonBarPositiveButtonStyle">@style/Widget.Daftree.Dialog.Button.Cairo</item>
+        <item name="buttonBarNegativeButtonStyle">@style/Widget.Daftree.Dialog.Button.Cairo</item>
+        <item name="buttonBarNeutralButtonStyle">@style/Widget.Daftree.Dialog.Button.Cairo</item>
+    </style>
+
+    <style name="ThemeOverlay.Daftree.Font.Cairo" parent="">
+        <item name="android:fontFamily">@font/cairo_font_family</item>
+        <item name="fontFamily">@font/cairo_font_family</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.Daftree.Cairo.HeadlineSmall</item>
+        <item name="textAppearanceTitleLarge">@style/TextAppearance.App.Cairo.TitleLarge</item>
+        <item name="textAppearanceTitleMedium">@style/TextAppearance.Daftree.Cairo.TitleMedium</item>
+        <item name="textAppearanceBodyLarge">@style/TextAppearance.App.Cairo.BodyLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.Daftree.Cairo.BodyMedium</item>
+        <item name="textAppearanceBodySmall">@style/TextAppearance.Daftree.Cairo.BodySmall</item>
+        <item name="textAppearanceLabelLarge">@style/TextAppearance.Daftree.Cairo.LabelLarge</item>
+        <item name="textAppearanceLabelMedium">@style/TextAppearance.App.Cairo.LabelMedium</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Daftree.MaterialAlertDialog.Cairo</item>
     </style>
 </resources>

@@ -67,6 +67,7 @@
                 android:title="@string/activate_linked_account" />
             <item
                 android:id="@+id/nav_linked_accounts_lock"
+                android:icon="@drawable/ic_linked_accounts"
                 android:title="@string/activate_linked_account"
                 app:actionLayout="@layout/menu_switch_item" />
         </menu>
@@ -75,10 +76,12 @@
         <menu>
             <item
                 android:id="@+id/nav_password_lock"
+                android:icon="@drawable/ic_lock"
                 android:title="@string/menu_password_lock"
                 app:actionLayout="@layout/menu_switch_item" />
             <item
                 android:id="@+id/nav_biometric_lock"
+                android:icon="@drawable/ic_fingerprint"
                 android:title="@string/menu_biometric_lock"
                 app:actionLayout="@layout/menu_switch_item" />
 
@@ -90,10 +93,12 @@
 
             <item
                 android:id="@+id/nav_general_notifications"
+                android:icon="@drawable/ic_notifications"
                 android:title="@string/channel_general_name"
                 app:actionLayout="@layout/menu_switch_item" />
             <item
                 android:id="@+id/nav_daily_reminders"
+                android:icon="@drawable/ic_calendar_today"
                 android:title="@string/channel_daily_name"
                 app:actionLayout="@layout/menu_switch_item" />
 

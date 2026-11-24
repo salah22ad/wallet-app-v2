@@ -45,9 +45,8 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_arrow_back_white"
-                    android:contentDescription="Back"
-                    app:tint="?attr/colorOnSurface" />
+                    android:src="@drawable/ic_modern_back"
+                    android:contentDescription="Back" />
 
                 <TextView
                     android:id="@+id/toolbar_title"

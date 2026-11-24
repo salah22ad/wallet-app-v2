@@ -178,3 +178,24 @@
 }
 -keep class com.google.firebase.crashlytics.CrashlyticsRegistrar { *; }
 -keep class com.google.firebase.crashlytics.FirebaseCrashlytics { *; }
+
+# ==============================================================================
+# 10. قواعد وحدة الميزانية والنفقات (Room + Firestore + MPAndroidChart)
+# ==============================================================================
+-keep interface com.hpp.daftree.budget.data.BudgetCategoryDao { *; }
+-keep interface com.hpp.daftree.budget.data.BudgetEntryDao { *; }
+-keep interface com.hpp.daftree.budget.data.MonthlyBudgetLimitDao { *; }
+
+-keepclassmembers class com.hpp.daftree.budget.data.** {
+    public <init>();
+    @com.google.firebase.firestore.PropertyName *;
+    @com.google.firebase.firestore.PropertyName <fields>;
+    @com.google.firebase.firestore.PropertyName <methods>;
+}
+
+-keep class com.github.mikephil.charting.animation.ChartAnimator { *; }
+-keepclassmembers class com.github.mikephil.charting.** {
+    public void set*(...);
+    public *** get*();
+}
+-dontwarn com.github.mikephil.charting.**

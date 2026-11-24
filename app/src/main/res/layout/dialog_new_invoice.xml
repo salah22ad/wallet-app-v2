@@ -144,8 +144,9 @@
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1.7"
                     android:hint="@string/date"
-                    app:endIconDrawable="@drawable/ic_calendar"
-                    app:endIconMode="custom">
+                    app:endIconDrawable="@drawable/ic_modern_calendar"
+                    app:endIconMode="custom"
+    app:endIconTint="@null">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/invoiceDateEditText"
@@ -197,8 +198,7 @@
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_camera"
-                    app:tint="?attr/colorPrimary" />
+                    android:src="@drawable/ic_modern_camera" />
             </LinearLayout>
 
 
@@ -346,8 +346,9 @@
                     android:text="PDF"
                     android:textColor="@color/secondaryColor"
                     android:visibility="gone"
-                    app:icon="@drawable/ic_pdf"
-                    app:strokeColor="@color/secondaryColor" />
+                    app:icon="@drawable/ic_modern_pdf"
+                    app:strokeColor="@color/secondaryColor" 
+    app:iconTint="@null"/>
             </LinearLayout>
 
             <LinearLayout

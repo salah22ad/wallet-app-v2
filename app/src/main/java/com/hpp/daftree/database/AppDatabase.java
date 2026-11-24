@@ -18,6 +18,13 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hpp.daftree.R;
 import com.hpp.daftree.models.UUIDGenerator;
+import com.hpp.daftree.budget.data.BudgetCategory;
+import com.hpp.daftree.budget.data.BudgetCategoryDao;
+import com.hpp.daftree.budget.data.BudgetDatabaseMigration;
+import com.hpp.daftree.budget.data.BudgetEntry;
+import com.hpp.daftree.budget.data.BudgetEntryDao;
+import com.hpp.daftree.budget.data.MonthlyBudgetLimit;
+import com.hpp.daftree.budget.data.MonthlyBudgetLimitDao;
 import com.hpp.daftree.helpers.LanguageManager;
 import com.hpp.daftree.syncmanagers.SyncCoordinator;
 import com.hpp.daftree.utils.SecureLicenseManager;
@@ -39,8 +46,11 @@ import java.util.concurrent.Executors;
                 ExternalAccountEntity.class,
                 RecurringOperation.class,
                 RecurringOperationTracking.class,
-                ExternalTransactionEntity.class}
-        , version = 19, exportSchema = false)
+                ExternalTransactionEntity.class,
+                BudgetCategory.class,
+                BudgetEntry.class,
+                MonthlyBudgetLimit.class}
+        , version = 20, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -66,6 +76,12 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract RecurringOperationDao recurringOperationDao();
 
     public abstract RecurringOperationTrackingDao recurringOperationTrackingDao();
+
+    public abstract BudgetCategoryDao budgetCategoryDao();
+
+    public abstract BudgetEntryDao budgetEntryDao();
+
+    public abstract MonthlyBudgetLimitDao monthlyBudgetLimitDao();
 
     // Singleton Instance
     private static volatile AppDatabase INSTANCE;
@@ -93,12 +109,14 @@ public abstract class AppDatabase extends RoomDatabase {
                                     MIGRATION_11_12, MIGRATION_12_13,
                                     MIGRATION_13_14, MIGRATION_14_16,
                                     MIGRATION_16_17,MIGRATION_17_18,
-                                    createMigration18To19(context)
+                                    createMigration18To19(context),
+                                    MIGRATION_19_20
                             )
                             .addCallback(new Callback() {
                                 @Override
                                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     super.onCreate(db);
+                                    BudgetDatabaseMigration.seedDefaultCategoriesIfNeeded(db);
                                     // تفعيل المفاتيح الخارجية عند الإنشاء لأول مرة
                                     db.execSQL("PRAGMA foreign_keys = ON;");
                                 }
@@ -137,7 +155,8 @@ public abstract class AppDatabase extends RoomDatabase {
                 "migration_8_9_pending",
                 "migration_6_7_pending",
                 "migration_17_18_pending",
-                "migration_18_19_pending"
+                "migration_18_19_pending",
+                "migration_19_20_pending"
         };
 
         boolean needsSync = false;
@@ -198,6 +217,8 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     // ================= MIGRATIONS =================
+
+    static final Migration MIGRATION_19_20 = BudgetDatabaseMigration.MIGRATION_19_20;
 
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override

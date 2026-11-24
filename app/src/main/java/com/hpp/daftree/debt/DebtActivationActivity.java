@@ -1,6 +1,8 @@
 package com.hpp.daftree.debt;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.telephony.TelephonyManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -29,11 +31,14 @@ import com.hbb20.CountryCodePicker;
 import com.hpp.daftree.MyApplication;
 import com.hpp.daftree.R;
 import com.hpp.daftree.databinding.ActivityDebtActivationBinding;
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.ui.BaseActivity;
 import com.hpp.daftree.utils.DialogHelper;
 import com.hpp.daftree.utils.SecureLicenseManager;
 import com.hpp.daftree.viewmodels.DebtActivationViewModel;
 
+import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
+import io.michaelrocks.libphonenumber.android.Phonenumber;
 import java.util.Locale;
 
 public class DebtActivationActivity extends BaseActivity {
@@ -56,7 +61,7 @@ public class DebtActivationActivity extends BaseActivity {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     try {
                         String phoneNumber = Identity.getSignInClient(this).getPhoneNumberFromIntent(result.getData());
-                        binding.ccp.setFullNumber(phoneNumber);
+                        applyValidatedPhoneHint(phoneNumber);
                     } catch (Exception e) {
                         Log.e("PhoneHint", "فشل جلب الرقم", e);
                     }
@@ -98,6 +103,7 @@ public class DebtActivationActivity extends BaseActivity {
         }
 
         setupCCP();
+        setupKeyboardAutoScroll();
         observeViewModel();
 
         binding.btnActivate.setOnClickListener(v -> handleActivationClick());
@@ -240,7 +246,18 @@ public class DebtActivationActivity extends BaseActivity {
             }
 
             int bottomInset = Math.max(systemBars.bottom, ime.bottom);
-            view.setPadding(systemBars.left, 0, systemBars.right, bottomInset);
+            view.setPadding(systemBars.left, 0, systemBars.right, 0);
+            if (binding.mainContentView != null) {
+                binding.mainContentView.setPadding(
+                        binding.mainContentView.getPaddingLeft(),
+                        binding.mainContentView.getPaddingTop(),
+                        binding.mainContentView.getPaddingRight(),
+                        bottomInset + 24
+                );
+                if (ime.bottom > 0) {
+                    binding.mainContentView.post(() -> scrollActiveInputIntoView());
+                }
+            }
             return windowInsets;
         });
     }
@@ -248,6 +265,110 @@ public class DebtActivationActivity extends BaseActivity {
     private void setupCCP() {
         binding.ccp.registerCarrierNumberEditText(binding.etPhoneNumber);
         binding.ccp.setNumberAutoFormattingEnabled(true);
+        if (isEditeMode) {
+            String savedCode = secureLicenseManager.getCountryCode();
+            if (!TextUtils.isEmpty(savedCode)) {
+                try {
+                    int codeInt = Integer.parseInt(savedCode.replaceAll("[^0-9]", ""));
+                    if (codeInt > 0) {
+                        binding.ccp.setCountryForPhoneCode(codeInt);
+                        return;
+                    }
+                } catch (NumberFormatException ignored) {
+                }
+            }
+        }
+        String detectedIso = detectBestCountryIso();
+        if (!TextUtils.isEmpty(detectedIso)) {
+            binding.ccp.setCountryForNameCode(detectedIso);
+        }
+    }
+
+    private void setupKeyboardAutoScroll() {
+        View.OnFocusChangeListener focusScroller = (v, hasFocus) -> {
+            if (hasFocus && binding != null && binding.mainContentView != null) {
+                binding.mainContentView.postDelayed(this::scrollActiveInputIntoView, 220);
+            }
+        };
+        binding.etFullName.setOnFocusChangeListener(focusScroller);
+        binding.etPhoneNumber.setOnFocusChangeListener(focusScroller);
+    }
+
+    private void scrollActiveInputIntoView() {
+        if (binding == null || binding.mainContentView == null) return;
+        binding.mainContentView.smoothScrollTo(0, binding.btnActivate.getBottom());
+    }
+
+    private String detectBestCountryIso() {
+        try {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            if (tm != null) {
+                String netIso = tm.getNetworkCountryIso();
+                if (netIso != null && netIso.trim().length() == 2) {
+                    return netIso.trim().toUpperCase(Locale.US);
+                }
+                String simIso = tm.getSimCountryIso();
+                if (simIso != null && simIso.trim().length() == 2) {
+                    return simIso.trim().toUpperCase(Locale.US);
+                }
+            }
+        } catch (Exception e) {
+            Log.w("PhoneHint", "Country ISO detection failed", e);
+        }
+        return "YE";
+    }
+
+    private boolean isLikelyImsiOrProgrammingId(String rawHint, String digitsOnly) {
+        if (TextUtils.isEmpty(digitsOnly)) return true;
+        // أرقام IMSI (مثل يمن موبايل CDMA/4G تبدأ بـ 421 وطولها 14-15 خانة)
+        if (digitsOnly.length() >= 14) {
+            if (digitsOnly.startsWith("421")) return true;
+            if (!rawHint.trim().startsWith("+")) return true;
+        }
+        return digitsOnly.length() > 15;
+    }
+
+    private void applyValidatedPhoneHint(String rawHint) {
+        if (TextUtils.isEmpty(rawHint)) return;
+        String trimmed = rawHint.trim().replaceAll("[\\s\\-()]", "");
+        String digitsOnly = trimmed.replaceAll("[^0-9]", "");
+        String detectedIso = detectBestCountryIso();
+
+        if (isLikelyImsiOrProgrammingId(trimmed, digitsOnly)) {
+            Log.w("PhoneHint", "Ignored CDMA/IMSI programming number from SIM hint");
+            binding.ccp.setCountryForNameCode(detectedIso);
+            return;
+        }
+
+        try {
+            PhoneNumberUtil phoneUtil = PhoneNumberUtil.createInstance(this);
+            Phonenumber.PhoneNumber parsed;
+
+            if (trimmed.startsWith("+") || trimmed.startsWith("00")) {
+                String normalized = trimmed.startsWith("00") ? "+" + trimmed.substring(2) : trimmed;
+                parsed = phoneUtil.parse(normalized, null);
+                if (phoneUtil.isValidNumber(parsed)) {
+                    String national = String.valueOf(parsed.getNationalNumber());
+                    if (national.length() <= 12) {
+                        binding.ccp.setCountryForPhoneCode(parsed.getCountryCode());
+                        binding.etPhoneNumber.setText(national);
+                        return;
+                    }
+                }
+            } else {
+                parsed = phoneUtil.parse(digitsOnly, detectedIso);
+                if (phoneUtil.isValidNumberForRegion(parsed, detectedIso)) {
+                    binding.ccp.setCountryForNameCode(detectedIso);
+                    binding.etPhoneNumber.setText(String.valueOf(parsed.getNationalNumber()));
+                    return;
+                }
+            }
+        } catch (Exception e) {
+            Log.w("PhoneHint", "Phone hint failed libphonenumber validation: " + e.getMessage());
+        }
+
+        // إذا لم يكن الرقم صالحاً، نبقي مفتاح الدولة الحقيقي دون تلويث الحقل
+        binding.ccp.setCountryForNameCode(detectedIso);
     }
 
     private void handleActivationClick() {
@@ -473,6 +594,7 @@ public class DebtActivationActivity extends BaseActivity {
                 .create();
 
         codeDialog.show();
+        AppFontHelper.applyFontToDialog(this, codeDialog);
 
         codeDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String code = etCode.getText().toString().trim();

@@ -45,9 +45,8 @@
                     android:layout_height="40dp"
                     android:layout_centerVertical="true"
                     android:layout_alignParentStart="true"
-                    app:tint="@color/black"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@android:drawable/ic_menu_revert"/>
+                    android:src="@drawable/ic_modern_back"/>
 
                 <FrameLayout
                     android:layout_width="0dp"
@@ -94,8 +93,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_search_white"
-                        app:tint="?attr/colorOnPrimaryContainer"
+                        android:src="@drawable/ic_modern_search"
                         android:tooltipText="@string/menu_search"/>
 
                     <ImageButton
@@ -103,8 +101,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_pdf"
-                        app:tint="?attr/colorOnPrimaryContainer"
+                        android:src="@drawable/ic_modern_pdf"
                         android:tooltipText="@string/menu_export_pdf"/>
 
                     <ImageButton
@@ -112,8 +109,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/ic_invoice"
-                        app:tint="?attr/colorOnPrimaryContainer"
+                        android:src="@drawable/ic_modern_invoice"
                         android:tooltipText="@string/menu_new_bill"/>
                 </LinearLayout>
 

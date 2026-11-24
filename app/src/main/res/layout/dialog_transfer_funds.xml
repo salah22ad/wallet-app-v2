@@ -93,8 +93,9 @@
             android:layout_marginEnd="8dp"
             android:hint="@string/amount_hint"
             app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_calculator"
-            app:endIconContentDescription="@string/calculator">
+            app:endIconDrawable="@drawable/ic_modern_calculator"
+            app:endIconContentDescription="@string/calculator"
+    app:endIconTint="@null">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/amountEditText"

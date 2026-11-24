@@ -22,6 +22,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.hpp.daftree.R;
 import com.hpp.daftree.SplashActivity;
+import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.hpp.daftree.helpers.LanguageManager;
 
 import java.util.Locale;
@@ -158,12 +164,41 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        AppFontHelper.applyThemeFontOverlay(this);
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         languageManager = LanguageManager.getInstance(this);
         applyLanguage(this);
         applyLayoutDirection();
+        getSupportFragmentManager().registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentViewCreated(@NonNull FragmentManager fm,
+                                                      @NonNull Fragment f,
+                                                      @NonNull View v,
+                                                      @Nullable Bundle savedInstanceState) {
+                        AppFontHelper.applyFontToViewTree(BaseActivity.this, v);
+                    }
+                }, true);
       //  applyFixedFontScale();   // ✅ الاحتفاظ بها
+    }
+
+    @Override
+    public void setContentView(int layoutResID) {
+        super.setContentView(layoutResID);
+        AppFontHelper.applyFontToViewTree(this, getWindow().getDecorView());
+    }
+
+    @Override
+    public void setContentView(View view) {
+        super.setContentView(view);
+        AppFontHelper.applyFontToViewTree(this, view);
+    }
+
+    @Override
+    public void setContentView(View view, ViewGroup.LayoutParams params) {
+        super.setContentView(view, params);
+        AppFontHelper.applyFontToViewTree(this, view);
     }
 
     public static void applyLanguage(Context context) {

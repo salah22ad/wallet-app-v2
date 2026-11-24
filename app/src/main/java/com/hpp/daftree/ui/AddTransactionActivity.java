@@ -56,6 +56,7 @@ import com.hpp.daftree.models.TransactionItem;
 import com.hpp.daftree.adapters.TransactionHistoryAdapter;
 import com.hpp.daftree.database.Account;
 import com.hpp.daftree.database.AccountType;
+import com.hpp.daftree.helpers.AccountTypeIconHelper;
 import com.hpp.daftree.database.AppDatabase;
 import com.hpp.daftree.database.Currency;
 import com.hpp.daftree.database.RecurringOperation;
@@ -67,6 +68,7 @@ import com.hpp.daftree.databinding.DialogEditAccountBinding;
 import com.hpp.daftree.databinding.DialogShareOptionsBinding;
 import com.hpp.daftree.dialogs.CalculatorDialog;
 import com.hpp.daftree.models.AutoResizeTextHelper;
+import com.hpp.daftree.budget.repository.BudgetRepository;
 import com.hpp.daftree.models.DaftreeRepository;
 import com.hpp.daftree.models.FormatingAmount;
 import com.hpp.daftree.notifications.TransactionNotificationManager;
@@ -248,8 +250,10 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
         handleIntentExtras();
         setupModernImageLaunchers();
 
-        // ربط زر الكاميرا (بناءً على التعديل في XML الذي اقترحته سابقاً)
+        // ربط زر الكاميرا وبطاقة الربط الاختياري بالميزانية
         binding.btnAttachImage.setOnClickListener(v -> onImageIconClicked());
+        binding.cardLinkToBudget.setOnClickListener(v ->
+                binding.switchLinkToBudget.setChecked(!binding.switchLinkToBudget.isChecked()));
     }
 
     private void processAndSetImage(Bitmap bitmap) {
@@ -765,21 +769,22 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
 
         Integer accountId = accountNameToIdMap.get(accountName);
         double amount = Double.parseDouble(amountStr);
+        final boolean shouldLinkToBudget = binding.switchLinkToBudget.isChecked();
 
         AppDatabase.databaseWriteExecutor.execute(() -> {
             long dateWithoutTime = getStartOfDay(selectedDate.getTime()).getTime();
             int duplicateCount = repository.findDuplicateTransaction(accountId, dateWithoutTime, amount, type, currencyId);
             runOnUiThread(() -> {
                 if (duplicateCount > 0) {
-                    showDuplicateWarningDialog(() -> saveTransaction(type, accountName, amount, details, currencyId));
+                    showDuplicateWarningDialog(() -> saveTransaction(type, accountName, amount, details, currencyId, shouldLinkToBudget));
                 } else {
-                    saveTransaction(type, accountName, amount, details, currencyId);
+                    saveTransaction(type, accountName, amount, details, currencyId, shouldLinkToBudget);
                 }
             });
         });
     }
 
-    private void saveTransaction(int type, String accountName, double amount, String details, int currencyId) {
+    private void saveTransaction(int type, String accountName, double amount, String details, int currencyId, boolean shouldLinkToBudget) {
         Integer accountId = accountNameToIdMap.get(accountName);
         if (accountId == null) return;
 // 1. الحصول على الوقت الفعلي الحالي لحظة الضغط على حفظ (للمزامنة وتاريخ الإضافة الفعلي)
@@ -807,6 +812,10 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
 //        newTransaction.setTimestamp(selectedDate.getTime());
         newTransaction.setTimestamp(transactionDate);
         viewModel.addTransaction(newTransaction);
+        if (shouldLinkToBudget) {
+            BudgetRepository.recordLinkedDebtTransaction(
+                    this, accountName, amount, type, currencyId, transactionDate.getTime());
+        }
         this.lastSavedTransaction = newTransaction;
         onTransactionSaved(amount * type);
         resetFieldsForNewEntry(accountName, accountId);
@@ -825,6 +834,7 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
     private void resetFieldsForNewEntry(String accountName, int accountId) {
         binding.amountEditText.setText("");
         binding.detailsEditText.setText("");
+        binding.switchLinkToBudget.setChecked(false);
         binding.accountNameAutoComplete.setText(accountName);
         binding.accountNameAutoComplete.dismissDropDown();
         viewModel.setSelectedAccount(accountId);
@@ -908,6 +918,13 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
                 newAccount.setPhoneNumber(phone);
                 newAccount.setAccountType(type);
                 if (typeId != null) newAccount.setAcTypeFirestoreId(typeId);
+                AccountType matchedType = null;
+                if (availableAccountTypes != null) {
+                    for (AccountType t : availableAccountTypes) {
+                        if (type.equals(t.getName())) { matchedType = t; break; }
+                    }
+                }
+                AccountTypeIconHelper.applyTypeVisualsToAccount(this, newAccount, matchedType);
 
                 viewModel.createAccount(newAccount);
                 binding.accountNameAutoComplete.setText(finalName);

@@ -5,79 +5,99 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
-    app:strokeWidth="0dp">
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="6dp"
+    app:cardBackgroundColor="@color/card_background"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/card_stroke"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="14dp">
 
-        <ImageView
-            android:id="@+id/icon_quantity_type"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            app:tint="?attr/colorPrimary"
-            android:src="@drawable/ic_accounts_types"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/icon_type_card"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            app:cardBackgroundColor="#0D6E6E"
+            app:cardCornerRadius="23dp"
+            app:cardElevation="2dp"
+            app:strokeWidth="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/text1"
+            <ImageView
+                android:id="@+id/icon_quantity_type"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_modern_account_general" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:id="@+id/llTypeTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="14dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_edit"
-            app:layout_constraintStart_toEndOf="@+id/icon_quantity_type"
-            app:layout_constraintTop_toTopOf="@+id/icon_quantity_type"
-            tools:text="حبة" />
+            app:layout_constraintStart_toEndOf="@+id/icon_type_card"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/text_default_label"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="204dp"
-            android:layout_marginTop="4dp"
-            android:text="@string/item_default"
-            android:textColor="@color/green"
-            android:textSize="11sp"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@+id/text1"
-            app:layout_constraintTop_toBottomOf="@+id/text1"
-            tools:visibility="visible" />
+            <TextView
+                android:id="@+id/text1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/text_card_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="عملاء" />
+
+            <TextView
+                android:id="@+id/text_default_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="@string/item_default"
+                android:textColor="@color/green"
+                android:textSize="11sp"
+                android:visibility="gone"
+                tools:visibility="visible" />
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/btn_edit"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_marginEnd="4dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:padding="4dp"
+            android:padding="5dp"
             android:src="@drawable/ic_edit"
-        app:layout_constraintEnd_toStartOf="@+id/btn_delete"
-        app:layout_constraintTop_toTopOf="@+id/icon_quantity_type"
-            app:tint="@android:color/darker_gray" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_delete"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/budget_text_secondary" />
 
         <ImageView
             android:id="@+id/btn_delete"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:padding="4dp"
+            android:padding="5dp"
             android:src="@drawable/ic_delete"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/icon_quantity_type" />
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </com.google.android.material.card.MaterialCardView>
-

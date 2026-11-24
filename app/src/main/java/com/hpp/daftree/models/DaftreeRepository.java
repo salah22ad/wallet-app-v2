@@ -18,6 +18,13 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hpp.daftree.MyApplication;
 import com.hpp.daftree.R;
+import com.hpp.daftree.budget.data.BudgetCategory;
+import com.hpp.daftree.budget.data.BudgetCategoryDao;
+import com.hpp.daftree.budget.data.BudgetEntry;
+import com.hpp.daftree.budget.data.BudgetEntryDao;
+import com.hpp.daftree.budget.data.MonthlyBudgetLimit;
+import com.hpp.daftree.budget.data.MonthlyBudgetLimitDao;
+import com.hpp.daftree.budget.util.BudgetUtils;
 import com.hpp.daftree.database.Account;
 import com.hpp.daftree.database.AccountDao;
 import com.hpp.daftree.database.AccountLatestTransaction;
@@ -40,6 +47,7 @@ import com.hpp.daftree.database.Transaction;
 import com.hpp.daftree.database.TransactionDao;
 import com.hpp.daftree.database.User;
 import com.hpp.daftree.database.UserDao;
+import com.hpp.daftree.helpers.AccountTypeIconHelper;
 import com.hpp.daftree.helpers.LanguageManager;
 import com.hpp.daftree.syncmanagers.SyncPreferences;
 import com.hpp.daftree.syncmanagers.SyncWorker;
@@ -69,6 +77,9 @@ public class DaftreeRepository {
     private final WorkManager mWorkManager;
     private final AppDatabase db;
     private final ExternalDebtDao externalDebtDao;
+    private final BudgetCategoryDao budgetCategoryDao;
+    private final BudgetEntryDao budgetEntryDao;
+    private final MonthlyBudgetLimitDao monthlyBudgetLimitDao;
     private Account account;
     private final Context context;
     private final SyncPreferences syncPreferences;
@@ -87,6 +98,9 @@ public class DaftreeRepository {
         currencyDao = db.currencyDao();
         accountTypeDao = db.accountTypeDao();
         externalDebtDao = db.externalDebtDao();
+        budgetCategoryDao = db.budgetCategoryDao();
+        budgetEntryDao = db.budgetEntryDao();
+        monthlyBudgetLimitDao = db.monthlyBudgetLimitDao();
         recurringOperationTrackingDao = db.recurringOperationTrackingDao();
         syncPreferences = new SyncPreferences(application.getApplicationContext());
         mWorkManager = WorkManager.getInstance(application);
@@ -152,13 +166,17 @@ public class DaftreeRepository {
 
     // للتحقق من وجود بيانات غير متزامنة
     public boolean hasUnsyncedData() {
-        // هذه دالة متزامنة يجب استدعاؤها من خيط خلفي
         int unsyncedAccounts = mAccountDao.getUnsyncedCount();
         int unsyncedTransactions = mTransactionDao.getUnsyncedCount();
         int unsyncedCurrencies = currencyDao.getUnsyncedCount();
         int unsyncedAccountType = accountTypeDao.getUnsyncedCount();
         int unsyncedDeletions = mDeletionLogDao.getDeletedUnsyncedCount();
-        return (unsyncedAccounts + unsyncedTransactions + unsyncedDeletions) > 0;
+        int unsyncedBudgetCats = budgetCategoryDao.getUnsyncedCount();
+        int unsyncedBudgetEntries = budgetEntryDao.getUnsyncedCount();
+        int unsyncedBudgetLimits = monthlyBudgetLimitDao.getUnsyncedCount();
+        return (unsyncedAccounts + unsyncedTransactions + unsyncedCurrencies
+                + unsyncedAccountType + unsyncedDeletions
+                + unsyncedBudgetCats + unsyncedBudgetEntries + unsyncedBudgetLimits) > 0;
     }
 
     public int getTransactionCountForAccount(int accountId) {
@@ -246,79 +264,124 @@ public class DaftreeRepository {
 
 //        SyncCoordinator.requestSync(context);
     }
+    private long readLongSafe(Map<String, Object> data, String key, long fallback) {
+        if (data == null || !data.containsKey(key)) return fallback;
+        Object val = data.get(key);
+        if (val instanceof Number) return ((Number) val).longValue();
+        try {
+            return val != null ? Long.parseLong(val.toString()) : fallback;
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    private int readIntSafe(Map<String, Object> data, String key, int fallback) {
+        if (data == null || !data.containsKey(key)) return fallback;
+        Object val = data.get(key);
+        if (val instanceof Number) return ((Number) val).intValue();
+        try {
+            return val != null ? Integer.parseInt(val.toString()) : fallback;
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    private double readDoubleSafe(Map<String, Object> data, String key, double fallback) {
+        if (data == null || !data.containsKey(key)) return fallback;
+        Object val = data.get(key);
+        if (val instanceof Number) return ((Number) val).doubleValue();
+        try {
+            return val != null ? Double.parseDouble(val.toString()) : fallback;
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    private boolean readIsDeletedSafe(Map<String, Object> data) {
+        if (data == null) return false;
+        if (data.containsKey("isDeleted")) {
+            return convertFirestoreBoolean(data.get("isDeleted"));
+        }
+        if (data.containsKey("isDeleted()")) {
+            return convertFirestoreBoolean(data.get("isDeleted()"));
+        }
+        return false;
+    }
+
+    private boolean readIsDefaultSafe(Map<String, Object> data) {
+        if (data == null) return false;
+        if (data.containsKey("isDefault")) {
+            return convertFirestoreBoolean(data.get("isDefault"));
+        }
+        if (data.containsKey("isDefault()")) {
+            return convertFirestoreBoolean(data.get("isDefault()"));
+        }
+        return false;
+    }
+
     public void batchUpsertAccounts(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
                 String changeType = (String) change.get("type");
                 String firestoreId = (String) change.get("firestoreId");
                 Map<String, Object> data = safeCastToMap(change.get("data"));
-                String nameAcc = (String) change.get("accountName");
 
                 if ("REMOVED".equals(changeType)) {
                     mAccountDao.deleteByFirestoreId(firestoreId);
                     continue;
                 }
 
-                long remoteLastModified = (long) data.get("lastModified");
-                long deleteDate = 0L;
-                if (data.containsKey("deleteDate") && data.get("deleteDate") instanceof Number) {
-                    deleteDate = ((Number) data.get("deleteDate")).longValue();
-                }
+                long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
+                long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
+                long deleteDate = readLongSafe(data, "deleteDate", 0L);
+                boolean isDeletedRemote = readIsDeletedSafe(data);
 
                 Account existing = mAccountDao.getAccountByFirestoreId(firestoreId);
-                boolean isDeletedRemote = convertFirestoreBoolean(data.get("isDeleted"));
 
-                if (existing != null && isDeletedRemote) {
-                    if (remoteLastModified > existing.getLastModified() && !"DELETED".equals(existing.getSyncStatus())) {
-                        existing.setDeleteDate(deleteDate);
-                        existing.setAccountName((String) data.get("accountName"));
-                        existing.setPhoneNumber((String) data.get("phoneNumber"));
-                        existing.setAccountType((String) data.get("accountType"));
-                        existing.setLastModified(remoteLastModified);
-                        existing.setSyncStatus("SYNCED");
-                        existing.setAcTypeFirestoreId((String) data.get("acTypeFirestoreId"));
-                        existing.setDeletedBy((String) data.get("deletedBy"));
-                        existing.setDeleted(true);
-                        mAccountDao.update(existing);
-                    }
+                if (existing != null && !"SYNCED".equals(existing.getSyncStatus())) {
                     continue;
                 }
 
-                if (existing != null && !"SYNCED".equals(existing.getSyncStatus())) {
-                    continue; // تجاهل التغيير القادم من السحابة
-                }
-
                 if (existing != null) {
-                    if (remoteLastModified > existing.getLastModified() && !"DELETED".equals(existing.getSyncStatus())) {
+                    if ((remoteLastModified >= existing.getLastModified() || remoteLastSyncDate > existing.getLastSyncDate())
+                            && !"DELETED".equals(existing.getSyncStatus())) {
                         existing.setDeleteDate(deleteDate);
                         existing.setAccountName((String) data.get("accountName"));
                         existing.setPhoneNumber((String) data.get("phoneNumber"));
                         existing.setAccountType((String) data.get("accountType"));
                         existing.setLastModified(remoteLastModified);
-                        existing.setAcTypeFirestoreId((String) data.get("acTypeFirestoreId"));
+                        existing.setLastSyncDate(remoteLastSyncDate);
+                        String acTypeFsId = (String) data.get("acTypeFirestoreId");
+                        if (acTypeFsId != null) existing.setAcTypeFirestoreId(acTypeFsId);
                         existing.setSyncStatus("SYNCED");
                         existing.setDeletedBy((String) data.get("deletedBy"));
                         existing.setDeleted(isDeletedRemote);
+                        AccountTypeIconHelper.applyTypeVisualsToAccount(context, existing, accountTypeDao.getAccountTypeByFirestoreId(existing.getAcTypeFirestoreId()));
                         mAccountDao.update(existing);
                     }
                 } else {
                     Account newAccount = new Account();
-                    newAccount.setFirestoreId(firestoreId);
+                    newAccount.setFirestoreId(firestoreId != null ? firestoreId : "");
                     newAccount.setDeleteDate(deleteDate);
                     newAccount.setAccountName((String) data.get("accountName"));
                     newAccount.setPhoneNumber((String) data.get("phoneNumber"));
                     newAccount.setAccountType((String) data.get("accountType"));
-                    newAccount.setOwnerUID((String) data.get("ownerUID"));
+                    String owner = (String) data.get("ownerUID");
+                    newAccount.setOwnerUID(owner != null ? owner : (currentUserId != null ? currentUserId : ""));
                     newAccount.setLastModified(remoteLastModified);
+                    newAccount.setLastSyncDate(remoteLastSyncDate);
                     newAccount.setSyncStatus("SYNCED");
-                    newAccount.setAcTypeFirestoreId((String) data.get("acTypeFirestoreId"));
+                    String acTypeFsId = (String) data.get("acTypeFirestoreId");
+                    newAccount.setAcTypeFirestoreId(acTypeFsId != null ? acTypeFsId : "");
                     newAccount.setDeletedBy((String) data.get("deletedBy"));
                     newAccount.setDeleted(isDeletedRemote);
+                    AccountTypeIconHelper.applyTypeVisualsToAccount(context, newAccount, accountTypeDao.getAccountTypeByFirestoreId(newAccount.getAcTypeFirestoreId()));
                     mAccountDao.insert(newAccount);
                 }
             }
         });
     }
+
     public void batchUpsertTransactions(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
@@ -327,127 +390,111 @@ public class DaftreeRepository {
                 Map<String, Object> data = safeCastToMap(change.get("data"));
 
                 if ("REMOVED".equals(changeType)) {
-                    Log.w(TAG, "REMOVED: " + firestoreId);
                     mTransactionDao.deleteByFirestoreId(firestoreId);
                     continue;
                 }
-                long deleteDate = 0L;
-                if (data.containsKey("deleteDate") && data.get("deleteDate") instanceof Number) {
-                    deleteDate = ((Number) data.get("deleteDate")).longValue();
-                }
-                // تحويل التاريخ بشكل آمن
-                Object timestampObj = data.get("timestamp");
-                Date timestamp = null;
 
+                long deleteDate = readLongSafe(data, "deleteDate", 0L);
+                long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
+                long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
+                boolean isDeletedRemote = readIsDeletedSafe(data);
+
+                Object timestampObj = data.get("timestamp");
+                Date timestamp;
                 if (timestampObj instanceof Timestamp) {
                     timestamp = ((Timestamp) timestampObj).toDate();
                 } else if (timestampObj instanceof Date) {
                     timestamp = (Date) timestampObj;
                 } else {
-                    Log.w(TAG, "Unknown timestamp type: " + (timestampObj != null ? timestampObj.getClass().getSimpleName() : "null"));
                     timestamp = new Date();
                 }
 
-                // البحث عن الحساب الأب
                 String accountFirestoreId = (String) data.get("accountFirestoreId");
-                Account parentAccount = mAccountDao.getAccountByFirestoreId(accountFirestoreId);
-
-                Log.d(TAG, " Parent account  on Transaction 1: " + accountFirestoreId);
+                Account parentAccount = accountFirestoreId != null
+                        ? mAccountDao.getAccountByFirestoreId(accountFirestoreId) : null;
                 if (parentAccount == null) {
                     Log.e(TAG, "CRITICAL: Parent account not found after sync: " + accountFirestoreId);
                     continue;
                 }
 
-                // بقية معالجة المعاملة
                 Transaction existing = mTransactionDao.getTransactionByFirestoreId(firestoreId);
                 if (existing != null && !"SYNCED".equals(existing.getSyncStatus())) {
-                    Log.d("RepoSync", "Skipping incoming change for transaction " + firestoreId + " because local status is " + existing.getSyncStatus());
                     continue;
                 }
 
-                long remoteLastModified = (long) data.get("lastModified");
-                if(existing != null && convertFirestoreBoolean((Boolean) change.get("isDeleted"))){
-                    if (remoteLastModified > existing.getLastModified() && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
-                        Log.d(TAG, "update Transaction : " + accountFirestoreId);
-                        existing.setSyncStatus("SYNCED");
-                        existing.setDeleteDate(deleteDate);
-                        existing.setDeletedBy((String) data.get("deletedBy"));
-                        existing.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
-                        mTransactionDao.update(existing);
-//                        }
+                String currencyFirestoreId = (String) data.get("currencyFirestoreId");
+                int resolvedCurrencyId = readIntSafe(data, "currencyId", 0);
+                if (currencyFirestoreId != null && !currencyFirestoreId.isEmpty()) {
+                    Currency matchedCur = currencyDao.getCurrencyByFirestoreId(currencyFirestoreId);
+                    if (matchedCur != null) {
+                        resolvedCurrencyId = matchedCur.getId();
                     }
-                    continue; // تجاهل التغيير القادم من السحابة
                 }
+                if (resolvedCurrencyId <= 0) {
+                    resolvedCurrencyId = currencyDao.getFirstIdCurrency();
+                }
+                if (currencyFirestoreId == null || currencyFirestoreId.isEmpty()) {
+                    String fetchedCurFsId = currencyDao.getCurrencyFirestoreId(resolvedCurrencyId);
+                    currencyFirestoreId = fetchedCurFsId != null ? fetchedCurFsId : "";
+                }
+
                 try {
                     if (existing != null) {
-                        if (remoteLastModified > existing.getLastModified() && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
-                            Log.d(TAG, "update Transaction : " + accountFirestoreId);
-                            String billType = (String) data.get("billType");
+                        if ((remoteLastModified >= existing.getLastModified() || remoteLastSyncDate > existing.getLastSyncDate())
+                                && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
                             existing.setAccountId(parentAccount.getId());
-                            existing.setAmount(((Number) data.get("amount")).doubleValue());
+                            existing.setAmount(readDoubleSafe(data, "amount", existing.getAmount()));
                             existing.setDetails((String) data.get("details"));
                             existing.setImageEncoded((String) data.get("imageEncoded"));
-                            existing.setCurrencyId(((Number) data.get("currencyId")).intValue());
-                            existing.setType(((Long) data.get("type")).intValue());
-                            existing.setAccountFirestoreId((String) data.get("accountFirestoreId"));
+                            existing.setCurrencyId(resolvedCurrencyId);
+                            existing.setCurrencyFirestoreId(currencyFirestoreId);
+                            existing.setType(readIntSafe(data, "type", existing.getType()));
+                            existing.setAccountFirestoreId(accountFirestoreId);
                             existing.setTimestamp(timestamp);
                             existing.setDeleteDate(deleteDate);
-                            existing.setAccountFirestoreId(accountFirestoreId);
-                            existing.setBillType(billType);
-                            existing.setImportID(((Number) data.get("importID")).intValue());
+                            existing.setBillType((String) data.get("billType"));
+                            existing.setImportID(readIntSafe(data, "importID", 0));
                             existing.setLastModified(remoteLastModified);
+                            existing.setLastSyncDate(remoteLastSyncDate);
                             existing.setSyncStatus("SYNCED");
                             existing.setDeletedBy((String) data.get("deletedBy"));
-                            existing.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
+                            existing.setDeleted(isDeletedRemote);
                             mTransactionDao.update(existing);
-//                        }
                         }
                     } else {
-                        Log.e(TAG, "insert Transaction :  accountFirestoreId " + accountFirestoreId + "  Transaction firestoreId :" + firestoreId);
                         Transaction newTx = new Transaction();
                         newTx.setFirestoreId(firestoreId);
                         newTx.setAccountId(parentAccount.getId());
-                        newTx.setAmount(((Number) data.get("amount")).doubleValue());
+                        newTx.setAmount(readDoubleSafe(data, "amount", 0.0));
                         newTx.setDetails((String) data.get("details"));
-                        newTx.setCurrencyId(((Number) data.get("currencyId")).intValue());
-                        newTx.setType(((Long) data.get("type")).intValue());
+                        newTx.setCurrencyId(resolvedCurrencyId);
+                        newTx.setCurrencyFirestoreId(currencyFirestoreId);
+                        newTx.setType(readIntSafe(data, "type", -1));
                         newTx.setTimestamp(timestamp);
                         newTx.setDeleteDate(deleteDate);
                         newTx.setImageEncoded((String) data.get("imageEncoded"));
                         newTx.setDeletedBy((String) data.get("deletedBy"));
-                        newTx.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
-                        newTx.setAccountFirestoreId((String) data.get("accountFirestoreId"));
-
-                        // التصحيح: استخدام newTx بدلاً من existing
+                        newTx.setDeleted(isDeletedRemote);
                         newTx.setAccountFirestoreId(accountFirestoreId);
 
                         Object billTypeObj = data.get("billType");
-                        if (billTypeObj != null) {
-                            newTx.setBillType(billTypeObj.toString());
-                        }
-
-                        Object importIDObj = data.get("importID");
-                        if (importIDObj != null) {
-                            newTx.setImportID(((Number) importIDObj).intValue());
-                        }
+                        if (billTypeObj != null) newTx.setBillType(billTypeObj.toString());
+                        newTx.setImportID(readIntSafe(data, "importID", 0));
 
                         Object ownerUIDObj = data.get("ownerUID");
-                        if (ownerUIDObj != null) {
-                            newTx.setOwnerUID(ownerUIDObj.toString());
-                        }
-
+                        newTx.setOwnerUID(ownerUIDObj != null ? ownerUIDObj.toString() : (currentUserId != null ? currentUserId : ""));
                         newTx.setLastModified(remoteLastModified);
+                        newTx.setLastSyncDate(remoteLastSyncDate);
                         newTx.setSyncStatus("SYNCED");
                         mTransactionDao.insert(newTx);
                     }
                 } catch (Exception e) {
-                    Log.e(TAG, "batchUpsertTransactions: " + e);
-                    // تسجيل التفاصيل الإضافية للخطأ
-                    Log.e(TAG, "Error data: " + data);
+                    Log.e(TAG, "batchUpsertTransactions error: " + e.getMessage(), e);
                 }
             }
         });
     }
+
     public void batchUpsertCurrencies(List<Map<String, Object>> changesBatch) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             for (Map<String, Object> change : changesBatch) {
@@ -460,75 +507,46 @@ public class DaftreeRepository {
                     continue;
                 }
 
-                long deleteDate = 0L;
-                if (data.containsKey("deleteDate") && data.get("deleteDate") instanceof Number) {
-                    deleteDate = ((Number) data.get("deleteDate")).longValue();
-                }
+                long deleteDate = readLongSafe(data, "deleteDate", 0L);
+                long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
+                long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
+                boolean isDeletedRemote = readIsDeletedSafe(data);
+                boolean isDefaultRemote = readIsDefaultSafe(data);
+
                 Currency existing = currencyDao.getCurrencyByFirestoreId(firestoreId);
                 if (existing != null && !"SYNCED".equals(existing.getSyncStatus())) {
-                    Boolean isDefaultFromFirestore = (Boolean) data.get("isDefault");
-                    if (isDefaultFromFirestore != null) {
-                        Log.e(TAG, "isDefaultFromFirestore: " + isDefaultFromFirestore);
-                        existing.setDefault(isDefaultFromFirestore);
-                    } else {
-                        existing.setDefault(false); // قيمة افتراضية إذا لم توجد
-                    }
-                    existing.setDeleteDate(deleteDate);
-                    existing.setDefault(convertFirestoreBoolean((Boolean) data.get("isDefault")));
-                    existing.setDeletedBy((String) data.get("deletedBy"));
-                    existing.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
-                    currencyDao.update(existing);
-                    continue; // تجاهل التغيير القادم من السحابة
-                }
-                long remoteLastModified = (long) data.get("lastModified");
-                if(existing != null && convertFirestoreBoolean((Boolean) change.get("isDeleted"))){
-                    if (remoteLastModified > existing.getLastModified() && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
-                        existing.setDeleteDate(deleteDate);
-                        existing.setDefault(convertFirestoreBoolean((Boolean) data.get("isDefault")));
-                        existing.setDeletedBy((String) data.get("deletedBy"));
-                        existing.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
-                        currencyDao.update(existing);
-                    }
-
                     continue;
                 }
+
                 if (existing != null) {
-                    if (remoteLastModified > existing.getLastModified() && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
+                    if ((remoteLastModified >= existing.getLastModified() || remoteLastSyncDate > existing.getLastSyncDate())
+                            && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
                         existing.setName((String) data.get("name"));
+                        if (data.get("code") != null) existing.setCode((String) data.get("code"));
+                        if (data.get("symbol") != null) existing.setSymbol((String) data.get("symbol"));
                         existing.setOwnerUID((String) data.get("ownerUID"));
                         existing.setLastModified(remoteLastModified);
+                        existing.setLastSyncDate(remoteLastSyncDate);
                         existing.setSyncStatus("SYNCED");
                         existing.setDeleteDate(deleteDate);
-                        Boolean isDefaultFromFirestore = (Boolean) data.get("isDefault");
-                        if (isDefaultFromFirestore != null) {
-                            Log.e(TAG, "isDefaultFromFirestore: " + isDefaultFromFirestore);
-                            existing.setDefault(isDefaultFromFirestore);
-                        } else {
-                            existing.setDefault(false); // قيمة افتراضية إذا لم توجد
-                        }
-                        existing.setDefault(convertFirestoreBoolean((Boolean) data.get("isDefault")));
+                        existing.setDefault(isDefaultRemote);
                         existing.setDeletedBy((String) data.get("deletedBy"));
-                        existing.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
+                        existing.setDeleted(isDeletedRemote);
                         currencyDao.update(existing);
                     }
                 } else {
                     Currency newCurrency = new Currency();
                     newCurrency.setFirestoreId(firestoreId);
                     newCurrency.setName((String) data.get("name"));
+                    newCurrency.setCode((String) data.get("code"));
+                    newCurrency.setSymbol((String) data.get("symbol"));
                     newCurrency.setOwnerUID((String) data.get("ownerUID"));
                     newCurrency.setLastModified(remoteLastModified);
+                    newCurrency.setLastSyncDate(remoteLastSyncDate);
                     newCurrency.setDeleteDate(deleteDate);
-                    Boolean isDefaultFromFirestore = (Boolean) data.get("isDefault");
-                    if (isDefaultFromFirestore != null) {
-                        Log.e(TAG, "isDefaultFromFirestore: " + isDefaultFromFirestore);
-                        newCurrency.setDefault(isDefaultFromFirestore);
-                    } else {
-                        newCurrency.setDefault(false); // قيمة افتراضية إذا لم توجد
-                    }
-                    newCurrency.setDefault(convertFirestoreBoolean((Boolean) data.get("isDefault")));
+                    newCurrency.setDefault(isDefaultRemote);
                     newCurrency.setDeletedBy((String) data.get("deletedBy"));
-                    newCurrency.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
-
+                    newCurrency.setDeleted(isDeletedRemote);
                     newCurrency.setSyncStatus("SYNCED");
                     currencyDao.insert(newCurrency);
                 }
@@ -548,40 +566,29 @@ public class DaftreeRepository {
                     continue;
                 }
 
-                long deleteDate = 0L;
-                if (data.containsKey("deleteDate") && data.get("deleteDate") instanceof Number) {
-                    deleteDate = ((Number) data.get("deleteDate")).longValue();
-                }
+                long deleteDate = readLongSafe(data, "deleteDate", 0L);
+                long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
+                long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
+                boolean isDeletedRemote = readIsDeletedSafe(data);
+                boolean isDefaultRemote = readIsDefaultSafe(data);
+
                 AccountType existing = accountTypeDao.getAccountTypeByFirestoreId(firestoreId);
                 if (existing != null && !"SYNCED".equals(existing.getSyncStatus())) {
-                    continue; // تجاهل التغيير القادم من السحابة
+                    continue;
                 }
-                long remoteLastModified = (long) data.get("lastModified");
-                if(existing != null && convertFirestoreBoolean((Boolean) change.get("isDeleted"))){
-                    if (remoteLastModified > existing.getLastModified() && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
-                        existing.setName((String) data.get("name"));
-                        existing.setOwnerUID((String) data.get("ownerUID"));
-                        existing.setLastModified(remoteLastModified);
-                        existing.setSyncStatus("SYNCED");
-                        existing.setDeleteDate(deleteDate);
-                        existing.setDefault(convertFirestoreBoolean((Boolean) data.get("isDefault")));
-                        existing.setDeletedBy((String) data.get("deletedBy"));
-                        existing.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
-                        accountTypeDao.update(existing);
-                    }
 
-                    continue; // تجاهل التغيير القادم من السحابة
-                }
                 if (existing != null) {
-                    if (remoteLastModified > existing.getLastModified() && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
+                    if ((remoteLastModified >= existing.getLastModified() || remoteLastSyncDate > existing.getLastSyncDate())
+                            && !Objects.equals(existing.getSyncStatus(), "DELETED")) {
                         existing.setName((String) data.get("name"));
                         existing.setOwnerUID((String) data.get("ownerUID"));
                         existing.setLastModified(remoteLastModified);
+                        existing.setLastSyncDate(remoteLastSyncDate);
                         existing.setSyncStatus("SYNCED");
                         existing.setDeleteDate(deleteDate);
-                        existing.setDefault(convertFirestoreBoolean((Boolean) data.get("isDefault")));
+                        existing.setDefault(isDefaultRemote);
                         existing.setDeletedBy((String) data.get("deletedBy"));
-                        existing.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
+                        existing.setDeleted(isDeletedRemote);
                         accountTypeDao.update(existing);
                     }
                 } else {
@@ -590,16 +597,261 @@ public class DaftreeRepository {
                     newType.setName((String) data.get("name"));
                     newType.setOwnerUID((String) data.get("ownerUID"));
                     newType.setLastModified(remoteLastModified);
+                    newType.setLastSyncDate(remoteLastSyncDate);
                     newType.setSyncStatus("SYNCED");
                     newType.setDeleteDate(deleteDate);
-                    newType.setDefault(convertFirestoreBoolean((Boolean) data.get("isDefault")));
+                    newType.setDefault(isDefaultRemote);
                     newType.setDeletedBy((String) data.get("deletedBy"));
-                    newType.setDeleted(convertFirestoreBoolean((Boolean) data.get("isDeleted")));
+                    newType.setDeleted(isDeletedRemote);
+                    AccountTypeIconHelper.ensureTypeVisuals(context, newType);
                     accountTypeDao.insert(newType);
                 }
             }
         });
     }
+
+    public void batchUpsertBudgetCategories(List<Map<String, Object>> changesBatch) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            for (Map<String, Object> change : changesBatch) {
+                String changeType = (String) change.get("type");
+                String firestoreId = (String) change.get("firestoreId");
+                Map<String, Object> data = safeCastToMap(change.get("data"));
+
+                if ("REMOVED".equals(changeType)) {
+                    budgetCategoryDao.deleteByFirestoreId(firestoreId);
+                    continue;
+                }
+
+                long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
+                long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
+                long deleteDate = readLongSafe(data, "deleteDate", 0L);
+                boolean isDeletedRemote = readIsDeletedSafe(data);
+                boolean isDefaultRemote = readIsDefaultSafe(data);
+                String code = (String) data.get("code");
+
+                BudgetCategory existing = budgetCategoryDao.getByFirestoreIdSync(firestoreId);
+                if (existing == null && isDefaultRemote && code != null && !code.isEmpty()) {
+                    existing = budgetCategoryDao.getByCodeSync(code);
+                }
+                if (existing != null && !"SYNCED".equals(existing.getSyncStatus())) {
+                    continue;
+                }
+
+                if (existing != null) {
+                    if (remoteLastModified >= existing.getLastModified() || remoteLastSyncDate > existing.getLastSyncDate()) {
+                        existing.setFirestoreId(firestoreId);
+                        existing.setOwnerUID((String) data.get("ownerUID"));
+                        if (code != null) existing.setCode(code);
+                        if (data.get("name") != null) existing.setName((String) data.get("name"));
+                        if (data.get("type") != null) existing.setType((String) data.get("type"));
+                        if (data.get("iconKey") != null) existing.setIconKey((String) data.get("iconKey"));
+                        if (data.get("colorHex") != null) existing.setColorHex((String) data.get("colorHex"));
+                        existing.setDefault(isDefaultRemote);
+                        existing.setSortOrder(readIntSafe(data, "sortOrder", existing.getSortOrder()));
+                        existing.setDeleted(isDeletedRemote);
+                        existing.setDeleteDate(deleteDate);
+                        existing.setDeletedBy((String) data.get("deletedBy"));
+                        existing.setLastModified(remoteLastModified);
+                        existing.setLastSyncDate(remoteLastSyncDate);
+                        existing.setSyncStatus("SYNCED");
+                        budgetCategoryDao.update(existing);
+                    }
+                } else {
+                    BudgetCategory cat = new BudgetCategory();
+                    cat.setFirestoreId(firestoreId);
+                    cat.setOwnerUID((String) data.get("ownerUID"));
+                    cat.setCode(code != null ? code : "");
+                    cat.setName(data.get("name") != null ? (String) data.get("name") : "");
+                    cat.setType(data.get("type") != null ? (String) data.get("type") : BudgetCategory.TYPE_EXPENSE);
+                    cat.setIconKey(data.get("iconKey") != null ? (String) data.get("iconKey") : "other");
+                    cat.setColorHex(data.get("colorHex") != null ? (String) data.get("colorHex") : "#06B6D4");
+                    cat.setDefault(isDefaultRemote);
+                    cat.setSortOrder(readIntSafe(data, "sortOrder", 100));
+                    cat.setDeleted(isDeletedRemote);
+                    cat.setDeleteDate(deleteDate);
+                    cat.setDeletedBy((String) data.get("deletedBy"));
+                    cat.setLastModified(remoteLastModified);
+                    cat.setLastSyncDate(remoteLastSyncDate);
+                    cat.setSyncStatus("SYNCED");
+                    budgetCategoryDao.insert(cat);
+                }
+            }
+        });
+    }
+
+    public void batchUpsertBudgetLimits(List<Map<String, Object>> changesBatch) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            for (Map<String, Object> change : changesBatch) {
+                String changeType = (String) change.get("type");
+                String firestoreId = (String) change.get("firestoreId");
+                Map<String, Object> data = safeCastToMap(change.get("data"));
+
+                if ("REMOVED".equals(changeType)) {
+                    monthlyBudgetLimitDao.deleteByFirestoreId(firestoreId);
+                    continue;
+                }
+
+                long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
+                long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
+                long deleteDate = readLongSafe(data, "deleteDate", 0L);
+                boolean isDeletedRemote = readIsDeletedSafe(data);
+                String yearMonth = (String) data.get("yearMonth");
+                if (yearMonth == null || yearMonth.isEmpty()) continue;
+
+                String curFsId = (String) data.get("currencyFirestoreId");
+                int resolvedCurrencyId = readIntSafe(data, "currencyId", 0);
+                if (curFsId != null && !curFsId.isEmpty()) {
+                    Currency matchedCur = currencyDao.getCurrencyByFirestoreId(curFsId);
+                    if (matchedCur != null) resolvedCurrencyId = matchedCur.getId();
+                }
+                if (resolvedCurrencyId <= 0) resolvedCurrencyId = currencyDao.getFirstIdCurrency();
+                if (resolvedCurrencyId <= 0) continue;
+
+                MonthlyBudgetLimit existing = monthlyBudgetLimitDao.getByFirestoreIdSync(firestoreId);
+                if (existing == null) {
+                    existing = monthlyBudgetLimitDao.getExactLimitSync(yearMonth, resolvedCurrencyId);
+                }
+                if (existing != null && !"SYNCED".equals(existing.getSyncStatus())) {
+                    continue;
+                }
+
+                if (existing != null) {
+                    if (remoteLastModified >= existing.getLastModified() || remoteLastSyncDate > existing.getLastSyncDate()) {
+                        existing.setFirestoreId(firestoreId);
+                        existing.setOwnerUID((String) data.get("ownerUID"));
+                        existing.setCurrencyId(resolvedCurrencyId);
+                        existing.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                        existing.setYearMonth(yearMonth);
+                        existing.setLimitAmount(readDoubleSafe(data, "limitAmount", existing.getLimitAmount()));
+                        existing.setDeleted(isDeletedRemote);
+                        existing.setDeleteDate(deleteDate);
+                        existing.setDeletedBy((String) data.get("deletedBy"));
+                        existing.setLastModified(remoteLastModified);
+                        existing.setLastSyncDate(remoteLastSyncDate);
+                        existing.setSyncStatus("SYNCED");
+                        monthlyBudgetLimitDao.update(existing);
+                    }
+                } else {
+                    MonthlyBudgetLimit limit = new MonthlyBudgetLimit();
+                    limit.setFirestoreId(firestoreId);
+                    limit.setOwnerUID((String) data.get("ownerUID"));
+                    limit.setCurrencyId(resolvedCurrencyId);
+                    limit.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                    limit.setYearMonth(yearMonth);
+                    limit.setLimitAmount(readDoubleSafe(data, "limitAmount", 0.0));
+                    limit.setDeleted(isDeletedRemote);
+                    limit.setDeleteDate(deleteDate);
+                    limit.setDeletedBy((String) data.get("deletedBy"));
+                    limit.setLastModified(remoteLastModified);
+                    limit.setLastSyncDate(remoteLastSyncDate);
+                    limit.setSyncStatus("SYNCED");
+                    monthlyBudgetLimitDao.insert(limit);
+                }
+            }
+        });
+    }
+
+    public void batchUpsertBudgetEntries(List<Map<String, Object>> changesBatch) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            for (Map<String, Object> change : changesBatch) {
+                String changeType = (String) change.get("type");
+                String firestoreId = (String) change.get("firestoreId");
+                Map<String, Object> data = safeCastToMap(change.get("data"));
+
+                if ("REMOVED".equals(changeType)) {
+                    budgetEntryDao.deleteByFirestoreId(firestoreId);
+                    continue;
+                }
+
+                long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
+                long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
+                long deleteDate = readLongSafe(data, "deleteDate", 0L);
+                boolean isDeletedRemote = readIsDeletedSafe(data);
+
+                BudgetEntry existing = budgetEntryDao.getByFirestoreIdSync(firestoreId);
+                if (existing != null && !"SYNCED".equals(existing.getSyncStatus())) {
+                    continue;
+                }
+
+                String curFsId = (String) data.get("currencyFirestoreId");
+                int resolvedCurrencyId = readIntSafe(data, "currencyId", 0);
+                if (curFsId != null && !curFsId.isEmpty()) {
+                    Currency matchedCur = currencyDao.getCurrencyByFirestoreId(curFsId);
+                    if (matchedCur != null) resolvedCurrencyId = matchedCur.getId();
+                }
+                if (resolvedCurrencyId <= 0) resolvedCurrencyId = currencyDao.getFirstIdCurrency();
+                if (resolvedCurrencyId <= 0) continue;
+
+                String catFsId = (String) data.get("categoryFirestoreId");
+                String catCode = (String) data.get("categoryCode");
+                String type = data.get("type") != null ? (String) data.get("type") : BudgetEntry.TYPE_EXPENSE;
+
+                int resolvedCategoryId = 0;
+                if (catFsId != null && !catFsId.isEmpty()) {
+                    BudgetCategory byFs = budgetCategoryDao.getByFirestoreIdSync(catFsId);
+                    if (byFs != null) resolvedCategoryId = byFs.getId();
+                }
+                if (resolvedCategoryId <= 0 && catCode != null && !catCode.isEmpty()) {
+                    Integer byCode = budgetCategoryDao.getCategoryIdByCodeSync(catCode);
+                    if (byCode != null && byCode > 0) resolvedCategoryId = byCode;
+                }
+                if (resolvedCategoryId <= 0) {
+                    String fallbackCode = BudgetEntry.TYPE_INCOME.equals(type) ? "income_other" : "other";
+                    Integer fb = budgetCategoryDao.getCategoryIdByCodeSync(fallbackCode);
+                    if (fb != null && fb > 0) resolvedCategoryId = fb;
+                }
+                if (resolvedCategoryId <= 0) {
+                    resolvedCategoryId = readIntSafe(data, "categoryId", 1);
+                }
+
+                long entryDate = readLongSafe(data, "entryDate", remoteLastModified);
+                String yearMonth = data.get("yearMonth") != null
+                        ? (String) data.get("yearMonth") : BudgetUtils.toYearMonth(entryDate);
+
+                if (existing != null) {
+                    if (remoteLastModified >= existing.getLastModified() || remoteLastSyncDate > existing.getLastSyncDate()) {
+                        existing.setCategoryId(resolvedCategoryId);
+                        existing.setCategoryFirestoreId(catFsId != null ? catFsId : "");
+                        existing.setCurrencyId(resolvedCurrencyId);
+                        existing.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                        existing.setType(type);
+                        existing.setAmount(readDoubleSafe(data, "amount", existing.getAmount()));
+                        existing.setNote(data.get("note") != null ? (String) data.get("note") : "");
+                        existing.setEntryDate(entryDate);
+                        existing.setYearMonth(yearMonth);
+                        existing.setDeleted(isDeletedRemote);
+                        existing.setDeleteDate(deleteDate);
+                        existing.setDeletedBy((String) data.get("deletedBy"));
+                        existing.setLastModified(remoteLastModified);
+                        existing.setLastSyncDate(remoteLastSyncDate);
+                        existing.setSyncStatus("SYNCED");
+                        budgetEntryDao.update(existing);
+                    }
+                } else {
+                    BudgetEntry entry = new BudgetEntry();
+                    entry.setFirestoreId(firestoreId);
+                    entry.setOwnerUID((String) data.get("ownerUID"));
+                    entry.setCategoryId(resolvedCategoryId);
+                    entry.setCategoryFirestoreId(catFsId != null ? catFsId : "");
+                    entry.setCurrencyId(resolvedCurrencyId);
+                    entry.setCurrencyFirestoreId(curFsId != null ? curFsId : "");
+                    entry.setType(type);
+                    entry.setAmount(readDoubleSafe(data, "amount", 0.0));
+                    entry.setNote(data.get("note") != null ? (String) data.get("note") : "");
+                    entry.setEntryDate(entryDate);
+                    entry.setYearMonth(yearMonth);
+                    entry.setDeleted(isDeletedRemote);
+                    entry.setDeleteDate(deleteDate);
+                    entry.setDeletedBy((String) data.get("deletedBy"));
+                    entry.setLastModified(remoteLastModified);
+                    entry.setLastSyncDate(remoteLastSyncDate);
+                    entry.setSyncStatus("SYNCED");
+                    budgetEntryDao.insert(entry);
+                }
+            }
+        });
+    }
+
     public LiveData<User> getUserProfile() {
         return mUserDao.getUserProfile();
     }
@@ -691,7 +943,7 @@ public class DaftreeRepository {
             if (currency.getFirestoreId() != null && !currency.getFirestoreId().isEmpty()) {
                 DeletionLog log = new DeletionLog();
                 log.setFirestoreId(currency.getFirestoreId());
-                log.setCollectionName("currency");
+                log.setCollectionName("currencies");
                 mDeletionLogDao.insert(log);
             }
         });
@@ -734,7 +986,7 @@ public class DaftreeRepository {
             if (accountType.getFirestoreId() != null && !accountType.getFirestoreId().isEmpty()) {
                 DeletionLog log = new DeletionLog();
                 log.setFirestoreId(accountType.getFirestoreId());
-                log.setCollectionName("accountType");
+                log.setCollectionName("accountTypes");
                 mDeletionLogDao.insert(log);
             }
         });

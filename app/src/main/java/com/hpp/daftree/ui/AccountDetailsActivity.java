@@ -107,7 +107,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
+import com.hpp.daftree.budget.repository.BudgetRepository;
+import com.hpp.daftree.helpers.AppFontHelper;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.hpp.daftree.MyApplication;
@@ -1024,17 +1028,30 @@ public class AccountDetailsActivity extends BaseActivity implements
         isAddNewTransactionBindingShowing = true;
         activeDialogBinding = DialogAddNewTransactionBinding.inflate(LayoutInflater.from(this));
         MyApplication.applyGlobalTextWatcher(activeDialogBinding.getRoot());
+        AppFontHelper.applyFontToViewTree(this, activeDialogBinding.getRoot());
 
         final boolean isEditMode = transactionToEdit != null;
         String title = isEditMode ? getString(R.string.edit_transaction_title) : getString(R.string.add_transaction_title);
         tempEncodedImage = (isEditMode) ? transactionToEdit.getImageEncoded() : null;
         activeDialogBinding.dialogTitel.setText(title);
 
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setView(activeDialogBinding.getRoot())
-                .create();
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        dialog.setContentView(activeDialogBinding.getRoot());
+        dialog.setOnShowListener(d -> {
+            View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                behavior.setSkipCollapsed(true);
+            }
+        });
+        activeDialogBinding.btnCloseDialog.setOnClickListener(v -> dialog.dismiss());
+        activeDialogBinding.cardLinkToBudget.setVisibility(isEditMode ? View.GONE : View.VISIBLE);
+        activeDialogBinding.cardLinkToBudget.setOnClickListener(v ->
+                activeDialogBinding.switchLinkToBudget.setChecked(!activeDialogBinding.switchLinkToBudget.isChecked()));
 
-// 2. إعادة تعيين المتغير عند إغلاق الديالوج بأي طريقة (حفظ، إلغاء، لمس بالخارج)
+// 2. إعادة تعيين المتغير عند إغلاق الشيت بأي طريقة (حفظ، إلغاء، سحب للأسفل)
         dialog.setOnDismissListener(d -> {
             isAddNewTransactionBindingShowing = false;
         });
@@ -1066,7 +1083,6 @@ public class AccountDetailsActivity extends BaseActivity implements
             updateDateInDialogView(activeDialogBinding, dialogSelectedDate);
             String selectedCurrency = binding.currencyTextView.getText().toString();
             activeDialogBinding.currencySpinnerAutocomplete.setText(selectedCurrency, false);
-            showKeyboard(activeDialogBinding.amountEditText);
         }
 
         // إعداد واجهة المستخدم والـ TextWatcher
@@ -1158,18 +1174,12 @@ public class AccountDetailsActivity extends BaseActivity implements
         activeDialogBinding.creditButton.setOnClickListener(saveClickListener);
         activeDialogBinding.debitButton.setOnClickListener(saveClickListener);
 
-        setupDialogKeyboardInteraction(dialog, activeDialogBinding.getRoot());
-        activeDialogBinding.amountEditText.requestFocus();
         dialog.show();
-        // -- الكود الجديد: السماح للوحة المفاتيح بالظهور في الديالوج --
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
-            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+        AppFontHelper.applyFontToDialog(this, dialog);
+        if (!isEditMode) {
+            activeDialogBinding.amountEditText.requestFocus();
+            showKeyboard(activeDialogBinding.amountEditText);
         }
-
-        // طلب التركيز لحقل المبلغ وتأخير إظهار لوحة المفاتيح
-        activeDialogBinding.amountEditText.requestFocus();
-        showKeyboard(activeDialogBinding.amountEditText);
     }
 
     private void checkCameraPermissionAndOpen() {
@@ -1233,37 +1243,17 @@ public class AccountDetailsActivity extends BaseActivity implements
         });
     }
 
-    private void setupDialogKeyboardInteraction(AlertDialog dialog, View dialogRootView) {
-        final boolean[] isKeyboardVisible = {false};
-        final int[] originalY = {-1};
-        // Apply window insets to dialog root view for keyboard detection
+    private void setupDialogKeyboardInteraction(Dialog dialog, View dialogRootView) {
         ViewCompat.setOnApplyWindowInsetsListener(dialogRootView, (v, insets) -> {
             Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-
-            if (imeInsets.bottom > 0) {
-                // Keyboard is visible
-                if (!isKeyboardVisible[0]) {
-//                    onDialogKeyboardShown(dialog, v, imeInsets.bottom);
-                    onKeyboardShown(dialog, v, imeInsets.bottom, new int[]{-1});
-                    isKeyboardVisible[0] = true;
-                }
-            } else {
-                // Keyboard is hidden
-                if (isKeyboardVisible[0]) {
-                    onKeyboardHidden(dialog, originalY);
-                    isKeyboardVisible[0] = false;
-                }
-            }
-
-            // Apply padding to dialog content for system bars
+            int bottomPad = Math.max(imeInsets.bottom, systemBarsInsets.bottom);
             v.setPadding(
                     systemBarsInsets.left,
-                    systemBarsInsets.top,
+                    v.getPaddingTop(),
                     systemBarsInsets.right,
-                    0  // Bottom padding handled by keyboard
+                    bottomPad
             );
-
             return insets;
         });
     }
@@ -1371,7 +1361,7 @@ public class AccountDetailsActivity extends BaseActivity implements
         }
 
     }
-    private void saveChanges(AlertDialog dialog, DialogAddNewTransactionBinding dialogBinding,
+    private void saveChanges(Dialog dialog, DialogAddNewTransactionBinding dialogBinding,
                              @Nullable Transaction oldTransaction, int newType, Calendar newDate) {
 
         // ========== 1. قراءة القيم والتحقق منها ==========
@@ -1458,7 +1448,7 @@ public class AccountDetailsActivity extends BaseActivity implements
      * تنفيذ عملية الحفظ الفعلية (تعديل أو إضافة).
      * تم فصلها من saveChanges لتُستدعى إما مباشرة أو بعد تأكيد المستخدم.
      */
-    private void performSaveChanges(AlertDialog dialog, @Nullable Transaction oldTransaction,
+    private void performSaveChanges(Dialog dialog, @Nullable Transaction oldTransaction,
                                     int newType, Calendar newDate, double newAmount,
                                     String newDetails, int currencyId, String newCurrencyName,
                                     String syncStatus) {
@@ -1554,6 +1544,13 @@ public class AccountDetailsActivity extends BaseActivity implements
                 .sendTransactionNotification(newTransaction, newCurrencyName, this);
 
         viewModel.addTransaction(newTransaction);
+        boolean linkToBudget = activeDialogBinding != null && activeDialogBinding.switchLinkToBudget.isChecked();
+        if (linkToBudget) {
+            String linkedAccName = currentAccount != null && currentAccount.getAccountName() != null
+                    ? currentAccount.getAccountName() : accountName;
+            BudgetRepository.recordLinkedDebtTransaction(
+                    this, linkedAccName, newAmount, newType, currencyId, newDate.getTimeInMillis());
+        }
         this.lastSavedTransaction = newTransaction;
         double finalAmount = newAmount * newType;
         onTransactionSaved(finalAmount);
@@ -2268,16 +2265,28 @@ public class AccountDetailsActivity extends BaseActivity implements
     private void showAddTransactionDialogFromRecurring(RecurringOperation op) {
         // استخدام الديالوج الموجود dialog_add_new_transaction.xml
         DialogAddNewTransactionBinding dialogBinding = DialogAddNewTransactionBinding.inflate(getLayoutInflater());
+        AppFontHelper.applyFontToViewTree(this, dialogBinding.getRoot());
         dialogBinding.accountNameEditText.setText(op.getAccountName());
         dialogBinding.amountEditText.setText(formatCurrency(op.getAmount()));
         dialogBinding.detailsEditText.setText(op.getDetails());
         dialogBinding.currencySpinnerAutocomplete.setText(findCurrencyNameById(op.getCurrencyId()), false);
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
         dialogBinding.dateEditText.setText(sdf.format(new Date()));
+        dialogBinding.cardLinkToBudget.setOnClickListener(v ->
+                dialogBinding.switchLinkToBudget.setChecked(!dialogBinding.switchLinkToBudget.isChecked()));
 
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setView(dialogBinding.getRoot())
-                .create();
+        BottomSheetDialog dialog = new BottomSheetDialog(this);
+        dialog.setContentView(dialogBinding.getRoot());
+        dialogBinding.btnCloseDialog.setOnClickListener(v -> dialog.dismiss());
+        dialog.setOnShowListener(d -> {
+            View bottomSheet = dialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheet != null) {
+                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
+                BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(bottomSheet);
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                behavior.setSkipCollapsed(true);
+            }
+        });
 
         dialogBinding.creditButton.setOnClickListener(v -> {
             // حفظ العملية بنوع -1
@@ -2293,7 +2302,7 @@ public class AccountDetailsActivity extends BaseActivity implements
 
     private void saveTransactionFromRecurring(RecurringOperation op, int type,
                                               DialogAddNewTransactionBinding dialogBinding,
-                                              AlertDialog dialog) {
+                                              Dialog dialog) {
         String amountStr = dialogBinding.amountEditText.getText().toString().trim().replaceAll(",", "");
         String details = dialogBinding.detailsEditText.getText().toString().trim();
         String currencyName = dialogBinding.currencySpinnerAutocomplete.getText().toString();
@@ -2383,6 +2392,10 @@ public class AccountDetailsActivity extends BaseActivity implements
         transaction.setTimestamp(new Date());
         // حفظ العملية
         viewModel.addTransaction(transaction);
+        if (dialogBinding.switchLinkToBudget.isChecked()) {
+            BudgetRepository.recordLinkedDebtTransaction(
+                    this, op.getAccountName(), amount, type, currencyId, System.currentTimeMillis());
+        }
         this.lastSavedTransaction = transaction;
         double finalAmount = amount * type;
         onTransactionSaved(finalAmount);
