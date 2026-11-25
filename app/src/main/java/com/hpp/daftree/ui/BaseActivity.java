@@ -41,28 +41,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     private static final String KEY_LANGUAGE = "language";
 
     //@Override
-    protected void attachBaseContext1(Context newBase) {
-        if (this instanceof SplashActivity) {
-            super.attachBaseContext(newBase);
-            return;
-        }
-
-        SharedPreferences prefs = newBase.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String lang = prefs.getString(KEY_LANGUAGE, "en");
-        Locale locale = Locale.forLanguageTag(lang);      // ✅ استخدام forLanguageTag
-        Locale.setDefault(locale);
-
-        Configuration config = new Configuration(newBase.getResources().getConfiguration());
-        config.setLocale(locale);                         // ✅ استخدام setLocale
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            config.setLayoutDirection(locale);
-        }
-
-        // ✅ استخدام createConfigurationContext بدلاً من updateConfiguration
-        Context updatedContext = newBase.createConfigurationContext(config);
-        super.attachBaseContext(updatedContext);
-    }
     @Override
     protected void attachBaseContext(Context newBase) {
         if (this instanceof SplashActivity) {

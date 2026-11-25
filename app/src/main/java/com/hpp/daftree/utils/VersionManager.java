@@ -343,26 +343,6 @@ public class VersionManager {
 
         throw new Exception("Could not extract version from Google Play");
     }
-    private UpdateInfo checkGooglePlay1() throws Exception {
-        String appUrl = GOOGLE_PLAY_URL;
-        Document doc = Jsoup.connect(appUrl)
-                .userAgent("Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Mobile Safari/537.36")
-                .referrer("https://www.google.com")
-                .timeout(15000)
-                .get();
-
-        String pageText = doc.body() != null ? doc.body().text() : doc.text();
-
-        // محاولات متعددة لاستخراج رقم الإصدار من جوجل بلاي
-        String latestVersion = extractVersionFromGooglePlay(doc, pageText);
-
-        if (latestVersion != null) {
-            String changelog = extractChangelogFromGooglePlay(doc, pageText);
-            return new UpdateInfo(latestVersion, changelog, appUrl);
-        }
-
-        throw new Exception("Could not extract version from Google Play");
-    }
 
     /**
      * استخراج الإصدار من صفحة جوجل بلاي
@@ -718,11 +698,6 @@ public class VersionManager {
     /**
      * إغلاق الـ ExecutorService عند عدم الحاجة
      */
-    public void shutdown1() {
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-        }
-    }
     // دالة للتحقق مما إذا كان هذا هو التشغيل الأول مطلقاً (تثبيت جديد)
     public boolean isFreshInstall() {
         int lastVersion = prefs.getInt(KEY_LAST_VERSION_CODE, -1);

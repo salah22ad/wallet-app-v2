@@ -126,8 +126,6 @@ import com.hpp.daftree.database.Currency;
 import com.hpp.daftree.database.DeviceInfo;
 import com.hpp.daftree.database.User;
 import com.hpp.daftree.databinding.ActivityMainBinding;
-import com.hpp.daftree.databinding.DialogAccountOptionsBinding;
-import com.hpp.daftree.databinding.DialogEditAccountBinding;
 import com.hpp.daftree.databinding.DialogWelcomeBackBinding;
 import com.hpp.daftree.dialogs.AccountBottomSheet;
 import com.hpp.daftree.dialogs.DeviceManagementDialog;
@@ -310,71 +308,16 @@ public class MainActivity extends BaseActivity implements
     private final Map<String, Integer> accountNameToIdMap = new HashMap<>();
     private SecureLicenseManager licenceData;
     private boolean isUserAdded = false;
-    private DialogEditAccountBinding activeEditeAccountDialogBinding;
     private String fullName, phoneNumber;
     private String currentUID;
     private final AtomicBoolean isCheckingSubscription = new AtomicBoolean(false);
     private OnBackPressedCallback backPressedCallback;
     private LinkedList<TapTarget> targetQueue = new LinkedList<>();
-    private final ActivityResultLauncher<String> requestContactPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    openContactPicker();
-                } else {
-                    Toast.makeText(this, getString(R.string.error_contact_permission), Toast.LENGTH_SHORT).show();
-                }
-            });
 
-    private final ActivityResultLauncher<Intent> pickContactLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    Uri contactUri = result.getData().getData();
-                    processSelectedContact(contactUri);
-                }
-            });
 
     // دالة مساعدة لفتح جهات الاتصال
-    private void openContactPicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-        pickContactLauncher.launch(intent);
-    }
 
     // دالة لمعالجة البيانات القادمة من جهات الاتصال
-    private void processSelectedContact(Uri dataUri) {
-        if (activeEditeAccountDialogBinding == null) return;
-
-        // الأعمدة التي نريد قراءتها مباشرة (الاسم والرقم)
-        String[] projection = new String[]{
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.NUMBER
-        };
-
-        try (Cursor cursor = getContentResolver().query(dataUri, projection, null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                // 1. استخراج الرقم المختار مباشرة
-                int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                String number = cursor.getString(numberIndex);
-
-                // 2. استخراج الاسم
-                int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-                String name = cursor.getString(nameIndex);
-
-                // تعيين القيم في الحقول
-                if (name != null) {
-                    activeEditeAccountDialogBinding.editAccountName.setText(name);
-                }
-
-                if (number != null) {
-                    // تنظيف الرقم (حذف المسافات، الشرطات، والأقواس)
-                    String cleanNumber = number.replaceAll("[\\s\\-()]", "");
-                    activeEditeAccountDialogBinding.editAccountPhone.setText(cleanNumber);
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error picking contact phone", e);
-            Toast.makeText(this, getString(R.string.processSelectedContact_01), Toast.LENGTH_SHORT).show();
-        }
-    }
 
     private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -861,43 +804,6 @@ public class MainActivity extends BaseActivity implements
             }
         }
     }
-    private void showSortPopupMenu1(View anchor) {
-        // إنشاء PopupMenu مرتبط بالزر ليظهر أسفله مباشرة ويدعم الـ RTL و LTR تلقائياً
-        PopupMenu popup = new PopupMenu(this, anchor);
-
-        // إضافة العناصر برمجياً لدعم اللغات بشكل ديناميكي كامل من ملف strings.xml
-        MenuItem titleItem = popup.getMenu().add(Menu.NONE, -1, 0, getString(R.string.sort_by));
-        titleItem.setEnabled(false); // جعل العنوان غير قابل للنقر
-
-        popup.getMenu().add(Menu.NONE, 0, 1, getString(R.string.sort_oldest));
-        popup.getMenu().add(Menu.NONE, 1, 2, getString(R.string.sort_newest));
-        popup.getMenu().add(Menu.NONE, 2, 3, getString(R.string.sort_name_az));
-        popup.getMenu().add(Menu.NONE, 3, 4, getString(R.string.sort_name_za));
-
-
-        // تحديد واختيار العنصر المفعل حالياً ووضع علامة صح بجانبه
-        int currentOrder = prefs.getInt("KEY_SORT_ORDER", 0);
-        MenuItem currentItem = popup.getMenu().findItem(currentOrder);
-        if (currentItem != null) {
-            currentItem.setCheckable(true);
-            currentItem.setChecked(true);
-        }
-
-        // معالجة حدث الضغط والاختيار من القائمة
-        popup.setOnMenuItemClickListener(item -> {
-            int selectedOrder = item.getItemId();
-            if (selectedOrder == -1) return false;
-
-            // حفظ الخيار الجديد في الـ SharedPreferences
-            prefs.edit().putInt("KEY_SORT_ORDER", selectedOrder).apply();
-
-            // تحديث الـ ViewModel لفرز البيانات فوراً في الواجهة
-            mainViewModel.setSortOrder(selectedOrder);
-            return true;
-        });
-
-        popup.show();
-    }
 
     private void setAdBannner() {
         // افترضنا وجود متغيرات الحالة: isPremium و isGuest
@@ -1331,90 +1237,6 @@ public class MainActivity extends BaseActivity implements
             startActivity(new Intent(this, WebServerActivity.class));
         });
         binding.btnReports.setOnClickListener(v -> showReportsDialogFromToolbar());
-    }
-
-    void toggleSearchMode1(boolean enable) {
-        isSearchMode = enable;
-        if (enable) {
-            binding.tvScreenTitle.setVisibility(View.GONE);
-            binding.iconsContainer.setVisibility(View.GONE);
-            binding.etSearch.setVisibility(View.VISIBLE);
-            binding.btnCloseSearch.setVisibility(View.VISIBLE);
-            binding.etSearch.requestFocus();
-
-            // إظهار الكيبورد
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT);
-
-            // 1. تهيئة الـ TextWatcher مرة واحدة فقط
-            if (searchWatcher == null) {
-                searchWatcher = new TextWatcher() {
-                    private Handler handler = new Handler(Looper.getMainLooper());
-                    private Runnable runnable;
-                    private final long DELAY = 300; // تأخير 300 مللي ثانية
-
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        if (runnable != null) {
-                            handler.removeCallbacks(runnable);
-                        }
-
-                        final String query = s.toString().trim();
-
-                        // إذا كان النص فارغاً، قم بإعادة تعيين التصفية مباشرة
-                        if (query.isEmpty()) {
-                            mainViewModel.setSearchQuery("");
-                            return;
-                        }
-
-                        runnable = () -> {
-                            mainViewModel.setSearchQuery(query);
-                            if (mainViewModel != null) {
-                                mainViewModel.refreshData();
-                            }
-                        };
-                        handler.postDelayed(runnable, DELAY);
-                    }
-
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                        // الكود هنا قد يسبب تكراراً إذا كان التحديث يحدث في onTextChanged
-                        // تم الاكتفاء بالتحديث داخل الـ Runnable بالأعلى
-                    }
-                };
-            }
-
-            // 2. إضافة المستمع بشكل صحيح
-            binding.etSearch.removeTextChangedListener(searchWatcher); // إزالة أي نسخ قديمة احتياطاً
-            binding.etSearch.addTextChangedListener(searchWatcher);
-
-        } else {
-            // العودة للوضع الطبيعي
-
-            // 3. الخطوة الأهم: إزالة المستمع أولاً قبل مسح النص
-            if (searchWatcher != null) {
-                binding.etSearch.removeTextChangedListener(searchWatcher);
-            }
-
-            // الآن يمكن مسح النص بأمان دون التسبب في Crash
-            binding.etSearch.setText("");
-
-            binding.etSearch.setVisibility(View.GONE);
-            binding.btnCloseSearch.setVisibility(View.GONE);
-            binding.tvScreenTitle.setVisibility(View.VISIBLE);
-            binding.iconsContainer.setVisibility(View.VISIBLE);
-
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(binding.etSearch.getWindowToken(), 0);
-
-            if (mainViewModel != null) {
-                mainViewModel.refreshData();
-            }
-        }
     }
 
     private void setupNavigationDrawer() {
@@ -3301,142 +3123,6 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
                 , null);
     }
 
-    void addNewAccout(final Account accountToEdit, boolean isNew) {
-        // 1. تهيئة الـ Binding وربطه بالمتغير العام
-        activeEditeAccountDialogBinding = DialogEditAccountBinding.inflate(getLayoutInflater());
-
-        // 2. ممارسة فضلى: إنشاء مرجع محلي نهائي (final) لاستخدامه داخل الـ Lambdas
-        // هذا يحميك من الـ NullPointerException تماماً حتى لو تم تصفير المتغير العام
-        final DialogEditAccountBinding dialogBinding = activeEditeAccountDialogBinding;
-
-        MyApplication.applyGlobalTextWatcher(dialogBinding.getRoot());
-
-        // إعداد أيقونة اختيار جهات الاتصال
-        dialogBinding.dialogPhoneInputLayout.setEndIconOnClickListener(v -> {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                openContactPicker();
-            } else {
-                requestContactPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
-            }
-        });
-
-        // إعداد الـ Spinner الخاص بنوع الحساب
-        AutoCompleteTextView accountTypeSpinner = dialogBinding.spinnerAccountType;
-        if (accountTypesList != null && !accountTypesList.isEmpty()) {
-            List<String> typeNames = accountTypesList.stream().map(t -> t.name).collect(Collectors.toList());
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, typeNames);
-            accountTypeSpinner.setAdapter(adapter);
-
-            int itemHeight = (int) (48 * getResources().getDisplayMetrics().density);
-            accountTypeSpinner.setDropDownHeight(itemHeight * 4);
-
-            if (!isNew && accountToEdit.getAccountType() != null) {
-                accountTypeSpinner.setText(accountToEdit.getAccountType(), false);
-            } else if (!typeNames.isEmpty()) {
-                accountTypeSpinner.setText(typeNames.get(0), false);
-            }
-        }
-
-        // إعداد البيانات في حالة التعديل
-        String originalPhone;
-        if (!isNew && accountToEdit != null) {
-            dialogBinding.editAccountName.setText(accountToEdit.getAccountName());
-            dialogBinding.editAccountPhone.setText(accountToEdit.getPhoneNumber());
-            dialogBinding.dialogTitel.setText(getString(R.string._1013));
-            dialogBinding.btnAdd.setText(getString(R.string.edit));
-            originalPhone = accountToEdit.getPhoneNumber() != null ? accountToEdit.getPhoneNumber() : "";
-        } else {
-            originalPhone = "";
-        }
-
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setView(dialogBinding.getRoot())
-                .create();
-
-        // تنظيف المرجع العام عند إغلاق الديالوج
-        dialog.setOnDismissListener(d -> activeEditeAccountDialogBinding = null);
-
-        dialog.setOnShowListener(d -> {
-            dialogBinding.btnCancel.setOnClickListener(v -> dialog.dismiss());
-
-            dialogBinding.btnAdd.setOnClickListener(v -> {
-                // استخدام dialogBinding المحلي هنا هو سر الأمان
-                String finalName = dialogBinding.editAccountName.getText().toString().trim();
-                String phone = dialogBinding.editAccountPhone.getText().toString().trim();
-                String type = accountTypeSpinner.getText().toString();
-
-                // 1. التحقق من المدخلات
-                if (TextUtils.isEmpty(finalName)) {
-                    dialogBinding.editAccountName.setError(getString(R.string.error_account_name_empty));
-                    return;
-                }
-                if (isNew && isAccountExists(finalName)) {
-                    Toast.makeText(this, R.string.error_account_exists, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (TextUtils.isEmpty(type)) {
-                    dialogBinding.accountTypeSpinnerLayout.setError(getString(R.string.required));
-                    return;
-                }
-
-                // 2. تجميد الأزرار فوراً لمنع الضغط المتكرر والانهيار
-                dialogBinding.btnAdd.setEnabled(false);
-                dialogBinding.btnCancel.setEnabled(false);
-
-                // 3. معالجة البيانات
-                String uid = isGuest ? guestUID : AppAuth.getUserID(this);//(FirebaseAuth.getInstance().getCurrentUser() != null ? FirebaseAuth.getInstance().getCurrentUser().getUid() : currentUID);
-                String typeId = findFirestoreIdByAccountTypeName(type);
-
-                // إشعار تغيير الرقم (استخدام .equals للمقارنة الصحيحة)
-                if (!originalPhone.equals(phone)) {
-                    if (!TextUtils.isEmpty(phone)) {
-                        new TransactionNotificationManager(this).sendNewAccount(phone, this);
-                    }
-                }
-
-                AccountType selectedTypeObj = findAccountTypeByFilter(type);
-                if (isNew) {
-                    Account newAccount = new Account();
-                    newAccount.setOwnerUID(uid);
-                    newAccount.setAccountName(finalName);
-                    newAccount.setPhoneNumber(phone);
-                    newAccount.setAccountType(type);
-                    if (typeId != null) newAccount.setAcTypeFirestoreId(typeId);
-                    AccountTypeIconHelper.applyTypeVisualsToAccount(this, newAccount, selectedTypeObj);
-                    mainViewModel.createAccount(newAccount);
-                } else {
-                    accountToEdit.setAccountName(finalName);
-                    accountToEdit.setPhoneNumber(phone);
-                    accountToEdit.setAccountType(type);
-                    if (typeId != null) accountToEdit.setAcTypeFirestoreId(typeId);
-                    AccountTypeIconHelper.applyTypeVisualsToAccount(this, accountToEdit, selectedTypeObj);
-                    accountToEdit.setSyncStatus("EDITED");
-                    mainViewModel.updateAccount(accountToEdit);
-                    mainViewModel.refreshData();
-                }
-
-                dialog.dismiss();
-            });
-        });
-
-        dialog.show();
-        AppFontHelper.applyFontToDialog(this, dialog);
-
-        // ضبط عرض الديالوج
-        if (dialog.getWindow() != null) {
-            android.view.WindowManager.LayoutParams lp = new android.view.WindowManager.LayoutParams();
-            lp.copyFrom(dialog.getWindow().getAttributes());
-            lp.width = android.view.WindowManager.LayoutParams.MATCH_PARENT;
-            lp.height = android.view.WindowManager.LayoutParams.WRAP_CONTENT;
-            dialog.getWindow().setAttributes(lp);
-        }
-    }
-
-    private boolean isAccountExists(String accountName) {
-        if (TextUtils.isEmpty(accountName)) return false;
-        return accountNameToIdMap.containsKey(accountName.trim());
-    }
-
 
     /**
      * تعديل دالة onBackPressed لدعم التنقل في التوجيه
@@ -3553,59 +3239,6 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
             }
         });
         sheet.show(getSupportFragmentManager(), "AccountBottomSheetOptions");
-    }
-
-    private String findFirestoreIdByAccountTypeName(String name) {
-        if (accountTypesList == null || name == null || name.isEmpty()) return null;
-        for (AccountType type : accountTypesList) {
-            if (name.equals(type.getName())) {
-                return type.getFirestoreId();
-            }
-        }
-        return null;
-    }
-
-    private void handleAccountDeletion(final Account accountToDelete) {
-        // تنفيذ الفحص في خيط خلفي
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            int transactionCount = repository.getTransactionCountForAccount(accountToDelete.getId());
-
-            // العودة للخيط الرئيسي لعرض الديالوج المناسب
-            mainHandler.post(() -> {
-                if (transactionCount > 0) {
-                    showDeleteWithTransactionsWarning(accountToDelete, transactionCount);
-                } else {
-                    showSimpleDeleteConfirmation(accountToDelete);
-                }
-            });
-        });
-    }
-
-    private void showDeleteWithTransactionsWarning(final Account account, int count) {
-        // String message = "هذا الحساب لديه (" + count + ") عمليات مرتبطة به. هل أنت متأكد من حذفه وحذف كل عملياته نهائيًا؟";
-        String message = getString(R.string.confirm_delete_message, String.valueOf(count));
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(getString(R.string.caution_titel))
-                .setMessage(message)
-                .setIcon(R.drawable.ic_alert)
-                .setNegativeButton(getString(R.string.cancel), null)
-                .setPositiveButton(getString(R.string.ok), (d, w) -> {
-                    mainViewModel.deleteAccount(account);
-//                    setupObservers();
-                })
-                .show();
-    }
-
-    private void showSimpleDeleteConfirmation(final Account account) {
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(getString(R.string.confirm_1))
-                .setMessage(getString(R.string.confirm_delete_account_message, account.getAccountName()))
-                .setNegativeButton(getString(R.string.cancel), null)
-                .setPositiveButton(getString(R.string.delete), (d, w) -> {
-                    mainViewModel.deleteAccount(account);
-//                    setupObservers();
-                })
-                .show();
     }
 
     @Override
@@ -4302,17 +3935,6 @@ private void handlePurchaseApp() {
         Intent subscribeIntent = new Intent(MainActivity.this, SubscriptionActivity.class);
         subscribeIntent.putExtra("purchase", true);
         subscribeLauncher.launch(subscribeIntent);
-    }
- 
-
-    private void handlePurchaseApp_old() {
-        if (!isUserAdded) {
-//               DialogHelper.show(this,getString(R.string.login_1), DialogHelper.FeedbackType.WARNING, null);
-            notSigned();
-            return;
-        }
-        PurchaseBottomSheet bottomSheet = new PurchaseBottomSheet();
-        bottomSheet.show(getSupportFragmentManager(), "PurchaseBottomSheet");
     }
 
     private void watchAd() {

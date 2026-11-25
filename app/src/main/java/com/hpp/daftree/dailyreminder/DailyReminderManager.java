@@ -112,20 +112,6 @@ public class DailyReminderManager {
     /**
      * تفعيل أو إيقاف الإشعارات اليومية
      */
-    public void setEnabled1(boolean enabled) {
-        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        prefs.edit().putBoolean(PREF_ENABLED, enabled).apply();
-
-        if (enabled) {
-            // تفعيل الإشعارات - جدولة جديدة
-            scheduleReminder();
-            Log.d(TAG, "تم تفعيل الإشعارات اليومية");
-        } else {
-            // إلغاء الإشعارات
-            cancelReminder();
-            Log.d(TAG, "تم إلغاء الإشعارات اليومية");
-        }
-    }
 
     /**
      * التحقق من تفعيل الإشعارات اليومية
@@ -237,24 +223,6 @@ public class DailyReminderManager {
     /**
      * الحصول على وصف حالة الإشعار
      */
-    public String getStatusDescription1() {
-        if (!isEnabled()) {
-            return "الإشعارات اليومية مُلغاة";
-        }
-
-        long minutesUntilNext = getMinutesUntilNextNotification();
-
-        if (minutesUntilNext < 0) {
-            return "الإشعارات اليومية مُفعلة";
-        } else if (minutesUntilNext == 0) {
-            return "الإشعار اليومي متاح الآن";
-        } else if (minutesUntilNext < 60) {
-            return "الإشعار التالي خلال " + minutesUntilNext + " دقيقة";
-        } else {
-            long hours = minutesUntilNext / 60;
-            return "الإشعار التالي خلال " + hours + " ساعة";
-        }
-    }
 
     /**
      * إعادة تهيئة الإشعارات عند بدء تشغيل التطبيق

@@ -122,23 +122,4 @@ public class AppErrorHandler {
 
         mFirebaseAnalytics.logEvent("app_logic_error", bundle);
     }
-    private static void logErrorToAnalytics1(Context context, String className, String methodName) {
-        FirebaseAnalytics mFirebaseAnalytics = FirebaseAnalytics.getInstance(context);
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-
-        // جلب معرف المستخدم أو تسجيله كمجهول إذا كان مسجل خروج
-        String uid = (auth.getCurrentUser() != null) ? auth.getCurrentUser().getUid() : "Unlogged_User";
-
-        // تجهيز بيانات الخطأ كـ Bundle
-        Bundle bundle = new Bundle();
-        bundle.putString("error_type", "Permission_Denied");
-        bundle.putString("class_name", className);
-        bundle.putString("method_name", methodName);
-        bundle.putString("user_uid", uid);
-
-        // السطر السحري: إرسال الحدث إلى تحليلات فايربيز (بدون استهلاك أي كتابة في فايرستور)
-        mFirebaseAnalytics.logEvent("app_logic_error", bundle);
-
-        Log.d("AppErrorHandler", "تم إرسال الخطأ للإحصائيات: " + className);
-    }
 }

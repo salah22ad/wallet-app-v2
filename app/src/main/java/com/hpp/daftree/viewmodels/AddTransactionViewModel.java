@@ -121,56 +121,6 @@ public class AddTransactionViewModel extends AndroidViewModel {
         transactionItems.addSource(currentTransactionSource,
                 items -> transactionItems.setValue(items));
     }
-    public void updateTransactionSource1() {
-        //Log.d("TransactionDebug", "updateTransactionSource called");
-
-        if (currentTransactionSource != null) {
-            transactionItems.removeSource(currentTransactionSource);
-        }
-
-        Integer accountId = selectedAccountId.getValue();
-        String currencyName = selectedCurrency.getValue();
-
-        //Log.d("TransactionDebug", "AccountID: " + accountId + ", CurrencyName: " + currencyName);
-
-        if (currencyName == null) {
-            transactionItems.setValue(new ArrayList<>());
-            return;
-        }
-
-        Integer currencyId = currencyNameToIdMap.get(currencyName);
-
-        //Log.d("TransactionDebug", "CurrencyID: " + currencyId);
-
-        if (currencyId == null) {
-            //Log.e("TransactionDebug", "Currency ID not found for: " + currencyName);
-            transactionItems.setValue(new ArrayList<>());
-            return;
-        }
-
-        if (accountId == null || accountId == -1) {
-            transactionItems.setValue(new ArrayList<>());
-            return;
-        }
-
-        currentTransactionSource = Transformations.map(
-                mRepository.getLiveTransactionsForAccount(accountId, currencyId),
-                transactions -> {
-                    //Log.d("TransactionDebug", "Transformations.map: transactions size=" + transactions.size());
-                    List<TransactionItem> itemsWithBalance = new ArrayList<>();
-                    double runningBalance = 0.0;
-                    for (Transaction tx : transactions) {
-                        runningBalance += (tx.getAmount() * tx.getType());
-                        itemsWithBalance.add(new TransactionItem(tx, runningBalance));
-                        Log.d("AddTrans_ORDER", tx.getTimestamp() + " - " + tx.getId());
-                    }
-                    Collections.reverse(itemsWithBalance);
-                    return itemsWithBalance;
-                });
-
-        transactionItems.addSource(currentTransactionSource,
-                items -> transactionItems.setValue(items));
-    }
 
     private void updateDetailSuggestionsSource() {
         if (currentSuggestionSource != null) {

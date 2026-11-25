@@ -116,36 +116,6 @@ public class AccountDetailsViewModel extends AndroidViewModel {
         });
         transactionItems.addSource(currentTransactionSource, items -> transactionItems.setValue(items));
     }
-    private void updateTransactionListSource1() {
-        if (currentTransactionSource != null) {
-            transactionItems.removeSource(currentTransactionSource);
-        }
-
-        String currencyName = currentCurrencyName.getValue();
-        String query = transactionSearchQuery.getValue();
-
-        // -- بداية التغيير: البحث عن الرقم المقابل للاسم --
-        Integer currencyId = currencyNameToIdMap.get(currencyName);
-        if (currencyId == null) {
-            return; // انتظر حتى يتم تحميل خريطة العملات
-        }
-        // -- نهاية التغيير --
-
-        LiveData<List<Transaction>> rawTransactions = mRepository.getTransactionsForAccount(accountId, currencyId, query != null ? query : "");
-        currentTransactionSource = Transformations.map(rawTransactions, transactions -> {
-            List<TransactionItem> itemsWithBalance = new ArrayList<>();
-            double runningBalance = 0.0;
-
-            for (Transaction tx : transactions) {
-                runningBalance += (tx.getAmount() * tx.getType());
-                itemsWithBalance.add(new TransactionItem(tx, runningBalance));
-                Log.d("ORDER", tx.getTimestamp() + " - " + tx.getId());
-            }
-            Collections.reverse(itemsWithBalance);
-            return itemsWithBalance;
-        });
-        transactionItems.addSource(currentTransactionSource, items -> transactionItems.setValue(items));
-    }
 
     public LiveData<Account> getAccountDetails() { return accountDetails; }
     public LiveData<List<TransactionItem>> getTransactionItems() { return transactionItems; }

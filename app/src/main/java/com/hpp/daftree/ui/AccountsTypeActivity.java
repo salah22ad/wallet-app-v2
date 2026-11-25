@@ -314,30 +314,6 @@ public class AccountsTypeActivity extends BaseActivity implements AccountsTypeAd
             });
         });
     }
-    private void saveAccountType11(String name) {
-        String uid;
-        if (isGuest) {
-            uid = SecureLicenseManager.getInstance(this).guestUID();
-        } else {
-            uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        }
-        if (uid == null) {
-            Toast.makeText(this, getString(R.string._320), Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!validateAccountType(name)){
-            return;
-        }
-        AccountType newAccountType = new AccountType();
-        newAccountType.name = name;
-        newAccountType.setOwnerUID(uid);
-        newAccountType.setFirestoreId(UUIDGenerator.generateSequentialUUID());
-        newAccountType.setSyncStatus("NEW");
-        newAccountType.setLastModified(System.currentTimeMillis());
-        newAccountType.setDefault(false);
-        accountTypeViewModel.insert(newAccountType);
-        Toast.makeText(this, getString(R.string._334), Toast.LENGTH_SHORT).show();
-    }
     @Override
     public void onDeleteAccountType(AccountType accountType) {
         if (accountType.isDefault()) {

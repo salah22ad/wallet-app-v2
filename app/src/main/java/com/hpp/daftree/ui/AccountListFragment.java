@@ -191,30 +191,6 @@ public class AccountListFragment extends Fragment {
             getActivity().runOnUiThread(this::recreateLayoutManager);
         }
     }
-    private void setupRecyclerView1() {
-        // تمرير الـ Activity كـ Listener
-        accountsAdapter = new AccountsAdapter((AccountsAdapter.OnAccountInteractionListener) requireActivity());
-        binding.accountsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.accountsRecyclerView.setAdapter(accountsAdapter);
-
-        // إضافة مستمع لمعرفة متى يبدأ وينتهي التمرير في RecyclerView
-        binding.accountsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-
-                // إعلام MainActivity بحالة التمرير
-                if (getActivity() instanceof MainActivity) {
-                    MainActivity mainActivity = (MainActivity) getActivity();
-                    if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                        mainActivity.setRecyclerViewScrolling(true);
-                    } else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                        mainActivity.setRecyclerViewScrolling(false);
-                    }
-                }
-            }
-        });
-    }
 
     /**
      * 🔥 تحديث عرض الحالة الفارغة بناءً على الحسابات والعمليات

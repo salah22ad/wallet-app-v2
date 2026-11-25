@@ -1584,25 +1584,6 @@ public class LoginActivity extends BaseActivity {
         });
     }
 // داخل LoginActivity.java
-
-    private void checkDebtFeatureActivation1(FirebaseUser user) {
-        FirebaseFirestore.getInstance().collection("users").document(user.getUid())
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        Boolean isEnabled = documentSnapshot.getBoolean("isDebtFeatureEnabled");
-                        if (isEnabled != null && isEnabled) {
-                            // الميزة مفعلة: حفظ الحالة محلياً لتجنب الفحص كل مرة
-                            prefs.edit().putBoolean("isDebtFeatureEnabled", true).apply();
-                            // تخزين الرقم المسجل للاستخدام لاحقاً
-                            String savedPhone = documentSnapshot.getString("phoneNumber");
-                            prefs.edit().putString("savedPhoneNumber", savedPhone).apply();
-                        } else {
-                            prefs.edit().putBoolean("isDebtFeatureEnabled", false).apply();
-                        }
-                    }
-                });
-    }
     private void checkDebtFeatureActivation(FirebaseUser user) {
         FirebaseFirestore.getInstance().collection("users").document(user.getUid())
                 .get()
@@ -1629,59 +1610,6 @@ public class LoginActivity extends BaseActivity {
                     }
                 })
                 .addOnFailureListener(e -> Log.e(TAG, "Failed to check debt feature activation", e));
-    }
-    private void deleteDatabaseCompletely1() {
-        try {
-            AppDatabase.databaseWriteExecutor.execute(() -> {
-                AppDatabase db = AppDatabase.getDatabase(this);
-//                db.currencyDao().deleteGuestData();
-//                db.accountTypeDao().deleteGuestData();
-                db.close();
-
-                File databaseFile = getDatabasePath("daftree_database");
-                if (databaseFile.exists()) databaseFile.delete();
-
-                File databaseWal = getDatabasePath("daftree_database-wal");
-                if (databaseWal.exists()) databaseWal.delete();
-
-                File databaseShm = getDatabasePath("daftree_database-shm");
-                if (databaseShm.exists()) databaseShm.delete();
-            });
-            String[] databaseNames = {
-                    "daftree_database",
-                    "daftree_database-wal",
-                    "daftree_database-shm",
-                    "daftree_database-journal"
-            };
-
-            for (String dbName : databaseNames) {
-                File dbFile = getDatabasePath(dbName);
-                if (dbFile.exists()) {
-                    boolean deleted = dbFile.delete();
-                    Log.d(TAG, "حذف ملف " + dbName + ": " + (deleted ? "نجح" : "فشل"));
-                }
-            }
-
-            // أيضاً حذف من مجلد databases
-            File databasesDir = new File(getApplicationInfo().dataDir + "/databases");
-            if (databasesDir.exists() && databasesDir.isDirectory()) {
-                File[] files = databasesDir.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        if (file.getName().contains("daftree_database")) {
-                            boolean deleted = file.delete();
-                            Log.d(TAG, "حذف " + file.getName() + ": " + (deleted ? "نجح" : "فشل"));
-                        }
-                    }
-                }
-            }
-
-            Log.d(TAG, "تم حذف قاعدة البيانات بالكامل بنجاح");
-
-        } catch (Exception e) {
-            Log.e(TAG, "خطأ في حذف قاعدة البيانات: " + e.getMessage());
-            throw new RuntimeException("فشل في حذف قاعدة البيانات", e);
-        }
     }
 
     private CompletableFuture<Boolean> deleteDatabaseCompletely() {

@@ -63,9 +63,6 @@ import com.hpp.daftree.database.RecurringOperation;
 import com.hpp.daftree.database.Transaction;
 import com.hpp.daftree.database.User;
 import com.hpp.daftree.databinding.ActivityAddTransactionBinding;
-import com.hpp.daftree.databinding.DialogAddAccountBinding;
-import com.hpp.daftree.databinding.DialogEditAccountBinding;
-import com.hpp.daftree.databinding.DialogShareOptionsBinding;
 import com.hpp.daftree.dialogs.AccountBottomSheet;
 import com.hpp.daftree.dialogs.CalculatorDialog;
 import com.hpp.daftree.helpers.ShareNotificationHelper;
@@ -143,71 +140,16 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
     private ArrayAdapter<String> accountSuggestionsAdapter;
     private ArrayAdapter<String> detailSuggestionsAdapter;
     private boolean isSelectionFromList = false;
-    private DialogAddAccountBinding activeAddAccountDialogBinding;
     private String encodedImage = null; // لتخزين الصورة مؤقتاً
     private ActivityResultLauncher<String> galleryLauncher;
     private ActivityResultLauncher<PickVisualMediaRequest> photoPickerLauncher;
     // 1. Launcher لطلب إذن جهات الاتصال
-    private final ActivityResultLauncher<String> requestContactPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    openContactPicker();
-                } else {
-                    Toast.makeText(this, getString(R.string.error_contact_permission), Toast.LENGTH_SHORT).show();
-                }
-            });
 
     // 2. Launcher لفتح جهات الاتصال واستلام النتيجة
-    private final ActivityResultLauncher<Intent> pickContactLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    Uri contactUri = result.getData().getData();
-                    processSelectedContact(contactUri);
-                }
-            });
 
     // دالة مساعدة لفتح جهات الاتصال
-    private void openContactPicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-        pickContactLauncher.launch(intent);
-    }
 
     // دالة لمعالجة البيانات القادمة من جهات الاتصال
-    private void processSelectedContact(Uri dataUri) {
-        if (activeAddAccountDialogBinding == null) return;
-
-        // الأعمدة التي نريد قراءتها مباشرة (الاسم والرقم)
-        String[] projection = new String[]{
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
-                ContactsContract.CommonDataKinds.Phone.NUMBER
-        };
-
-        try (Cursor cursor = getContentResolver().query(dataUri, projection, null, null, null)) {
-            if (cursor != null && cursor.moveToFirst()) {
-                // 1. استخراج الرقم المختار مباشرة
-                int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                String number = cursor.getString(numberIndex);
-
-                // 2. استخراج الاسم
-                int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-                String name = cursor.getString(nameIndex);
-
-                // تعيين القيم في الحقول
-                if (name != null) {
-                    activeAddAccountDialogBinding.editAccountName.setText(name);
-                }
-
-                if (number != null) {
-                    // تنظيف الرقم (حذف المسافات، الشرطات، والأقواس)
-                    String cleanNumber = number.replaceAll("[\\s\\-()]", "");
-                    activeAddAccountDialogBinding.editAccountPhone.setText(cleanNumber);
-                }
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "Error picking contact phone", e);
-            Toast.makeText(this, "حدث خطأ أثناء جلب الرقم", Toast.LENGTH_SHORT).show();
-        }
-    }
     private final ActivityResultLauncher<Intent> loginLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -922,55 +864,6 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
             binding.detailsEditText.requestFocus();
         }
     }
-
-    private String findFirestoreIdByAccountTypeName(String name) {
-        if (availableAccountTypes == null || name == null || name.isEmpty()) return null;
-        for (AccountType type : availableAccountTypes) {
-            if (name.equals(type.getName())) {
-                return type.getFirestoreId();
-            }
-        }
-        return null;
-    }
-    private void onTransactionSaved(double finalAmount) {
-        viewModel.getSelectedTransactionItems().observe(this, new Observer<List<TransactionItem>>() {
-            @Override
-            public void onChanged(List<TransactionItem> transactionItems) {
-                if (transactionItems != null && !transactionItems.isEmpty()) {
-
-                    // 1. الحصول على أول عملية في القائمة الحالية ورصيدها
-                    TransactionItem topItem = transactionItems.get(0);
-                    double balanceFromList = topItem.getBalanceAfter();
-                    double actualFinalBalance = getActualFinalBalance(topItem, balanceFromList);
-
-                    // 3. إظهار البانر بالرصيد الصحيح نهائياً
-                    showSaveConfirmationBanner(lastSavedTransaction, actualFinalBalance);
-
-                    // 4. فك الارتباط فوراً لمنع التكرار
-                    viewModel.getSelectedTransactionItems().removeObserver(this);
-                }
-            }
-
-            private double getActualFinalBalance(TransactionItem topItem, double balanceFromList) {
-                Transaction topTransaction = topItem.getTransaction();
-
-                double actualFinalBalance;
-
-                // 2. التحقق: هل هذه العملية هي التي قمنا بحفظها الآن؟
-                // نقارن الوقت والتفاصيل والمبلغ للتأكد (لأن الـ ID قد لا يكون وصل بعد)
-                if (topTransaction.getAmount() == lastSavedTransaction.getAmount() &&
-                        topTransaction.getTimestamp().getTime() == lastSavedTransaction.getTimestamp().getTime()) {
-
-                    // إذا كانت هي نفسها، فالرصيد balanceFromList يحتوي بالفعل على المبلغ
-                    actualFinalBalance = balanceFromList;
-                } else {
-                    // إذا كانت عملية قديمة (لم يتم تحديث القائمة بعد)، نجمع المبلغ يدوياً
-                    actualFinalBalance = balanceFromList + finalAmount;
-                }
-                return actualFinalBalance;
-            }
-        });
-    }
     private void showIfAccountNull(Runnable onConfirm) {
         String accountNames = binding.accountNameAutoComplete.getText().toString().trim();
         new MaterialAlertDialogBuilder(this)
@@ -1003,159 +896,6 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar.getTime();
-    }
-    private void showSaveConfirmationBanner(Transaction transaction, double finalBalance) {
-        View bannerView = binding.saveConfirmationBanner.getRoot();
-        Button shareButton = bannerView.findViewById(R.id.button_share);
-
-        shareButton.setOnClickListener(v -> shareTransaction(transaction, finalBalance));
-
-        bannerView.setVisibility(View.VISIBLE);
-        bannerView.setAlpha(0f);
-        bannerView.setTranslationY(200f);
-
-        bannerView.animate()
-                .translationY(0f)
-                .alpha(1f)
-                .setDuration(600)
-                .start();
-
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            bannerView.animate()
-                    .alpha(0f)
-                    .setDuration(500)
-                    .withEndAction(() -> bannerView.setVisibility(View.GONE))
-                    .start();
-        }, 5000); // إخفاء البانر بعد 5 ثواني
-      checkFirstRunAndShowReminderDialog();
-    }
-    private void shareTransaction(Transaction transaction, double finalBalance) {
-        viewModel.getSelectedAccountDetails().observe(this, new Observer<Account>() {
-            @Override
-            public void onChanged(Account account) {
-                if (account == null) return;
-                viewModel.getSelectedAccountDetails().removeObserver(this);
-
-                String phoneNumber = account.getPhoneNumber();
-                if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-                    showEditAccountDialogForSharing(account, transaction, finalBalance);
-                } else {
-                    String message = generateShareMessage(transaction, finalBalance);
-                    showShareOptionsDialog(phoneNumber, message);
-                }
-            }
-        });
-    }
-    private void showEditAccountDialogForSharing(Account accountToEdit, Transaction transaction, double finalBalance) {
-        DialogEditAccountBinding dialogBinding = DialogEditAccountBinding.inflate(getLayoutInflater());
-        dialogBinding.editAccountName.setText(accountToEdit.getAccountName());
-        dialogBinding.editAccountPhone.setText(accountToEdit.getPhoneNumber());
-        dialogBinding.editAccountName.setVisibility(View.GONE); // إخفاء نوع الحساب
-        new MaterialAlertDialogBuilder(this)
-                .setTitle(getString(R.string.edit_1))
-                .setView(dialogBinding.getRoot())
-                .setNegativeButton(R.string.cancel, null)
-                .setPositiveButton(R.string.ok, (d, which) -> {
-                    String newName = dialogBinding.editAccountName.getText().toString().trim();
-                    String newPhone = dialogBinding.editAccountPhone.getText().toString().trim();
-                    if (!newPhone.isEmpty()) {
-                        accountToEdit.setAccountName(newName);
-                        accountToEdit.setPhoneNumber(newPhone);
-                        viewModel.updateAccount(accountToEdit); // تحديث الحساب
-                        String message = generateShareMessage(transaction, finalBalance);
-                        openSmsIntent(newPhone, message);
-                    }
-                })
-                .show();
-
-    }
-    private String generateShareMessage(Transaction transaction, double finalBalance) {
-        String genMessage = "";
-        String transactionType = transaction.getType() == 1 ? getString(R.string.on_you) : getString(R.string.for_you);
-        String balanceType;//= finalBalance < 0 ? " لكم " : " عليكم ";
-        if (finalBalance < 0) {
-            balanceType = getString(R.string.report_balance_type_credit);
-        } else if (finalBalance > 0) {
-            balanceType = getString(R.string.report_balance_type_debit);
-        } else {
-            return getString(R.string.zero_balance, binding.accountNameAutoComplete.getText().toString(), binding.currencySpinnerAutocomplete.getText().toString());
-//            return "مرحباً " + currentAccount.getAccountName() + "، ليس هناك رصيد حالي بعملة (" + currency + ").";
-        }
-        // الرصيد المتبقي
-        String formattedAmount = NumberFormat.getInstance(Locale.US).format(transaction.getAmount());
-        AtomicReference<String> formattedBalance = new AtomicReference<>(NumberFormat.getInstance(Locale.US).format(Math.abs(finalBalance)));
-        String details = " " + transaction.getDetails() + " ";
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            try {
-                Integer accountId = accountNameToIdMap.get(binding.accountNameAutoComplete.getText().toString().trim());
-                int transCount = repository.getTransactionsDao().getAccountTransactionsCount(accountId);
-            if(transCount==1) {
-                formattedBalance.set(formattedAmount);
-                }
-            } catch (RuntimeException e) {
-//                throw new RuntimeException(e);
-            }
-        });
-
-        genMessage = transactionType + getString(R.string.amonts) + " " + formattedAmount + " " + details + "\n" +
-                getString(R.string.fianal_remain) + " " + balanceType + " " + formattedBalance + " " + binding.currencySpinnerAutocomplete.getText().toString();
-
-        return genMessage;
-    }
-
-    private void showShareOptionsDialog(String phoneNumber, String message) {
-        DialogShareOptionsBinding dialogBinding = DialogShareOptionsBinding.inflate(getLayoutInflater());
-
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
-                .setView(dialogBinding.getRoot())
-                .create();
-
-        // الضغط على خيار الواتساب
-        dialogBinding.optionWhatsapp.setOnClickListener(v -> {
-            openWhatsApp(phoneNumber, message);
-            dialog.dismiss();
-        });
-
-        // الضغط على خيار الرسائل
-        dialogBinding.optionSms.setOnClickListener(v -> {
-            openSmsIntent(phoneNumber, message);
-            dialog.dismiss();
-        });
-
-        dialog.show();
-    }
-
-    private void openSmsIntent(String phoneNumber, String message) {
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("smsto:" + phoneNumber));
-        intent.putExtra("sms_body", message);
-        try {
-            startActivity(intent);
-        } catch (Exception e) {
-            Toast.makeText(this, getString(R.string.cant_open_app), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void openWhatsApp(String phoneNumber, String message) {
-        try {
-            String formattedNumber = phoneNumber.replaceAll("[\\s\\-()]", "");
-            // يمكنك تعديل هذا الشرط ليتناسب مع رمز بلدك الدولي
-            // if (!formattedNumber.startsWith("+")) {
-            //     formattedNumber = "+967" + formattedNumber;
-            // }
-
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse("https://api.whatsapp.com/send?phone=" + formattedNumber + "&text=" + Uri.encode(message )));
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
-              Toast.makeText(this, getString(R.string._1086), Toast.LENGTH_SHORT).show();
-
-            try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.whatsapp")));
-            } catch (ActivityNotFoundException playStoreException) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.whatsapp" )));
-            }
-        }
     }
 
     private void showNoOperationsDialog(String titel, String textInfo) {

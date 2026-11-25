@@ -208,29 +208,6 @@ public String getCurrentLanguage() {
         }
         return false;
     }
-    public  List<LanguageItem> getSupportedLanguageItems1() {
-        List<LanguageItem> list = new ArrayList<>();
-
-            String currentAppLang = prefs.getString(KEY_LANGUAGE, "en");
-            for (String languageCode : SUPPORTED_LANGUAGES) {
-                Locale locale = Locale.forLanguageTag(languageCode);
-                // الاسم بلغة التطبيق الحالية
-                String nameByAppLang = locale.getDisplayName(Locale.forLanguageTag(currentAppLang));
-
-                // الاسم الأصلي
-                String nativeName = locale.getDisplayName(locale);
-                if (!nativeName.isEmpty()) {
-                    nativeName = nativeName.substring(0, 1).toUpperCase(locale) + nativeName.substring(1);
-                }
-
-                // العلم والاتجاه
-                String flag = getFlagForLanguage(languageCode);
-                boolean isRtl = isCodeRTL(languageCode);
-                list.add(new LanguageItem(languageCode, nameByAppLang, nativeName, flag, isRtl));
-            }
-
-        return list;
-    }
     public List<LanguageItem> getSupportedLanguageItems() {
         List<LanguageItem> list = new ArrayList<>();
 

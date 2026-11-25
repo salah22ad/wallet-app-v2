@@ -275,37 +275,4 @@ public class MainViewModel extends AndroidViewModel {
         return sortedList;
     }
     // دالة الفرز البرمجية الاحترافية بناءً على خيار المستخدم وحقل lastModified
-    public List<AccountWithBalance> applySorting1(List<AccountWithBalance> originalList) {
-        if (originalList == null || originalList.isEmpty()) {
-            return originalList;
-        }
-
-        List<AccountWithBalance> sortedList = new java.util.ArrayList<>(originalList);
-        int order = sortOrder.getValue() != null ? sortOrder.getValue() : 0;
-
-        switch (order) {
-            case 2: // الاسم أ ~ ي
-                sortedList.sort((a, b) -> {
-                    String nameA = a.account.getAccountName() != null ? a.account.getAccountName() : "";
-                    String nameB = b.account.getAccountName() != null ? b.account.getAccountName() : "";
-                    return nameA.compareToIgnoreCase(nameB);
-                });
-                break;
-            case 3: // الاسم ي ~ أ
-                sortedList.sort((a, b) -> {
-                    String nameA = a.account.getAccountName() != null ? a.account.getAccountName() : "";
-                    String nameB = b.account.getAccountName() != null ? b.account.getAccountName() : "";
-                    return nameB.compareToIgnoreCase(nameA);
-                });
-                break;
-            case 1: // التاريخ الأحدث أولاً (تنازلي بناءً على lastModified)
-                sortedList.sort((a, b) -> Long.compare(b.account.getLastModified(), a.account.getLastModified()));
-                break;
-            case 0: // التاريخ الأقدم أولاً (تصاعدي بناءً على lastModified)
-                sortedList.sort((a, b) -> Long.compare(a.account.getLastModified(), b.account.getLastModified()));
-                break;
-        }
-
-        return sortedList;
-    }
 }

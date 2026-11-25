@@ -486,67 +486,6 @@ public class NotificationHelper {
     /**
      * الدالة الجديدة: الإشعارات الترويجية الاحترافية (Custom RemoteViews)
      */
-    @SuppressLint("MissingPermission")
-    public void showPromoNotification1(String title, String body, String imageUrl, String webUrl, String type, String btnText, int modelType) {
-        NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        int notificationId = (int) System.currentTimeMillis();
-
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(() -> {
-            Bitmap bitmap = null;
-            if (imageUrl != null && !imageUrl.isEmpty()) {
-                bitmap = getBitmapFromUrl(imageUrl);
-            }
-
-            int layoutResId = (modelType == 2) ? R.layout.layout_notif_model2 : R.layout.layout_notif_model1;
-            RemoteViews expandedView = new RemoteViews(context.getPackageName(), layoutResId);
-
-            expandedView.setTextViewText(R.id.tvNotifTitle, title);
-            expandedView.setTextViewText(R.id.tvNotifBody, body);
-            expandedView.setTextViewText(R.id.btnMainAction, btnText);
-
-            if (bitmap != null) {
-                expandedView.setImageViewBitmap(R.id.ivNotifImage, bitmap);
-                expandedView.setViewVisibility(R.id.ivNotifImage, View.VISIBLE);
-                if (modelType == 1) expandedView.setInt(R.id.tvNotifBody, "setMaxLines", 5);
-            } else {
-                expandedView.setViewVisibility(R.id.ivNotifImage, View.GONE);
-                expandedView.setInt(R.id.tvNotifBody, "setMaxLines", 10);
-            }
-
-            // إعداد التوجيه الذكي للزر الرئيسي وللإشعار نفسه
-            PendingIntent mainPendingIntent = createSmartPendingIntent(type, webUrl);
-            expandedView.setOnClickPendingIntent(R.id.btnMainAction, mainPendingIntent);
-
-            // زر التذكير لاحقاً
-            Intent remindIntent = new Intent(context, NotificationReceiver.class);
-            remindIntent.setAction(ACTION_REMIND_LATER);
-            remindIntent.putExtra("title", title);
-            remindIntent.putExtra("body", body);
-            remindIntent.putExtra("imageUrl", imageUrl);
-            remindIntent.putExtra("webUrl", webUrl);
-            remindIntent.putExtra("type", type);
-            remindIntent.putExtra("btnText", btnText);
-            remindIntent.putExtra("modelType", modelType);
-            remindIntent.putExtra("notifId", notificationId);
-
-            PendingIntent remindPendingIntent = PendingIntent.getBroadcast(context, notificationId, remindIntent, getSafePendingIntentFlags());
-            expandedView.setOnClickPendingIntent(R.id.btnRemindLater, remindPendingIntent);
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_MAIN)
-                    .setSmallIcon(R.drawable.ic_stat_name) // تأكد من اسم الأيقونة لديك
-                    .setCustomBigContentView(expandedView)
-                    .setCustomContentView(expandedView)
-                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-                    .setPriority(NotificationCompat.PRIORITY_MAX)
-                    .setAutoCancel(true)
-                    .setGroup(GROUP_DAFTREE) // إضافته للمجموعة
-                    .setContentIntent(mainPendingIntent);
-
-            manager.notify(notificationId, builder.build());
-//            showSummaryNotification(manager); // استدعاء الحاوية
-        });
-    }
 
     /**
      * الدالة القديمة (تم المحافظة عليها لإشعارات النظام والعمليات المالية)
@@ -611,41 +550,7 @@ public class NotificationHelper {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.notify(SUMMARY_ID, summaryBuilder.build());
     }
-    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private void showSummaryNotification1(NotificationManager manager) {
-        NotificationCompat.Builder summaryBuilder = new NotificationCompat.Builder(context, CHANNEL_MAIN)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setSmallIcon(R.drawable.ic_stat_name) // تأكد من اسم الأيقونة لديك
-                .setStyle(new NotificationCompat.InboxStyle()
-                        .setSummaryText(context.getString(R.string.new_notifications)))
-                .setGroup(GROUP_DAFTREE)
-                .setGroupSummary(true)
-                .setAutoCancel(true);
-
-//        manager.notify(SUMMARY_ID, summaryBuilder.build());
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(SUMMARY_ID, summaryBuilder.build());
-    }
     // الدالة المحدثة لتحميل الصور
-    private static Bitmap getBitmapFromUrl1(String imageUrl, boolean besaidPic) {
-        try {
-            URL url = new URL(imageUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap originalBitmap = BitmapFactory.decodeStream(input);
-
-            if (originalBitmap != null) {
-                // السر هنا: تقليص حجم الصورة فوراً لتفادي انهيار الإشعار
-                return scaleBitmapForRemoteViews(originalBitmap,besaidPic);
-            }
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     // دالة جديدة لتقليص الأبعاد بما يتناسب مع RemoteViews بأمان تام
     private static Bitmap scaleBitmapForRemoteViews(Bitmap bitmap, boolean besaidPic) {

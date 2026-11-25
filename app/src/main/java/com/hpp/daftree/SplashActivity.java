@@ -272,11 +272,6 @@ public class SplashActivity extends BaseActivity
             new Handler(Looper.getMainLooper()).postDelayed(this::handleAppOpen, 100);
         });
     }
-    private void checkUserAndNavigateToMain1() {
-        verifyDatabaseData(() -> {
-            new Handler(Looper.getMainLooper()).postDelayed(this::handleAppOpen, 100);
-        });
-    }
     private void verifyDatabaseData(Runnable onComplete) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             try {
@@ -904,26 +899,6 @@ if(!isNetworkAvailable()){
             finish();
         }, 100);
     }
-
-    private void showProgressDialog1(String message) {
-        runOnUiThread(() -> {
-            try {
-                if (progressDialog == null) {
-                    progressDialog = new MaterialAlertDialogBuilder(this)
-                            .setView(new ProgressBar(this))
-                            .setMessage(message)
-                            .setCancelable(false)
-                            .create();
-                }
-                progressDialog.setMessage(message);
-                if (!progressDialog.isShowing()) {
-                    progressDialog.show();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error showing progress dialog", e);
-            }
-        });
-    }
     private void showProgressDialog(String message) {
         if (progressDialog != null && progressDialog.isShowing()) {
             TextView tv = progressDialog.findViewById(R.id.tv_message);
@@ -1094,17 +1069,6 @@ if(!isNetworkAvailable()){
         NetworkCapabilities capabilities = cm.getNetworkCapabilities(network);
         return capabilities != null && (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
                 || capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR));
-    }
-
-    private void saveGuestUserLocally1(User guestUser) {
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            try {
-                db.userDao().upsert(guestUser);
-                Log.d(TAG, "تم حفظ المستخدم الضيف محلياً في SQLite: " + guestUser.getOwnerUID());
-            } catch (Exception e) {
-                Log.e(TAG, "خطأ في حفظ الضيف محلياً: " + e.getMessage());
-            }
-        });
     }
 
     private void saveGuestUserLocally(User guestUser, Runnable onComplete) {

@@ -32,21 +32,6 @@ public class UUIDGenerator {
     /**
      * يحصل على معرف فريد مرتب تسلسلياً
      */
-    public static String generateSequentialUUID1() {
-        long currentTime = System.currentTimeMillis();
-        long lastTime = lastTimestamp.get();
-
-        // إذا كان الوقت الحالي أقل أو يساوي الأخير، نزيد بمقدار 1 مللي ثانية
-        if (currentTime <= lastTime) {
-            currentTime = lastTime + 1;
-        }
-
-        // تحديث آخر وقت
-        lastTimestamp.set(currentTime);
-Log.e("generateSequentialUUID ", "UUID: " + timeBasedUUID(currentTime) + " Time: " + currentTime);
-        // إنشاء UUID بناءً على الوقت مع جزء عشوائي
-        return timeBasedUUID(currentTime);
-    }
     public static void initialize(long timestamp) {
         lastTimestamp.set(timestamp);
     }

@@ -278,27 +278,4 @@ public class ExternalDebtSyncManager {
             return null;
         }
     }
-
-    private ExternalTransactionEntity mapDocumentToTransaction1(DocumentSnapshot doc) {
-        ExternalTransactionEntity tx = new ExternalTransactionEntity();
-        tx.firestoreId = doc.getId();
-        tx.accountFirestoreId = doc.getString("accountFirestoreId");
-        tx.currencyFirestoreId = doc.getString("currencyFirestoreId");
-        tx.details = doc.getString("details");
-        tx.ownerUID = doc.getString("ownerUID");
-        tx.amount = doc.getDouble("amount") != null ? doc.getDouble("amount") : 0.0;
-        tx.type = doc.getLong("type") != null ? doc.getLong("type").intValue() : 0;
-
-        Object ts = doc.get("timestamp");
-        if (ts instanceof Timestamp) tx.timestamp = ((Timestamp) ts).toDate().getTime();
-        else if (ts instanceof Long) tx.timestamp = (Long) ts;
-        else tx.timestamp = System.currentTimeMillis();
-
-        Long lm = doc.getLong("lastModified");
-        tx.lastModified = lm != null ? lm : System.currentTimeMillis();
-
-        Boolean del = doc.getBoolean("isDeleted");
-        tx.isDeleted = del != null ? del : false;
-        return tx;
-    }
 }

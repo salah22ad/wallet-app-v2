@@ -233,38 +233,6 @@ public class DebtActivationViewModel extends AndroidViewModel {
         }
     }
     // تم إزالة الـ Context من الدالة لتعمل كما هي مستدعاة في الأكتيفتي
-    public void saveActivationDataToFirestore1() {
-        isLoading.setValue(true);
-        String phoneNumberWithoutSpaces = pendingPhoneNumber.replaceAll("\\s+", "");
-
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("isDebtFeatureEnabled", true);
-        updates.put("isLinked", true);
-        updates.put("debtFeatureActivatedAt", getCurrentLocalDateTime());
-        updates.put("fullName", pendingFullName);
-        updates.put("name", pendingFullName);
-        updates.put("phoneNumber", phoneNumberWithoutSpaces);
-        updates.put("phone", phoneNumberWithoutSpaces);
-        updates.put("countryCode", pendingCountryCode);
-
-        if (mAuth.getCurrentUser() != null) {
-            db.collection("users").document(mAuth.getCurrentUser().getUid())
-                    .set(updates, SetOptions.merge())
-                    .addOnSuccessListener(aVoid -> {
-                        isLoading.setValue(false);
-                        activationSuccess.setValue(true);
-                    })
-                    .addOnFailureListener(e -> {
-                        isLoading.setValue(false);
-                        errorMsg.setValue(getApplication().getString(R.string.error_save_failed, e.getMessage()));
-                        Log.e("DebtActivationViewModel", "Save failed", e);
-                        AppErrorHandler.handle(getApplication().getApplicationContext()); // جلب Context من الـ Application
-                    });
-        } else {
-            isLoading.setValue(false);
-            errorMsg.setValue("User is null after operation");
-        }
-    }
     private void removeActivationDataFromFirestore() {
         if (mAuth.getCurrentUser() != null) {
             Map<String, Object> updates = new HashMap<>();
@@ -287,26 +255,6 @@ public class DebtActivationViewModel extends AndroidViewModel {
 
             db.collection("users").document(mAuth.getCurrentUser().getUid())
                     .update(updates) // استخدام update هو الأفضل والأصح عند حذف حقول معينة
-                    .addOnSuccessListener(aVoid -> {
-                        isLoading.setValue(false);
-                        isUnlinkedSuccess.setValue(true);
-                    })
-                    .addOnFailureListener(e -> {
-                        isLoading.setValue(false);
-                        errorMsg.setValue(e.getLocalizedMessage());
-                    });
-        }
-    }
-    private void removeActivationDataFromFirestore1() {
-        if (mAuth.getCurrentUser() != null) {
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("isDebtFeatureEnabled", false);
-            updates.put("isLinked", false);
-            updates.put("phoneNumber", "");
-            updates.put("countryCode", "");
-
-            db.collection("users").document(mAuth.getCurrentUser().getUid())
-                    .set(updates, SetOptions.merge())
                     .addOnSuccessListener(aVoid -> {
                         isLoading.setValue(false);
                         isUnlinkedSuccess.setValue(true);

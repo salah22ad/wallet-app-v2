@@ -51,15 +51,6 @@ public class DeviceManagementDialog extends DialogFragment {
     }
 
     // ⭐ تعديل: تحديث دالة newInstance لتقبل المتغير الجديد
-    public static DeviceManagementDialog newInstance1(List<DeviceInfo> devices, LicenseManager manager, boolean isLimitExceeded) {
-        DeviceManagementDialog fragment = new DeviceManagementDialog();
-        Bundle args = new Bundle();
-        args.putSerializable(ARG_DEVICES, new ArrayList<>(devices));
-        args.putBoolean(ARG_IS_LIMIT_EXCEEDED, isLimitExceeded);
-        fragment.setArguments(args);
-        fragment.licenseManager = manager;
-        return fragment;
-    }
 
     public static DeviceManagementDialog newInstance(List<DeviceInfo> devices, LicenseManager manager, boolean isLimitExceeded) {
         DeviceManagementDialog fragment = new DeviceManagementDialog();

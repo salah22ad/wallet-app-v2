@@ -32,9 +32,6 @@ public interface TransactionDao {
 
     @Query("SELECT SUM(amount) FROM transactions WHERE accountId = :accountId AND currencyId = :currency AND type = -1  AND isDeleted = 0  ")
     LiveData<Double> getCreditForAccount(int accountId, String currency);
-     @Query("SELECT * FROM transactions" +
-            " WHERE accountId = :accountId AND currencyId = :currency  AND isDeleted = 0   AND details LIKE '%' || :searchQuery || '%' ORDER BY timestamp,lastModified ASC")
-    LiveData<List<Transaction>> getTransactionsForAccount1(int accountId, String currency, String searchQuery);
     @Query("SELECT * FROM transactions" +
             " WHERE accountId = :accountId AND currencyId = :currency  AND isDeleted = 0   AND details LIKE '%' || :searchQuery || '%' ORDER BY timestamp ASC,id DESC")
     LiveData<List<Transaction>> getTransactionsForAccount(int accountId, String currency, String searchQuery);

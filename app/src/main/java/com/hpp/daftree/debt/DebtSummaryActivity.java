@@ -274,35 +274,6 @@ public class DebtSummaryActivity extends BaseActivity {
     }
 
     // دالة مركزية للتحكم في الظهور والاختفاء
-    private void updateUIState1(boolean isLoading) {
-        if (isLoading) {
-            // الحالة 1: جاري التحميل (من النت)
-            binding.loadingLayout.setVisibility(View.VISIBLE);
-
-            // نخفي الباقي تماماً
-            binding.contentLayout.setVisibility(View.GONE);
-            binding.emptyLayout.setVisibility(View.GONE);
-            binding.errorLayout.setVisibility(View.GONE);
-
-        } else {
-            // الحالة 2: انتهى التحميل
-            binding.loadingLayout.setVisibility(View.GONE);
-
-            if (adapter.getItemCount() > 0) {
-                // توجد بيانات
-                binding.contentLayout.setVisibility(View.VISIBLE);
-                binding.emptyLayout.setVisibility(View.GONE);
-                binding.errorLayout.setVisibility(View.GONE);
-            } else {
-                // القائمة فارغة
-                binding.contentLayout.setVisibility(View.GONE);
-                binding.emptyLayout.setVisibility(View.VISIBLE);
-                binding.errorLayout.setVisibility(View.GONE);
-                // تفريغ الهيدر
-                binding.llTotalsContainer.removeAllViews();
-            }
-        }
-    }
     private void updateUIState(boolean isLoading) {
         if (isLoading) {
             // إذا لم يكن هناك بيانات، نظهر شاشة التحميل الكاملة
