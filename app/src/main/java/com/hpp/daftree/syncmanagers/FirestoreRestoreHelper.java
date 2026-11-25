@@ -227,6 +227,8 @@ public class FirestoreRestoreHelper {
                                             // التفاصيل والملاحظات
                                             String phoneNumber = doc.getString("phoneNumber");
                                             account.setPhoneNumber(phoneNumber != null ? phoneNumber : "");
+                                            account.setNotifyWhatsApp(doc.contains("notifyWhatsApp") && convertFirestoreBoolean(doc.get("notifyWhatsApp")));
+                                            account.setNotifySms(doc.contains("notifySms") && convertFirestoreBoolean(doc.get("notifySms")));
 
                                             // رقم الهاتف والبريد
                                             account.setFirestoreId(doc.getId());

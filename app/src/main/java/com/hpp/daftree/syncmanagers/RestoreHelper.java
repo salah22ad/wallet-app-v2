@@ -926,7 +926,8 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
         String symbol;
 
         // قراءة اللغة من SharedPreferences
-        Locale locale = context.getResources().getConfiguration().locale;
+        Locale locale = androidx.core.os.ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0);
+        if (locale == null) locale = Locale.getDefault();
         String savedLanguage = locale.getLanguage();
 
         if (savedLanguage.equals("ar") && cleanName.length() >= 2) {
@@ -1185,6 +1186,14 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
                         // SOURCE_FOUR: استخدام accountType مباشرة من الجدول
                         accountTypeName = c.getString(c.getColumnIndexOrThrow("accountType"));
                         newAccount.setPhoneNumber(c.getString(c.getColumnIndexOrThrow("phoneNumber")));
+                        int notifyWaIdx = c.getColumnIndex("notifyWhatsApp");
+                        if (notifyWaIdx != -1) {
+                            newAccount.setNotifyWhatsApp(c.getInt(notifyWaIdx) == 1);
+                        }
+                        int notifySmsIdx = c.getColumnIndex("notifySms");
+                        if (notifySmsIdx != -1) {
+                            newAccount.setNotifySms(c.getInt(notifySmsIdx) == 1);
+                        }
 
                         // البحث المباشر في الخريطة
                         accountTypeFirestoreId = accountTypeNameToFirestoreIdMap.get(accountTypeName);

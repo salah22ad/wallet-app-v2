@@ -412,7 +412,7 @@
     <string name="report_signature_manager">توقيع المدير</string>
 
     <!-- Header Strings -->
-    <string name="header_page">صفحة 2%d | تاريخ الطباعة: 1%s</string>
+    <string name="header_page">صفحة %1$d | تاريخ الطباعة: %2$s</string>
     <string name="page">صفحة </string>
     <!--    <string name="print_date"> تاريخ الطباعة </string>-->
     <!--    <string name="period">للفترة </string>-->
@@ -1075,7 +1075,7 @@
     <string name="change_email_button">تغيير البريد</string>
     <string name="resend_countdown">إعادة الإرسال متاحة بعد: %d ثانية</string>
     <string name="resend_available">يمكنك إعادة إرسال الرابط الآن</string>
-    <string name="verification_progress">جاري الانتظار... (%d/%d محاولة)</string>
+    <string name="verification_progress">جاري الانتظار... (%1$d/%2$d محاولة)</string>
     <string name="verification_success">تم تفعيل الحساب بنجاح! جاري إكمال التسجيل...</string>
     <string name="verification_error">خطأ في التحقق: %s</string>
     <string name="verification_timeout_title">انتهى وقت الانتظار</string>
@@ -1310,7 +1310,7 @@
     <string name="updateUserLoginDataUpgrade_21">فشل في تحديث بيانات تسجيل الدخول.</string>
     <string name="search_language_hint">ابحث عن لغة...</string>
     <string name="document_was_created_by">"تم إنشاء هذا المستند بواسطة "</string>
-    <string name="page_info_format">الصفحة %d | تاريخ الطباعة: %s</string>
+    <string name="page_info_format">الصفحة %1$d | تاريخ الطباعة: %2$s</string>
 
     <string name="sending_verification_to_email">تم إرسال رابط التفعيل إلى البريد الإلكتروني:</string>
     <string name="search_for_account">إبحث عن حساب ...</string>
@@ -1665,10 +1665,10 @@
     <string name="prepareAndPushNotification_06">إشعار تسجيل 🔔</string>
 
     <string name="connectToGooglePlay_01">فشل الاتصال بمتجر جوجل: </string>
-    <string name="updateUIWithPrices_format_021">%.2f %s </string>
-    <string name="updateUIWithPrices_format_031">%.2f %s </string>
+    <string name="updateUIWithPrices_format_021">%1$.2f %2$s </string>
+    <string name="updateUIWithPrices_format_031">%1$.2f %2$s </string>
     <string name="updateUIWithPrices_04">خصم </string>
-    <string name="updateSubscriptionPricesDisplay_format_051">%.2f %s </string>
+    <string name="updateSubscriptionPricesDisplay_format_051">%1$.2f %2$s </string>
     <string name="updateSubscriptionPricesDisplay_06"> / شهر</string>
     <string name="updateSubscriptionPricesDisplay_07"> / سنة</string>
     <string name="startPurchaseFlow_08">الرجاء اختيار خطة</string>
@@ -1764,7 +1764,7 @@
     <string name="recurring_added">تمت إضافة العملية الدورية بنجاح</string>
     <string name="recurring_updated">تم تحديث العملية الدورية</string>
     <string name="confirm_delete_recurring">هل أنت متأكد من حذف هذه العملية الدورية؟</string>
-    <string name="recurring_bubble_message">لديك عملية دورية %s بقيمة %s %s. \nهل ترغب بإضافتها اليوم؟</string>
+    <string name="recurring_bubble_message">لديك عملية دورية %1$s بقيمة %2$s %3$s. \nهل ترغب بإضافتها اليوم؟</string>
     <string name="add_now">إضافة الآن</string>
     <string name="stoping_server1">السيرفر متوقف</string>
     <string name="update">تحديث</string>
