@@ -1,4 +1,4 @@
-# بيانات متجر Google Play — القسم الأول (اللغات من 1 إلى 14)
+# بيانات متجر Google Play — الدفعة الأولى (اللغات من 1 إلى 15)
 
 > **ضوابط Google Play Console المعتمدة في هذا الملف:**
 > - **اسم التطبيق:** حد أقصى `30` حرفاً.
@@ -75,7 +75,7 @@
 
 ---
 
-## 2. الإنجليزية (`en-US`)
+## 2. الإنجليزية (الولايات المتحدة) (`en-US`)
 
 **اسم التطبيق (30 / 30):**
 ```text
@@ -143,7 +143,7 @@ Your money is your hard work—keep it clear, protected, and under control.
 
 ---
 
-## 3. الإسبانية (`es-ES` / `es-419`)
+## 3. الإسبانية (إسبانيا) (`es-ES`)
 
 **اسم التطبيق (29 / 30):**
 ```text
@@ -206,7 +206,70 @@ No te limites a anotar lo que debes o te deben: consulta también lo que otros r
 
 ---
 
-## 4. الفرنسية (`fr-FR`)
+## 4. الإسبانية (أمريكا اللاتينية) (`es-419`)
+
+**اسم التطبيق (29 / 30):**
+```text
+Smart Wallet: Gastos y Deudas
+```
+
+**الوصف المختصر (76 / 80):**
+```text
+Controla tu presupuesto, gastos diarios, deudas y lo registrado a tu nombre.
+```
+
+**الوصف الكامل:**
+```text
+¿Te preguntas adónde va tu dinero antes de fin de mes? ¿Se mezclan tus gastos personales con las deudas de clientes y amigos? 🤔💸
+
+Deja de adivinar y toma el control total de tus finanzas.
+My Smart Wallet reúne en una sola aplicación un gestor de presupuesto mensual, control de gastos diarios y un libro inteligente de deudas y cuentas. Ideal para familias, estudiantes, freelancers y dueños de negocios.
+
+━━━━━━━━━━━━━━━━
+
+✨ NUEVO: Separación inteligente entre Presupuesto Personal y Deudas
+Mantén tus gastos personales totalmente separados de tus cuentas de clientes, proveedores y préstamos, con un interruptor opcional para reflejar cualquier movimiento de deuda en tu presupuesto mensual con un solo toque.
+
+📊 1. Presupuesto Mensual y Control de Gastos
+- Registra ingresos y gastos diarios (Facturas, Vivienda, Comida, Transporte, Salud o categorías personalizadas) en segundos.
+- Define un límite mensual por moneda y controla el porcentaje consumido, el saldo restante y el superávit o déficit en tiempo real.
+- Visualiza tus hábitos con gráficos circulares interactivos y barras comparativas de los últimos 6 meses.
+
+💎 2. Exclusivo: "Seguimiento de mis cuentas"
+No te limites a anotar lo que debes o te deben: consulta también lo que otros registran con tu número.
+- Transparencia total sobre cuentas y saldos registrados por comercios o socios.
+- Tú tienes el control absoluto para activar o pausar la función cuando quieras.
+
+📒 3. Libro Inteligente de Deudas y Cuentas
+- Organiza clientes, proveedores y categorías ilimitadas con insignias de colores.
+- Sistema claro de Crédito y Débito con saldo acumulado tras cada movimiento.
+- Calculadora integrada, fotos de recibos y envío de estados de cuenta por WhatsApp o SMS.
+
+📄 4. Informes PDF Profesionales (Cuentas y Presupuesto)
+- Informes de Cuentas: extractos detallados, saldos consolidados y resúmenes mensuales.
+- Informes de Presupuesto: registro detallado, análisis por categorías con porcentajes y comparativa mensual frente al límite.
+- Personalizados con tu logotipo y listos para imprimir o compartir al instante.
+
+☁️ 5. Sincronización en la Nube en 2 Dispositivos y Modo Offline
+- Usa tu cuenta en dos teléfonos al mismo tiempo con sincronización en tiempo real.
+- Respaldo automático en la nube y restauración rápida al cambiar de móvil.
+- Funciona 100% sin conexión e importa copias de seguridad de apps anteriores.
+
+━━━━━━━━━━━━━━━━
+
+🌟 Herramientas Avanzadas:
+🌍 Multimoneda: USD, EUR, monedas locales o personalizadas.
+🧾 Facturas de venta y compra con control de pagos en efectivo y saldo pendiente.
+🔁 Operaciones recurrentes para alquileres, salarios y suscripciones.
+💻 Acceso desde PC por Wi-Fi para ver tus cuentas e informes en pantalla grande.
+🔒 Bloqueo con huella digital o PIN y modo oscuro elegante en 29 idiomas.
+
+📥 ¡Descarga My Smart Wallet AHORA y logra estabilidad financiera hoy mismo!
+```
+
+---
+
+## 5. الفرنسية (فرنسا) (`fr-FR`)
 
 **اسم التطبيق (29 / 30):**
 ```text
@@ -269,7 +332,7 @@ Ne vous contentez pas de noter vos dettes : voyez ce que d'autres enregistrent s
 
 ---
 
-## 5. الألمانية (`de-DE`)
+## 6. الألمانية (`de-DE`)
 
 **اسم التطبيق (27 / 30):**
 ```text
@@ -332,7 +395,7 @@ Notiere nicht nur eigene Einträge – sieh auch, was andere unter deiner Nummer
 
 ---
 
-## 6. التركية (`tr-TR`)
+## 7. التركية (`tr-TR`)
 
 **اسم التطبيق (27 / 30):**
 ```text
@@ -395,7 +458,7 @@ Sadece kendi alacak ve borçlarınızı kaydetmeyin; başkalarının sizin numar
 
 ---
 
-## 7. الروسية (`ru-RU`)
+## 8. الروسية (`ru-RU`)
 
 **اسم التطبيق (28 / 30):**
 ```text
@@ -458,7 +521,7 @@ My Smart Wallet объединяет личный финансовый мене�
 
 ---
 
-## 8. البرتغالية (`pt-BR`)
+## 9. البرتغالية (البرازيل) (`pt-BR`)
 
 **اسم التطبيق (30 / 30):**
 ```text
@@ -521,7 +584,7 @@ Não registre apenas o que você deve ou tem a receber — veja também o que ou
 
 ---
 
-## 9. الإيطالية (`it-IT`)
+## 10. الإيطالية (`it-IT`)
 
 **اسم التطبيق (29 / 30):**
 ```text
@@ -584,7 +647,7 @@ Non limitarti a segnare ciò che dai o ricevi: scopri anche cosa registrano gli 
 
 ---
 
-## 10. الهولندية (`nl-NL`)
+## 11. الهولندية (`nl-NL`)
 
 **اسم التطبيق (29 / 30):**
 ```text
@@ -647,7 +710,7 @@ Noteer niet alleen eigen posten — bekijk ook wat anderen op jouw nummer regist
 
 ---
 
-## 11. البولندية (`pl-PL`)
+## 12. البولندية (`pl-PL`)
 
 **اسم التطبيق (28 / 30):**
 ```text
@@ -710,7 +773,7 @@ Nie tylko zapisuj swoje należności — zobacz też, co inni zapisali na Twój 
 
 ---
 
-## 12. الأوكرانية (`uk`)
+## 13. الأوكرانية (`uk`)
 
 **اسم التطبيق (28 / 30):**
 ```text
@@ -773,7 +836,7 @@ My Smart Wallet поєднує планувальник місячного бю�
 
 ---
 
-## 13. الرومانية (`ro`)
+## 14. الرومانية (`ro`)
 
 **اسم التطبيق (30 / 30):**
 ```text
@@ -836,7 +899,7 @@ Nu nota doar ce datorezi sau ai de încasat — vezi și ce înregistrează alț
 
 ---
 
-## 14. التشيكية (`cs-CZ`)
+## 15. التشيكية (`cs-CZ`)
 
 **اسم التطبيق (30 / 30):**
 ```text
