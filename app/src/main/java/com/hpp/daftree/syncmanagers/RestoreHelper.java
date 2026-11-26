@@ -1132,6 +1132,7 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
                     newType.setSyncStatus("NEW");
                     newType.setLastModified(System.currentTimeMillis());
                     newType.setDefault(false);
+                    com.hpp.daftree.helpers.AccountTypeIconHelper.ensureTypeVisuals(context, newType);
                     appDb.accountTypeDao().insert(newType);
                     existingNamesSet.add(originalName);
                     nameToFirestoreIdMap.put(originalName, newFirestoreId);
@@ -1230,6 +1231,12 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
                     // التعيين النهائي
                     newAccount.setAccountType(accountTypeName);
                     newAccount.setAcTypeFirestoreId(accountTypeFirestoreId);
+                    AccountType matchedType = (accountTypeFirestoreId != null && !accountTypeFirestoreId.isEmpty())
+                            ? appDb.accountTypeDao().getAccountTypeByFirestoreId(accountTypeFirestoreId) : null;
+                    if (matchedType == null && accountTypeName != null) {
+                        matchedType = appDb.accountTypeDao().getAccountTypeByName(accountTypeName);
+                    }
+                    com.hpp.daftree.helpers.AccountTypeIconHelper.applyTypeVisualsToAccount(context, newAccount, matchedType);
 
                     if(isGuest) {
                         currentUserId = guestUID;

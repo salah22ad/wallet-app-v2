@@ -111,7 +111,7 @@ public abstract class AppDatabase extends RoomDatabase {
                                     MIGRATION_16_17,MIGRATION_17_18,
                                     createMigration18To19(context),
                                     MIGRATION_19_20,
-                                    MIGRATION_20_21
+                                    createMigration20To21(context)
                             )
                             .addCallback(new Callback() {
                                 @Override
@@ -222,19 +222,66 @@ public abstract class AppDatabase extends RoomDatabase {
 
     static final Migration MIGRATION_19_20 = BudgetDatabaseMigration.MIGRATION_19_20;
 
-    static final Migration MIGRATION_20_21 = new Migration(20, 21) {
-        @Override
-        public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE accounts ADD COLUMN lastTransDate INTEGER NOT NULL DEFAULT 0");
-            database.execSQL(
-                    "UPDATE accounts SET " +
-                    "lastTransDate = COALESCE((SELECT MAX(tx.lastModified) FROM transactions tx " +
-                    "WHERE tx.accountId = accounts.id AND tx.isDeleted = 0), accounts.lastModified, 0), " +
-                    "syncStatus = 'EDITED'"
-            );
-            database.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('migration_20_21_pending', 1)");
-        }
-    };
+    static Migration createMigration20To21(final Context context) {
+        return new Migration(20, 21) {
+            @Override
+            public void migrate(@NonNull SupportSQLiteDatabase database) {
+                database.execSQL("ALTER TABLE accounts ADD COLUMN lastTransDate INTEGER NOT NULL DEFAULT 0");
+                database.execSQL(
+                        "UPDATE accounts SET " +
+                        "lastTransDate = COALESCE((SELECT MAX(tx.lastModified) FROM transactions tx " +
+                        "WHERE tx.accountId = accounts.id AND tx.isDeleted = 0), accounts.lastModified, 0), " +
+                        "syncStatus = 'EDITED'"
+                );
+
+                // 1. تعبئة iconKey و colorHex لجدول account_types باستخدام AccountTypeIconHelper (يدعم كل اللغات) دون تغيير syncStatus
+                Cursor c = database.query("SELECT id, name, firestoreId, iconKey, colorHex FROM account_types");
+                try {
+                    while (c.moveToNext()) {
+                        int id = c.getInt(0);
+                        String name = c.getString(1);
+                        String fsId = c.getString(2);
+                        String iconKey = c.getString(3);
+                        String colorHex = c.getString(4);
+
+                        boolean needsUpdate = false;
+                        if (iconKey == null || iconKey.trim().isEmpty()) {
+                            iconKey = com.hpp.daftree.helpers.AccountTypeIconHelper.resolveIconKey(context, name);
+                            needsUpdate = true;
+                        }
+                        if (colorHex == null || colorHex.trim().isEmpty()) {
+                            colorHex = com.hpp.daftree.helpers.AccountTypeIconHelper.resolveColorHex(context, name, fsId);
+                            needsUpdate = true;
+                        }
+                        if (needsUpdate) {
+                            database.execSQL(
+                                    "UPDATE account_types SET iconKey = ?, colorHex = ? WHERE id = ?",
+                                    new Object[]{iconKey, colorHex, id}
+                            );
+                        }
+                    }
+                } finally {
+                    c.close();
+                }
+
+                // 2. تعبئة iconKey و colorHex لجدول accounts من جدول account_types محلياً
+                database.execSQL(
+                        "UPDATE accounts SET " +
+                        "iconKey = CASE WHEN iconKey IS NULL OR TRIM(iconKey) = '' THEN COALESCE(" +
+                        "(SELECT at.iconKey FROM account_types at WHERE at.firestoreId = accounts.acTypeFirestoreId AND at.iconKey IS NOT NULL AND TRIM(at.iconKey) != '' LIMIT 1), " +
+                        "(SELECT at.iconKey FROM account_types at WHERE at.name = accounts.accountType AND at.iconKey IS NOT NULL AND TRIM(at.iconKey) != '' LIMIT 1), " +
+                        "'general') ELSE iconKey END, " +
+                        "colorHex = CASE WHEN colorHex IS NULL OR TRIM(colorHex) = '' THEN COALESCE(" +
+                        "(SELECT at.colorHex FROM account_types at WHERE at.firestoreId = accounts.acTypeFirestoreId AND at.colorHex IS NOT NULL AND TRIM(at.colorHex) != '' LIMIT 1), " +
+                        "(SELECT at.colorHex FROM account_types at WHERE at.name = accounts.accountType AND at.colorHex IS NOT NULL AND TRIM(at.colorHex) != '' LIMIT 1), " +
+                        "'#0D6E6E') ELSE colorHex END " +
+                        "WHERE iconKey IS NULL OR TRIM(iconKey) = '' OR colorHex IS NULL OR TRIM(colorHex) = ''"
+                );
+
+                database.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('migration_20_21_pending', 1)");
+            }
+        };
+    }
 
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override

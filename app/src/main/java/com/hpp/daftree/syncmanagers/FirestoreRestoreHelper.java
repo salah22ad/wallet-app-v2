@@ -270,6 +270,12 @@ public class FirestoreRestoreHelper {
 
                                             account.setAcTypeFirestoreId(currentTypeId);
                                             account.setAccountType(typeName);
+                                            AccountType matchedType = (currentTypeId != null && !currentTypeId.isEmpty())
+                                                    ? appDb.accountTypeDao().getAccountTypeByFirestoreId(currentTypeId) : null;
+                                            if (matchedType == null && typeName != null) {
+                                                matchedType = appDb.accountTypeDao().getAccountTypeByName(typeName);
+                                            }
+                                            com.hpp.daftree.helpers.AccountTypeIconHelper.applyTypeVisualsToAccount(context, account, matchedType);
                                             accountsToProcess.add(account);
 
                                         } catch (Exception e) {
@@ -645,6 +651,7 @@ public class FirestoreRestoreHelper {
                                             existing.setDefault(isDefault);
                                             existing.setLastModified(lastModified);
                                             existing.setLastSyncDate(lastSyncDate);
+                                            com.hpp.daftree.helpers.AccountTypeIconHelper.ensureTypeVisuals(context, existing);
                                             processedTypeNames.add(name);
                                             appDb.accountTypeDao().update(existing);
 
@@ -660,6 +667,7 @@ public class FirestoreRestoreHelper {
                                             newType.setLastSyncDate(lastSyncDate);
                                             if (isDefault != null)
                                                 newType.setDefault(isDefault);
+                                            com.hpp.daftree.helpers.AccountTypeIconHelper.ensureTypeVisuals(context, newType);
                                             processedTypeNames.add(name);
                                             appDb.accountTypeDao().insert(newType);
                                             typeNameToFirestoreIdMap.put(name, firestoreId);
@@ -718,6 +726,7 @@ public class FirestoreRestoreHelper {
                         String firestoreId = UUIDGenerator.generateSequentialUUID();
                         newType.setFirestoreId(firestoreId);
 
+                        com.hpp.daftree.helpers.AccountTypeIconHelper.ensureTypeVisuals(context, newType);
                         appDb.accountTypeDao().insert(newType);
                         typeNameToFirestoreIdMap.put(requiredType, firestoreId);
                         processedTypeNames.add(requiredType);

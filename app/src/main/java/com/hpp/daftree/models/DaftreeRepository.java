@@ -192,6 +192,7 @@ public class DaftreeRepository {
             }
             //account.setLastModified(System.currentTimeMillis());
             account.setLastModified(System.currentTimeMillis());
+            AccountTypeIconHelper.applyTypeVisualsToAccount(context, account, accountTypeDao.getAccountTypeByFirestoreId(account.getAcTypeFirestoreId()));
             mAccountDao.update(account);
             triggerSync(); // يمكنك إضافة دالة triggerSync مجددًا إذا أردت مزامنة فورية
 //            SyncCoordinator.requestSync(context);
@@ -605,6 +606,7 @@ public class DaftreeRepository {
                         existing.setDefault(isDefaultRemote);
                         existing.setDeletedBy((String) data.get("deletedBy"));
                         existing.setDeleted(isDeletedRemote);
+                        AccountTypeIconHelper.ensureTypeVisuals(context, existing);
                         accountTypeDao.update(existing);
                     }
                 } else {
@@ -892,6 +894,7 @@ public class DaftreeRepository {
     public void insertAccountType(AccountType accountType) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             // افترض أن DAO لديه هذه الدالة
+            AccountTypeIconHelper.ensureTypeVisuals(context, accountType);
             accountTypeDao.insert(accountType);
             triggerSync(); // تشغيل المزامنة بعد إضافة عملة جديدة
         });
@@ -991,6 +994,7 @@ public class DaftreeRepository {
             typeToUpdate.name = newName;
             typeToUpdate.setSyncStatus("EDITED");
             typeToUpdate.setLastModified(timestamp);
+            AccountTypeIconHelper.ensureTypeVisuals(context, typeToUpdate);
             accountTypeDao.update(typeToUpdate);
 
             triggerSync();
@@ -1108,6 +1112,7 @@ public class DaftreeRepository {
                     account.getSyncStatus() + "\n" +
                     account.getLastModified());
 //            mAccountDao.insert(account);
+            AccountTypeIconHelper.applyTypeVisualsToAccount(context, account, accountTypeDao.getAccountTypeByFirestoreId(account.getAcTypeFirestoreId()));
             long newId = mAccountDao.insert(account);
             Log.i(TAG, "Account inserted with ID: " + newId);
 
