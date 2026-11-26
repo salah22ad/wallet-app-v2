@@ -37,7 +37,7 @@ public class AccountsAdapter extends ListAdapter<AccountWithBalance, AccountsAda
 
     private static final java.util.Map<String, Integer> COLOR_CACHE = new java.util.HashMap<>();
     private static final java.util.Map<String, Integer> ICON_CACHE = new java.util.HashMap<>();
-    private static final NumberFormat NUMBER_FORMAT = NUMBER_FORMAT;
+    private static final NumberFormat NUMBER_FORMAT = NumberFormat.getNumberInstance(Locale.US);
 
     public AccountsAdapter(OnAccountInteractionListener listener) {
         super(DIFF_CALLBACK);
