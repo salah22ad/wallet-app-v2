@@ -578,7 +578,12 @@ public class MainActivity extends BaseActivity implements
                         Log.d("FCM", "تم الاشتراك في قناة الإشعارات العامة بنجاح");
                     }
                 });
+        com.hpp.daftree.notifications.NonGmsNotificationScheduler.initAndScheduleIfNeeded(this);
 
+        if (getIntent() != null && getIntent().getBooleanExtra("stop_daily_reminder", false)) {
+            getIntent().removeExtra("stop_daily_reminder");
+            com.hpp.daftree.dailyreminder.DailyReminderNotification.stopAndCancel(this);
+        }
         if (getIntent().getExtras() != null) {
             String type = getIntent().getExtras().getString("type");
             if ("transaction_alert".equals(type)) {
@@ -3493,7 +3498,7 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
             versionManager.shutdown();
         }
         if (billingClient != null) billingClient.endConnection();
-        WorkManager.getInstance(this).cancelUniqueWork("UNIQUE_SYNC_WORK");
+        // تم الإبقاء على UNIQUE_SYNC_WORK ليكمل رفع البيانات في الخلفية بعد إغلاق التطبيق
     }
 
     @Override
@@ -4055,6 +4060,10 @@ private void handlePurchaseApp() {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         setIntent(intent);
+        if (intent != null && intent.getBooleanExtra("stop_daily_reminder", false)) {
+            intent.removeExtra("stop_daily_reminder");
+            com.hpp.daftree.dailyreminder.DailyReminderNotification.stopAndCancel(this);
+        }
         if (intent != null && intent.getExtras() != null) {
             String type = intent.getExtras().getString("type");
             if ("transaction_alert".equals(type)) {

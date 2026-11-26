@@ -20,6 +20,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             // قراءة المتغيرات الجديدة
             String modelTypeStr = remoteMessage.getData().get("modelType");
             String btnText = remoteMessage.getData().get("btnText");
+            String notifId = remoteMessage.getData().get("notifId");
+            if (notifId != null && !notifId.isEmpty()) {
+                NonGmsNotificationScheduler.markNotifShown(getApplicationContext(), notifId);
+            }
 
             if (title == null && remoteMessage.getNotification() != null) {
                 title = remoteMessage.getNotification().getTitle();

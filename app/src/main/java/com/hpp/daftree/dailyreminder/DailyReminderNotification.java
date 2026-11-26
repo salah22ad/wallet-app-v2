@@ -58,6 +58,16 @@ public class DailyReminderNotification {
             e.printStackTrace();
         }
     }
+
+    public static void stopAndCancel(Context context) {
+        stopSound();
+        if (context != null) {
+            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (manager != null) {
+                manager.cancel(NOTIFICATION_ID);
+            }
+        }
+    }
     private Bitmap getBitmapFromDrawable(Context context, int drawableId) {
         Drawable drawable = ContextCompat.getDrawable(context, drawableId);
         if (drawable == null) return null;
@@ -126,7 +136,8 @@ public class DailyReminderNotification {
         String bigText = context.getString(R.string.daily_reminder_big_text);
 
         Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra("stop_daily_reminder", true);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         Intent openBroadcastIntent = new Intent(context, DailyReminderReceiver.class);
         openBroadcastIntent.setAction(ACTION_OPEN);
         PendingIntent openPendingIntent = PendingIntent.getBroadcast(
@@ -164,14 +175,14 @@ public class DailyReminderNotification {
                 .setDefaults(NotificationCompat.DEFAULT_LIGHTS)
                 .setTicker(message)
                 .setOnlyAlertOnce(false)
-                .setContentIntent(openPendingIntent)// السحب للإلغاء (Swipe) يوقف الصوت أيضاً
+                // السحب للإلغاء (Swipe) يوقف الصوت أيضاً
                 .setDeleteIntent(dismissPendingIntent)
                 .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setOngoing(true) // لنجبره يضغط على الأزرار
 
                 // إضافة الأزرار
-                .addAction(R.drawable.ic_stat_name, context.getString(R.string.open_app), openPendingIntent)
+                .addAction(R.drawable.ic_stat_name, context.getString(R.string.open_app), pendingIntent)
                 .addAction(android.R.drawable.ic_menu_close_clear_cancel, context.getString(R.string.later), dismissPendingIntent);
 
         // لا نضع setSound هنا لأننا شغلناه يدوياً بالأعلى

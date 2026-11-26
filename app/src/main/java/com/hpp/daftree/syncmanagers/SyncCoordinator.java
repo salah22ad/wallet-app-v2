@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import androidx.lifecycle.Observer;
+import androidx.work.BackoffPolicy;
 import androidx.work.Constraints;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.ExistingWorkPolicy;
@@ -27,20 +28,19 @@ public class SyncCoordinator {
 
         WorkManager workManager = WorkManager.getInstance(context);
 
-        // إلغاء أي عمل سابق لضمان عدم وجود مزامنة قديمة
-        workManager.cancelUniqueWork(UNIQUE_WORK_NAME);
-
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
 
         OneTimeWorkRequest syncRequest = new OneTimeWorkRequest.Builder(SyncWorker.class)
                 .setConstraints(constraints)
+                .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 30, TimeUnit.SECONDS)
                 .build();
 
+        // APPEND_OR_REPLACE يضمن انتظار اكتمال الرفع الجاري ثم تنفيذ الرفع الجديد دون إلغاء
         workManager.enqueueUniqueWork(
                 UNIQUE_WORK_NAME,
-                ExistingWorkPolicy.REPLACE,
+                ExistingWorkPolicy.APPEND_OR_REPLACE,
                 syncRequest
         );
 

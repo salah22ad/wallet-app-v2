@@ -209,9 +209,8 @@ public class DailyReminderManager {
             return -1;
         }
 
-        long nextReminderTime = DailyReminderScheduler.getNextReminderTime(context);
-        long currentTime = System.currentTimeMillis();
-        long timeDifference = nextReminderTime - currentTime;
+        // getNextReminderTime() تُرجع الفارق الزمني المتبقي مباشرة بالملي ثانية
+        long timeDifference = DailyReminderScheduler.getNextReminderTime(context);
 
         if (timeDifference <= 0) {
             return 0;

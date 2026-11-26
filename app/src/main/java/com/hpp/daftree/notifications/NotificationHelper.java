@@ -496,13 +496,18 @@ public class NotificationHelper {
 
         PendingIntent pendingIntent = createSmartPendingIntent(type, webUrl);
 
+        Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/raw/notification_sound");
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_MAIN)
-                .setSmallIcon(R.drawable.ic_stat_name) // تأكد من اسم الأيقونة لديك
+                .setSmallIcon(R.drawable.ic_stat_name)
                 .setContentTitle(title)
                 .setContentText(body)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setSound(soundUri)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .setAutoCancel(true)
-                .setGroup(GROUP_DAFTREE) // إضافته للمجموعة
+                .setGroup(GROUP_DAFTREE)
                 .setContentIntent(pendingIntent);
 
         if (imageUrl != null && !imageUrl.isEmpty()) {

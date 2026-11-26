@@ -55,9 +55,14 @@ public class DailyReminderReceiver extends BroadcastReceiver {
 
         // 2. التعامل مع وقت التنبيه الفعلي
         if (ALARM_ACTION.equals(action)) {
-            // أ) الخطوة الأولى والأهم: جدولة موعد الغد فوراً!
-            // نجدول القادم قبل تشغيل الصوت لضمان استمرار السلسلة حتى لو حدث كراش في الصوت
+            DailyReminderManager reminderManager = DailyReminderManager.getInstance(context);
+            if (!reminderManager.areGeneralNotificationsEnabled() || !reminderManager.isEnabled()) {
+                Log.d(TAG, "التذكير اليومي معطّل من الإعدادات، تم التخطي.");
+                return;
+            }
+            // أ) الخطوة الأولى والأهم: جدولة موعد الغد فوراً وتسجيل العرض!
             DailyReminderScheduler.scheduleDailyReminder(context);
+            reminderManager.markNotificationShown();
 
             // ب) تشغيل الـ MediaPlayer وعرض الإشعار (كما طلبت)
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);

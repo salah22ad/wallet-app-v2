@@ -151,7 +151,7 @@ public class SyncWorker extends Worker {
             uploadBudgetEntries(currentUid);
             handleDeletions();
             uploadUserProfile(currentUid);
-            checkDelete();
+            // checkDelete(); // معطّل مؤقتاً لحين التأكد من دالة التنظيف الشهرية في Cloud Functions
 
             SecureLicenseManager.getInstance(getApplicationContext()).setLastSyncTime(System.currentTimeMillis());
             Log.d(TAG, "Sync process finished successfully.");
@@ -167,13 +167,28 @@ public class SyncWorker extends Worker {
             }
             return Result.retry();
         } finally {
-            if (!isStopped()) {
-                FirestoreSyncManager.isSyncWorkerRunning = false;
+            // تصفير العلم دائماً دون شرط حتى لا يعلق المستمع الحي
+            FirestoreSyncManager.isSyncWorkerRunning = false;
+            if (!isStopped() && isAppInForeground()) {
                 repository.setUserUID(resolveCurrentUid());
                 FirestoreSyncManager.getInstance().startListening(repository, getApplicationContext(), () -> {
                 });
+                Log.d(TAG, "انتهى SyncWorker وتمت إعادة تشغيل نظام المزامنة الحي (التطبيق في الواجهة).");
+            } else {
+                Log.d(TAG, "انتهى SyncWorker في الخلفية بنجاح دون فتح مستمع حي.");
             }
-            Log.d(TAG, "انتهى SyncWorker وتمت إعادة تشغيل نظام المزامنة الحي.");
+        }
+    }
+
+    private boolean isAppInForeground() {
+        try {
+            android.app.ActivityManager.RunningAppProcessInfo info =
+                    new android.app.ActivityManager.RunningAppProcessInfo();
+            android.app.ActivityManager.getMyMemoryState(info);
+            return info.importance == android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                    || info.importance == android.app.ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE;
+        } catch (Exception e) {
+            return false;
         }
     }
 
