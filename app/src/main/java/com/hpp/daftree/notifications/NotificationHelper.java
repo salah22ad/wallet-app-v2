@@ -401,34 +401,22 @@ public class NotificationHelper {
 
                 int notificationId = (int) (System.currentTimeMillis() & 0x7fffffff);
                 Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/raw/notification_sound");
-                Bitmap largeIcon = getBitmapFromDrawable(context, R.mipmap.ic_launcher);
-                int layoutResId = (modelType == 2) ? R.layout.layout_notif_model2 : R.layout.layout_notif_model1;
+                Bitmap appIcon = getBitmapFromDrawable(context, R.mipmap.ic_launcher);
 
                 Bitmap bitmap = null;
                 if (imageUrl != null && !imageUrl.isEmpty()) {
                     try {
-                        bitmap = getBitmapFromUrl(imageUrl, modelType == 2);
+                        bitmap = getBitmapFromUrl(imageUrl, false);
                     } catch (Exception imgErr) {
                         android.util.Log.e("NotificationHelper", "Failed to load promo image", imgErr);
                     }
                 }
 
-                RemoteViews expandedView = new RemoteViews(context.getPackageName(), layoutResId);
-                expandedView.setTextViewText(R.id.tvNotifTitle, title);
-                expandedView.setTextViewText(R.id.tvNotifBody, body);
-                expandedView.setTextViewText(R.id.btnMainAction, btnText);
-
-                if (bitmap != null) {
-                    expandedView.setImageViewBitmap(R.id.ivNotifImage, bitmap);
-                    expandedView.setViewVisibility(R.id.ivNotifImage, View.VISIBLE);
-                    if (modelType == 1) expandedView.setInt(R.id.tvNotifBody, "setMaxLines", 4);
-                } else {
-                    expandedView.setViewVisibility(R.id.ivNotifImage, View.GONE);
-                    expandedView.setInt(R.id.tvNotifBody, "setMaxLines", 10);
-                }
+                String actionLabel = (btnText != null && !btnText.trim().isEmpty())
+                        ? btnText
+                        : context.getString(R.string.open_app);
 
                 PendingIntent mainPendingIntent = createSmartPendingIntent(type, webUrl);
-                expandedView.setOnClickPendingIntent(R.id.btnMainAction, mainPendingIntent);
 
                 Intent remindIntent = new Intent(context, NotificationReceiver.class);
                 remindIntent.setAction(ACTION_REMIND_LATER);
@@ -437,34 +425,43 @@ public class NotificationHelper {
                 remindIntent.putExtra("imageUrl", imageUrl);
                 remindIntent.putExtra("webUrl", webUrl);
                 remindIntent.putExtra("type", type);
-                remindIntent.putExtra("btnText", btnText);
+                remindIntent.putExtra("btnText", actionLabel);
                 remindIntent.putExtra("modelType", modelType);
                 remindIntent.putExtra("notifId", notificationId);
 
                 PendingIntent remindPendingIntent = PendingIntent.getBroadcast(
                         context, notificationId, remindIntent, getSafePendingIntentFlags()
                 );
-                expandedView.setOnClickPendingIntent(R.id.btnRemindLater, remindPendingIntent);
-
-                RemoteViews collapsedView = new RemoteViews(context.getPackageName(), R.layout.layout_notif_collapsed);
-                collapsedView.setTextViewText(R.id.tvNotifTitle, title);
-                collapsedView.setTextViewText(R.id.tvNotifBody, body);
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_MAIN)
                         .setSmallIcon(R.drawable.ic_stat_name)
-                        .setLargeIcon(largeIcon)
                         .setContentTitle(title)
                         .setContentText(body)
-                        .setCustomContentView(collapsedView)
-                        .setCustomBigContentView(expandedView)
-                        .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                         .setPriority(NotificationCompat.PRIORITY_MAX)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                         .setSound(soundUri)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
                         .setAutoCancel(true)
-                        .setContentIntent(mainPendingIntent);
+                        .setContentIntent(mainPendingIntent)
+                        .addAction(0, actionLabel, mainPendingIntent)
+                        .addAction(0, context.getString(R.string.later), remindPendingIntent);
+
+                if (bitmap != null) {
+                    builder.setLargeIcon(bitmap);
+                    builder.setStyle(new NotificationCompat.BigPictureStyle()
+                            .bigPicture(bitmap)
+                            .bigLargeIcon((Bitmap) null)
+                            .setBigContentTitle(title)
+                            .setSummaryText(body));
+                } else {
+                    if (appIcon != null) {
+                        builder.setLargeIcon(appIcon);
+                    }
+                    builder.setStyle(new NotificationCompat.BigTextStyle()
+                            .bigText(body)
+                            .setBigContentTitle(title));
+                }
 
                 manager.notify(notificationId, builder.build());
             } catch (Exception e) {
@@ -472,7 +469,6 @@ public class NotificationHelper {
             }
         };
 
-        // إذا كنا أصلاً في خيط خلفي (مثل FCM onMessageReceived) ننفذ مباشرة حتى لا تُقتل الخدمة قبل العرض
         if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) {
             ExecutorService executor = Executors.newSingleThreadExecutor();
             executor.execute(() -> {
