@@ -1,0 +1,252 @@
+====================================================
+ملخص الأخطاء والاستثناءات Error Summary
+====================================================
+Welcome to Gradle 9.5.0!
+
+Here are the highlights of this release:
+ - Task provenance in reports and failure messages
+ - Type-safe accessors for precompiled Kotlin Settings plugins
+
+For more details see https://docs.gradle.org/9.5.0/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Task :app:signingReport
+Variant: debug
+Config: debug
+Store: /home/runner/.config/.android/debug.keystore
+Alias: AndroidDebugKey
+Error: Missing keystore
+----------
+Variant: release
+Config: release
+Store: /home/runner/work/wallet-app-v2/wallet-app-v2/app/release.jks
+Alias: key0
+MD5: 0C:77:B8:B3:4D:A2:CC:D2:A2:FA:CF:1F:DB:93:47:83
+SHA1: 1F:94:F6:DD:5C:3B:4B:97:F0:75:B2:FE:C1:C1:C9:8A:41:19:EE:40
+SHA-256: 1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D
+Valid until: Wednesday, November 24, 2049
+----------
+Variant: debugAndroidTest
+Config: debug
+Store: /home/runner/.config/.android/debug.keystore
+Alias: AndroidDebugKey
+Error: Missing keystore
+----------
+
+BUILD SUCCESSFUL in 49s
+1 actionable task: 1 executed
+🔹 البصمة التي قرأها Gradle فعلياً لنسخة release : 1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D
+🔹 البصمة المطلوبة لمفتاح التحميل (Upload Key)  : 1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D
+✅ الفحص الثاني نجح: Gradle مرتبط رسمياً بمفتاح التحميل الصحيح (1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D) وجاهز للبناء!
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden
+> Task :clean UP-TO-DATE
+> Task :app:clean UP-TO-DATE
+
+BUILD SUCCESSFUL in 797ms
+2 actionable tasks: 2 up-to-date
+=== بدء بناء نسخة Release APK ===
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden
+====================================================
+آخر 200 سطر من سجل البناء الكامل:
+====================================================
+                                                      ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1796: warning: [deprecation] MasterKey in androidx.security.crypto has been deprecated
+            MasterKey masterKey = new MasterKey.Builder(this)
+            ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1797: warning: [deprecation] MasterKey in androidx.security.crypto has been deprecated
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                  ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1797: warning: [deprecation] KeyScheme in MasterKey has been deprecated
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                           ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1796: warning: [deprecation] MasterKey in androidx.security.crypto has been deprecated
+            MasterKey masterKey = new MasterKey.Builder(this)
+                                      ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1796: warning: [deprecation] Builder in MasterKey has been deprecated
+            MasterKey masterKey = new MasterKey.Builder(this)
+                                               ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1804: warning: [deprecation] EncryptedSharedPreferences in androidx.security.crypto has been deprecated
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1804: warning: [deprecation] PrefKeyEncryptionScheme in EncryptedSharedPreferences has been deprecated
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1805: warning: [deprecation] EncryptedSharedPreferences in androidx.security.crypto has been deprecated
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                    ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1805: warning: [deprecation] PrefValueEncryptionScheme in EncryptedSharedPreferences has been deprecated
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1800: warning: [deprecation] EncryptedSharedPreferences in androidx.security.crypto has been deprecated
+            SharedPreferences encryptedPrefs = EncryptedSharedPreferences.create(
+                                               ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:2794: warning: [unchecked] unchecked cast
+                                Map<String, Object> resultData = (Map<String, Object>) result.getData();
+                                                                                                     ^
+  required: Map<String,Object>
+  found:    Object
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/AddTransactionActivity.java:821: warning: [deprecation] SHOW_IMPLICIT in InputMethodManager has been deprecated
+                    imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+                                                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/SecurityBootstrap.java:162: warning: [deprecation] GET_SIGNATURES in PackageManager has been deprecated
+                        packageInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+                                                                                                                 ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/SecurityBootstrap.java:163: warning: [deprecation] signatures in PackageInfo has been deprecated
+                        if (packageInfo.signatures != null) {
+                                       ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/SecurityBootstrap.java:164: warning: [deprecation] signatures in PackageInfo has been deprecated
+                            for (Signature s : packageInfo.signatures) {
+                                                          ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/TamperDetection.java:42: warning: [deprecation] GET_SIGNATURES in PackageManager has been deprecated
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+                                                                                                                         ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/TamperDetection.java:43: warning: [deprecation] signatures in PackageInfo has been deprecated
+            for (Signature signature : packageInfo.signatures) {
+                                                  ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/UpdateAppDialog.java:205: warning: [deprecation] VIBRATOR_SERVICE in Context has been deprecated
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                                                                           ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/UpdateAppDialog.java:210: warning: [deprecation] vibrate(long) in Vibrator has been deprecated
+                    vibrator.vibrate(500);
+                            ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/UpdateAppDialog.java:220: warning: [deprecation] VIBRATOR_SERVICE in Context has been deprecated
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                                                                           ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/UpdateAppDialog.java:225: warning: [deprecation] vibrate(long) in Vibrator has been deprecated
+                    vibrator.vibrate(50);
+                            ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/ReportsBottomSheet.java:178: warning: [deprecation] getSerializable(String) in Bundle has been deprecated
+            LaunchMode mode = (LaunchMode) getArguments().getSerializable(ARG_LAUNCH_MODE);
+                                                         ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/ReportsBottomSheet.java:227: warning: [deprecation] setOnCheckedChangeListener(OnCheckedChangeListener) in ChipGroup has been deprecated
+        binding.chipGroupScope.setOnCheckedChangeListener((group, checkedId) -> updateScopeVisibility(checkedId));
+                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/DeviceManagementDialog.java:77: warning: [deprecation] getSerializable(String) in Bundle has been deprecated
+            devices = (List<DeviceInfo>) getArguments().getSerializable(ARG_DEVICES);
+                                                       ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/DeviceManagementDialog.java:77: warning: [unchecked] unchecked cast
+            devices = (List<DeviceInfo>) getArguments().getSerializable(ARG_DEVICES);
+                                                                       ^
+  required: List<DeviceInfo>
+  found:    Serializable
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/DeviceManagementDialog.java:97: warning: [deprecation] onBackPressed() in Dialog has been deprecated
+            public void onBackPressed() {
+                        ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/SplashActivity.java:219: warning: [deprecation] updateConfiguration(Configuration,DisplayMetrics) in Resources has been deprecated
+            getResources().updateConfiguration(configuration, resources.getDisplayMetrics());
+                          ^
+72 warnings
+
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:checkReleaseAarMetadata
+> Task :app:compileReleaseNavigationResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:extractProguardFiles
+> Task :app:processReleaseJavaRes
+> Task :app:processReleaseManifestForPackage
+> Task :app:mergeReleaseJavaResource
+> Task :app:mergeReleaseStartupProfile
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:processReleaseResources
+> Task :app:mergeReleaseGeneratedProguardFiles
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:minifyReleaseWithR8
+> Task :app:compileReleaseArtProfile
+> Task :app:convertShrunkResourcesToBinaryRelease
+> Task :app:optimizeReleaseResources
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+
+[Incubating] Problems report is available at: file:///home/runner/work/wallet-app-v2/wallet-app-v2/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 3m 24s
+49 actionable tasks: 49 executed
+=== شهادة وبصمة ملف APK الناتج ===
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden
+V2 Signer: certificate DN: C=YE, ST=Taiz, L=Taiz, O=HPP, CN=Salah Ahmed
+V2 Signer: certificate SHA-256 digest: 1c36973851f58501a8ea6c9415511cec7a0fab1af835732a6581ba626727390d
+V2 Signer: certificate SHA-1 digest: 1f94f6dd5c3b4b97f075b2fec1c1c98a4119ee40
+V2 Signer: certificate MD5 digest: 0c77b8b34da2ccd2a2facf1fdb934783
+✅ تم التأكد القاطع من توقيع ملف APK ببصمة مفتاح التحميل الصحيحة!
+=== الذاكرة المتاحة قبل بناء AAB ===
+               total        used        free      shared  buff/cache   available
+Mem:            15Gi       1.0Gi        12Gi        48Mi       2.6Gi        14Gi
+Swap:          3.0Gi          0B       3.0Gi
+=== بدء بناء نسخة Release AAB وتوليد mergeReleaseNativeLibs ===
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden
+Starting a Gradle Daemon, 1 stopped Daemon could not be reused, use --status for details
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:extractReleaseVersionControlInfo UP-TO-DATE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets UP-TO-DATE
+> Task :app:checkReleaseDuplicateClasses UP-TO-DATE
+> Task :app:dataBindingMergeDependencyArtifactsRelease UP-TO-DATE
+> Task :app:generateReleaseResources UP-TO-DATE
+> Task :app:injectCrashlyticsMappingFileIdRelease
+> Task :app:injectCrashlyticsVersionControlInfoRelease UP-TO-DATE
+> Task :app:processReleaseGoogleServices UP-TO-DATE
+> Task :app:packageReleaseResources
+> Task :app:processReleaseNavigationResources UP-TO-DATE
+> Task :app:parseReleaseLocalResources
+> Task :app:generateReleaseBuildConfig UP-TO-DATE
+> Task :app:generateReleaseRFile UP-TO-DATE
+> Task :app:javaPreCompileRelease UP-TO-DATE
+> Task :app:mergeReleaseArtProfile UP-TO-DATE
+> Task :app:checkReleaseAarMetadata UP-TO-DATE
+> Task :app:mapReleaseSourceSetPaths UP-TO-DATE
+> Task :app:compileReleaseNavigationResources UP-TO-DATE
+> Task :app:createReleaseCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksRelease UP-TO-DATE
+> Task :app:processReleaseMainManifest UP-TO-DATE
+> Task :app:processReleaseManifest UP-TO-DATE
+> Task :app:processReleaseManifestForPackage UP-TO-DATE
+> Task :app:extractProguardFiles UP-TO-DATE
+> Task :app:mergeReleaseStartupProfile UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders UP-TO-DATE
+> Task :app:mergeReleaseResources
+> Task :app:mergeReleaseNativeLibs UP-TO-DATE
+> Task :app:dataBindingGenBaseClassesRelease UP-TO-DATE
+> Task :app:compileReleaseKotlin NO-SOURCE
+> Task :app:compileReleaseJavaWithJavac UP-TO-DATE
+> Task :app:processReleaseJavaRes UP-TO-DATE
+> Task :app:mergeReleaseJavaResource UP-TO-DATE
+> Task :app:stripReleaseDebugSymbols UP-TO-DATE
+> Task :app:writeReleaseAppMetadata UP-TO-DATE
+> Task :app:collectReleaseDependencies UP-TO-DATE
+> Task :app:configureReleaseDependencies
+> Task :app:extractReleaseNativeDebugMetadata UP-TO-DATE
+> Task :app:parseReleaseIntegrityConfig
+> Task :app:validateSigningRelease UP-TO-DATE
+> Task :app:processReleaseResources
+> Task :app:expandReleaseArtProfileWildcards UP-TO-DATE
+> Task :app:mergeReleaseGeneratedProguardFiles UP-TO-DATE
+> Task :app:minifyReleaseWithR8
+> Task :app:buildReleasePreBundle
+> Task :app:compileReleaseArtProfile UP-TO-DATE
+> Task :app:packageReleaseBundle
+> Task :app:signReleaseBundle
+> Task :app:produceReleaseBundleIdeListingFile
+> Task :app:createReleaseBundleListingFileRedirect
+> Task :app:bundleRelease
+
+BUILD SUCCESSFUL in 2m 41s
+49 actionable tasks: 13 executed, 36 up-to-date
+=== فحص شهادة وبصمة ملف AAB النهائي ===
+Owner: C=YE, ST=Taiz, L=Taiz, O=HPP, CN=Salah Ahmed
+Issuer: C=YE, ST=Taiz, L=Taiz, O=HPP, CN=Salah Ahmed
+	 SHA1: 1F:94:F6:DD:5C:3B:4B:97:F0:75:B2:FE:C1:C1:C9:8A:41:19:EE:40
+	 SHA256: 1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D
+✅ تم التأكد القاطع من توقيع ملف AAB ببصمة مفتاح التحميل الصحيحة (1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D)!
