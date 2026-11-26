@@ -46,7 +46,7 @@ android {
         versionName = "1.7.0"
 
         // إظهار ديالوج التحديث
-        buildConfigField("boolean", "IS_MAJOR_UPDATE", "false")
+        buildConfigField("boolean", "IS_MAJOR_UPDATE", "true")
         buildConfigField("int", "VERSION_CODE", versionCode.toString())
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
