@@ -155,7 +155,14 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     // --- Getters and Setters for UI ---
+    private final Map<String, LiveData<List<AccountWithBalance>>> cachedTypeAccounts = new HashMap<>();
+
     public LiveData<List<AccountWithBalance>> getAccountsForType(String acTypeFirestoreId) {
+        String cacheKey = (acTypeFirestoreId == null || acTypeFirestoreId.trim().isEmpty()) ? "__ALL__" : acTypeFirestoreId;
+        LiveData<List<AccountWithBalance>> existing = cachedTypeAccounts.get(cacheKey);
+        if (existing != null) {
+            return existing;
+        }
         MediatorLiveData<List<AccountWithBalance>> pageAccounts = new MediatorLiveData<>();
         final LiveData<List<AccountWithBalance>>[] sourceHolder = new LiveData[]{null};
 
@@ -186,6 +193,7 @@ public class MainViewModel extends AndroidViewModel {
             if (cur != null) pageAccounts.setValue(applySorting(cur));
         });
 
+        cachedTypeAccounts.put(cacheKey, pageAccounts);
         return pageAccounts;
     }
 

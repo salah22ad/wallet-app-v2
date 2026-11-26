@@ -2650,6 +2650,7 @@ AppDatabase.databaseWriteExecutor.execute(() -> {
             pagerAdapter = new AccountTypesPagerAdapter(MainActivity.this, accountTypesList);
             binding.viewPager.setSaveEnabled(false);
             binding.viewPager.setAdapter(pagerAdapter);
+            binding.viewPager.setOffscreenPageLimit(Math.max(1, pagerAdapter.getItemCount()));
 
             binding.viewPager.setCurrentItem(1, false);
 
