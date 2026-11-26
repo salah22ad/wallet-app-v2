@@ -195,8 +195,14 @@ public class TransactionNotificationManager {
             typeText = context.getString(R.string.report_balance_type_debit);
         }
 
-        String body = context.getString(R.string.prepareAndPushNotification_04) + formatCurrency(transaction.getAmount()) + " " + currencySymbol + ") "
-                + typeText + " " + context.getString(R.string.prepareAndPushNotification_05) + currentUserName;
+        String title = context.getString(R.string.notif_tx_official_title);
+        String body = context.getString(
+                R.string.notif_tx_official_body,
+                currentUserName,
+                formatCurrency(transaction.getAmount()),
+                currencySymbol,
+                typeText
+        );
         boolean senderIsGuest = mAuth.getCurrentUser() == null;
 
         Map<String, Object> notificationData = new HashMap<>();
@@ -205,7 +211,7 @@ public class TransactionNotificationManager {
         notificationData.put("targetUserType", isGuest ? "guests" : "users");
         notificationData.put("senderId", senderIsGuest ? "guest_user" : mAuth.getCurrentUser().getUid());
         notificationData.put("type", "transaction_alert");
-        notificationData.put("title", context.getString(R.string.prepareAndPushNotification_06));
+        notificationData.put("title", title);
         notificationData.put("message", body);
         notificationData.put("amount", transaction.getAmount());
         notificationData.put("currency", currencySymbol);
@@ -233,7 +239,7 @@ public class TransactionNotificationManager {
     }
 
 
-    private void prepareAndPushNotification2(String targetUserId, String body, String targetUserType) {
+    private void prepareAndPushNotification2(String targetUserId, String title, String body, String targetUserType) {
 
         Map<String, Object> notificationData = new HashMap<>();
 
@@ -244,7 +250,7 @@ public class TransactionNotificationManager {
         notificationData.put("targetUserType", targetUserType); // القيمة التي سنمررها (users أو guests)
         notificationData.put("senderId", senderIsGuest ? "guest_user" : mAuth.getCurrentUser().getUid());
         notificationData.put("type", "transaction_alert");
-        notificationData.put("title", context.getString(R.string.prepareAndPushNotification_06));
+        notificationData.put("title", title);
         notificationData.put("message", body);
         notificationData.put("timestamp", FieldValue.serverTimestamp());
         notificationData.put("isRead", false);
@@ -266,7 +272,8 @@ public class TransactionNotificationManager {
 
             List<String> possibleNumbers = getGlobalPossiblePhoneNumbers(phone);
             String linkedAccounts = context.getString(R.string.linked_account);
-            @SuppressLint({"StringFormatInvalid", "LocalSuppress"}) String body = context.getString(R.string.prepareAndPushNotification_account_is_new, linkedAccounts);
+            String title = context.getString(R.string.notif_new_account_title);
+            String body = context.getString(R.string.prepareAndPushNotification_account_is_new, linkedAccounts);
             if(isExcludedPhone(currentUserPhone)) return;
             // البحث في المستخدمين الرسميين أولاً
             db.collection("users")
@@ -282,7 +289,7 @@ public class TransactionNotificationManager {
                                 return;
                             }
                                 Log.d(TAG, "New Account Alert: Found in Users -> " + targetUserId);
-                                prepareAndPushNotification2(targetUserId, body, "users");
+                                prepareAndPushNotification2(targetUserId, title, body, "users");
 
                         } else {
                             // إذا لم يوجد، نبحث في الضيوف
@@ -300,7 +307,7 @@ public class TransactionNotificationManager {
                                             String targetUserId = guestSnapshot.getDocuments().get(0).getId();
                                             Log.d(TAG, "New Account Alert: Found in guests -> " + targetUserId);
 
-                                            prepareAndPushNotification2(targetUserId, body, "guests");
+                                            prepareAndPushNotification2(targetUserId, title, body, "guests");
                                         }
                                     })
                                     .addOnFailureListener(e -> {
@@ -329,8 +336,13 @@ public class TransactionNotificationManager {
             typeText = context.getString(R.string.report_balance_type_debit);
         }
 
-        String body = context.getString(R.string.prepareAndPushNotification_guest) + formatCurrency(transaction.getAmount()) + " " + currencySymbol + ") "
-                + typeText;
+        String title = context.getString(R.string.notif_tx_guest_title);
+        String body = context.getString(
+                R.string.notif_tx_guest_body,
+                formatCurrency(transaction.getAmount()),
+                currencySymbol,
+                typeText
+        );
         // البحث في المستخدمين الرسميين أولاً
         db.collection("users")
                 .whereIn("phone", possibleNumbers)
@@ -345,7 +357,7 @@ public class TransactionNotificationManager {
                             return;
                         }
                             Log.d(TAG, "New Account Alert: Found in Users -> " + targetUserId);
-                            prepareAndPushNotification2(targetUserId, body, "users");
+                            prepareAndPushNotification2(targetUserId, title, body, "users");
 
                     } else {
                         // إذا لم يوجد، نبحث في الضيوف
@@ -361,7 +373,7 @@ public class TransactionNotificationManager {
                                             Log.d(TAG, "Skipping transaction notification (same phone)");
                                             return;
                                         }
-                                            prepareAndPushNotification2(targetUserId, body, "guests");
+                                            prepareAndPushNotification2(targetUserId, title, body, "guests");
 
                                     }
                                 })

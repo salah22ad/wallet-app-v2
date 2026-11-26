@@ -1683,7 +1683,7 @@
     <string name="setupLifetimeDiscountLogic_17">انتهى العرض</string>
     <string name="handleSuccessfulPurchase_18">تم تفعيل الاشتراك بنجاح!</string>
     <string name="disableUIForActiveSubscriber_19">مشترك بالفعل </string>
-    <string name="prepareAndPushNotification_account_is_new">قام شخص ما بإضافتك ضمن قائمة حساباتة المالية\nلمعرفة من قام بإضافتك, قم بتفعيل ميزة متابعة حسابتي وتابع حساباتك عند الأخرين أولا بأول</string>
+    <string name="prepareAndPushNotification_account_is_new">أضافك أحد المستخدمين إلى قائمة حساباته المالية. فعّل ميزة «%1$s» لمعرفة من أضافك ومتابعة أرصدتك لحظة بلحظة.</string>
     <string name="remind_laters">تذكيري لاحقاً</string>
     <string name="rate_rewarded">مكافأة التميز 🎁</string>
     <string name="rate_rewarded_message">تقديراً لثقتك بعد 100 عملية، نود منحك 20 نقطة مكافأة عند تقييمك للتطبيق.</string>
@@ -1891,4 +1891,9 @@
     <string name="share_inv_balance_label">إجمالي الرصيد الحالي</string>
     <string name="share_bal_header">إشعار برصيد حسابكم الحالي لدينا بعملة (%1$s):</string>
     <string name="share_bal_zero">نفيدكم بأن رصيد حسابكم الحالي لدينا بعملة (%1$s) هو: 0 (مُصفّى).</string>
+    <string name="notif_tx_official_title">🔔 قيد مالي جديد في حسابك</string>
+    <string name="notif_tx_official_body">سجّل %1$s مبلغ %2$s %3$s (%4$s). اضغط للاطلاع على كشف حسابك.</string>
+    <string name="notif_tx_guest_title">🔔 حركة مالية جديدة برقمك</string>
+    <string name="notif_tx_guest_body">تم تسجيل مبلغ %1$s %2$s (%3$s) على حساب مرتبط برقمك. فعّل «متابعة حساباتي» لمعرفة التفاصيل ومن قام بالتسجيل.</string>
+    <string name="notif_new_account_title">👤 تمت إضافتك إلى حساب مالي</string>
 </resources>

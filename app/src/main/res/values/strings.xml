@@ -1608,7 +1608,7 @@
     <string name="setupLifetimeDiscountLogic_17">Offer ended</string>
     <string name="handleSuccessfulPurchase_18">Subscription activated successfully!</string>
     <string name="disableUIForActiveSubscriber_19">Already subscribed </string>
-    <string name="prepareAndPushNotification_account_is_new">Someone added you to their financial accounts list\nTo find out who added you, activate the \' %s \' feature and track your accounts with others regularly</string>
+    <string name="prepareAndPushNotification_account_is_new">Someone added you to their financial accounts. Activate \"%1$s\" to see who added you and track your balances in real time.</string>
     <string name="remind_laters">Remind me later</string>
     <string name="rate_rewarded">Excellence Reward 🎁</string>
     <string name="rate_rewarded_message">In appreciation of your trust after 100 transactions, we\'d like to give you 20 bonus points for rating the app.</string>
@@ -1807,4 +1807,9 @@
     <string name="share_inv_balance_label">Total Account Balance</string>
     <string name="share_bal_header">Current account balance notice in (%1$s):</string>
     <string name="share_bal_zero">Your current account balance with us in (%1$s) is: 0 (Settled).</string>
+    <string name="notif_tx_official_title">🔔 New Transaction Recorded</string>
+    <string name="notif_tx_official_body">%1$s recorded %2$s %3$s (%4$s). Tap to view your statement.</string>
+    <string name="notif_tx_guest_title">🔔 New Activity on Your Number</string>
+    <string name="notif_tx_guest_body">%1$s %2$s (%3$s) was recorded on an account linked to your number. Activate \"Track My Accounts\" to see who recorded it.</string>
+    <string name="notif_new_account_title">👤 You Were Added to an Account</string>
 </resources>
