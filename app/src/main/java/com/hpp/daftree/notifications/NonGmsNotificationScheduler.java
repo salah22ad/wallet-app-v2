@@ -16,6 +16,7 @@ import androidx.work.WorkManager;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.hpp.daftree.utils.SecureLicenseManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,13 +65,20 @@ public class NonGmsNotificationScheduler {
 
         Log.d(TAG, "GMS غير متوفر — تفعيل منظومة WorkManager للإشعارات.");
 
-        // 1) مسار الإشعارات العامة والمدراء + احتياط التذكير اليومي (مرتين يومياً / كل 12 ساعة)
+        // 1) مسار الإشعارات العامة والمدراء + احتياط التذكير اليومي
+        // المدراء: فحص فوري عند كل فتح للتطبيق | المستخدمون العاديون: مرة كل 12 ساعة
+        boolean isAdmin = SecureLicenseManager.getInstance(appCtx).isUserAdmin();
         SharedPreferences prefs = appCtx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         long lastCheck = prefs.getLong(KEY_LAST_BROADCAST_CHECK, 0L);
         long elapsed = System.currentTimeMillis() - lastCheck;
-        long initialDelayMs = (lastCheck == 0L || elapsed >= TWELVE_HOURS_MS)
+
+        long initialDelayMs = (isAdmin || lastCheck == 0L || elapsed >= TWELVE_HOURS_MS)
                 ? 0L
                 : (TWELVE_HOURS_MS - elapsed);
+
+        ExistingWorkPolicy broadcastPolicy = isAdmin
+                ? ExistingWorkPolicy.REPLACE
+                : ExistingWorkPolicy.KEEP;
 
         Constraints connectedConstraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -82,7 +90,7 @@ public class NonGmsNotificationScheduler {
                 .setBackoffCriteria(BackoffPolicy.EXPONENTIAL, 15, TimeUnit.MINUTES)
                 .build();
 
-        wm.enqueueUniqueWork(BROADCAST_WORK_NAME, ExistingWorkPolicy.KEEP, broadcastReq);
+        wm.enqueueUniqueWork(BROADCAST_WORK_NAME, broadcastPolicy, broadcastReq);
 
         // 2) مسار الإشعارات المالية والديون (فحص كل ساعة عند توفر الإنترنت)
         PeriodicWorkRequest debtReq = new PeriodicWorkRequest.Builder(
