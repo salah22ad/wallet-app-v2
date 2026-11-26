@@ -203,6 +203,7 @@ public class SyncWorker extends Worker {
         map.put("notifySms", account.isNotifySms());
         map.put("accountType", account.getAccountType());
         map.put("lastModified", account.getLastModified());
+        map.put("lastTransDate", account.getLastTransDate());
         map.put("lastSyncDate", syncTime);
         map.put("acTypeFirestoreId", account.getAcTypeFirestoreId());
         map.put("isDeleted", account.isDeleted());

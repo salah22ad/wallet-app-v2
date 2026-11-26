@@ -792,8 +792,10 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
         newTransaction.setFirestoreId(UUIDGenerator.generateSequentialUUID());
         newTransaction.setSyncStatus("NEW");
         newTransaction.setAccountFirestoreId(getAccountFirestoreId.getFirestoreId());
-        newTransaction.setLastModified(System.currentTimeMillis());
+        long txMod = System.currentTimeMillis();
+        newTransaction.setLastModified(txMod);
         appDb.transactionDao().insert(newTransaction);
+        appDb.accountDao().updateLastTransDate(accountId, timestamp != null ? timestamp.getTime() : txMod);
     }
 
 
@@ -1233,10 +1235,17 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
                         currentUserId = guestUID;
                     }
 
+                    long importedLastTrans = 0L;
+                    if (type == SourceType.SOURCE_FOUR) {
+                        int ltdIdx = c.getColumnIndex("lastTransDate");
+                        if (ltdIdx != -1) importedLastTrans = c.getLong(ltdIdx);
+                    }
+                    long nowAccTs = System.currentTimeMillis();
                     newAccount.setFirestoreId(UUIDGenerator.generateSequentialUUID());
                     newAccount.setSyncStatus("NEW");
                     newAccount.setOwnerUID(currentUserId);
-                    newAccount.setLastModified(System.currentTimeMillis());
+                    newAccount.setLastModified(nowAccTs);
+                    newAccount.setLastTransDate(importedLastTrans > 0 ? importedLastTrans : nowAccTs);
 
                     long newId = appDb.accountDao().insert(newAccount);
                     accountIdMap.put(oldId, (int) newId);

@@ -62,6 +62,9 @@ public interface AccountDao {
     int getUnsyncedCount();
     @Query("UPDATE accounts SET syncStatus = :status, lastModified = :timestamp WHERE id = :id")
     int updateSyncStatus(int id, String status, long timestamp);
+
+    @Query("UPDATE accounts SET lastTransDate = :timestamp WHERE id = :accountId")
+    void updateLastTransDate(int accountId, long timestamp);
     @Query("SELECT * FROM accounts WHERE firestoreId = :firestoreId LIMIT 1")
     Account getAccountByFirestoreId(String firestoreId);
 

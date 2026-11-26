@@ -606,6 +606,7 @@ public class InvoiceDialog extends BottomSheetDialogFragment {
                             .sendTransactionNotification(newPayTx, finalCurrencyName, hostActivity);
                 }
 
+                db.accountDao().updateLastTransDate(account.getId(), System.currentTimeMillis());
                 repository.triggerSync();
                 licenseManager.incrementTransactionCount();
 

@@ -53,10 +53,9 @@ public class AccountListFragment extends Fragment {
         setupRecyclerView();
 
         String accountType = getArguments() != null ? getArguments().getString(ARG_ACCOUNT_TYPE) : null;
-        mainViewModel.setFilter(accountType); // ضبط الفلتر لهذا الـ Fragment
 
-        // هذا المراقب سيراقب الحسابات ويعرضها
-        mainViewModel.getAccounts().observe(getViewLifecycleOwner(), accounts -> {
+        // مراقب مستقل لكل صفحة لمنع التقطيع أثناء السحب
+        mainViewModel.getAccountsForType(accountType).observe(getViewLifecycleOwner(), accounts -> {
             if (accountsAdapter != null) {
                 accountsAdapter.submitList(accounts);
             }
@@ -92,6 +91,8 @@ public class AccountListFragment extends Fragment {
 
         // تحديد تخطيط الشبكة بناءً على حجم الشاشة والاتجاه
         RecyclerView.LayoutManager layoutManager = createAppropriateLayoutManager();
+        binding.accountsRecyclerView.setHasFixedSize(true);
+        binding.accountsRecyclerView.setItemViewCacheSize(20);
         binding.accountsRecyclerView.setLayoutManager(layoutManager);
         binding.accountsRecyclerView.setAdapter(accountsAdapter);
 

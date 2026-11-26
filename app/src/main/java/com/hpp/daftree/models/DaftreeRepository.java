@@ -136,7 +136,8 @@ public class DaftreeRepository {
                 transaction.setSyncStatus("DELETED");
                 transaction.setDeleted(true);
                 transaction.setDeletedBy(currentUserName);
-                transaction.setLastModified(System.currentTimeMillis());
+                long nowTs = System.currentTimeMillis();
+            transaction.setLastModified(nowTs);
                 mTransactionDao.update(transaction);
             }
 //            mTransactionDao.deleteById(transaction.getId());
@@ -332,6 +333,7 @@ public class DaftreeRepository {
                 }
 
                 long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
+                long remoteLastTransDate = readLongSafe(data, "lastTransDate", remoteLastModified);
                 long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
                 long deleteDate = readLongSafe(data, "deleteDate", 0L);
                 boolean isDeletedRemote = readIsDeletedSafe(data);
@@ -352,6 +354,7 @@ public class DaftreeRepository {
                         existing.setPhoneNumber((String) data.get("phoneNumber"));
                         existing.setAccountType((String) data.get("accountType"));
                         existing.setLastModified(remoteLastModified);
+                        if (remoteLastTransDate > existing.getLastTransDate()) existing.setLastTransDate(remoteLastTransDate);
                         existing.setLastSyncDate(remoteLastSyncDate);
                         String acTypeFsId = (String) data.get("acTypeFirestoreId");
                         if (acTypeFsId != null) existing.setAcTypeFirestoreId(acTypeFsId);
@@ -373,6 +376,7 @@ public class DaftreeRepository {
                     String owner = (String) data.get("ownerUID");
                     newAccount.setOwnerUID(owner != null ? owner : (currentUserId != null ? currentUserId : ""));
                     newAccount.setLastModified(remoteLastModified);
+                    newAccount.setLastTransDate(remoteLastTransDate);
                     newAccount.setLastSyncDate(remoteLastSyncDate);
                     newAccount.setSyncStatus("SYNCED");
                     String acTypeFsId = (String) data.get("acTypeFirestoreId");
@@ -466,6 +470,9 @@ public class DaftreeRepository {
                             existing.setDeletedBy((String) data.get("deletedBy"));
                             existing.setDeleted(isDeletedRemote);
                             mTransactionDao.update(existing);
+                            if (!isDeletedRemote && remoteLastModified > parentAccount.getLastTransDate()) {
+                                mAccountDao.updateLastTransDate(parentAccount.getId(), remoteLastModified);
+                            }
                         }
                     } else {
                         Transaction newTx = new Transaction();
@@ -493,6 +500,9 @@ public class DaftreeRepository {
                         newTx.setLastSyncDate(remoteLastSyncDate);
                         newTx.setSyncStatus("SYNCED");
                         mTransactionDao.insert(newTx);
+                        if (!isDeletedRemote && remoteLastModified > parentAccount.getLastTransDate()) {
+                            mAccountDao.updateLastTransDate(parentAccount.getId(), remoteLastModified);
+                        }
                     }
                 } catch (Exception e) {
                     Log.e(TAG, "batchUpsertTransactions error: " + e.getMessage(), e);
@@ -1039,6 +1049,7 @@ public class DaftreeRepository {
                         tx.setOwnerUID(currentUserId);
                     }
                     mTransactionDao.insert(tx);
+                    mAccountDao.updateLastTransDate(tx.getAccountId(), tx.getLastModified() > 0 ? tx.getLastModified() : System.currentTimeMillis());
                     Log.e("transactions", tx.toString());
                 }
             });
@@ -1060,6 +1071,7 @@ public class DaftreeRepository {
                         transactions.setOwnerUID(currentUserId);
                     }
                     mTransactionDao.insert(transactions);
+                    mAccountDao.updateLastTransDate(transactions.getAccountId(), transactions.getLastModified() > 0 ? transactions.getLastModified() : System.currentTimeMillis());
                     Log.e("transactions", transactions.toString());
 
             });
@@ -1235,7 +1247,8 @@ public class DaftreeRepository {
             transaction.setAccountFirestoreId(accountFirestoreId);
             transaction.setFirestoreId(UUIDGenerator.generateSequentialUUID());
             transaction.setSyncStatus("NEW");
-            transaction.setLastModified(System.currentTimeMillis());
+            long nowTs = System.currentTimeMillis();
+            transaction.setLastModified(nowTs);
 
             String currencyFirestoreId = currencyDao.getCurrencyFirestoreId(transaction.getCurrencyId());
 
@@ -1250,6 +1263,7 @@ public class DaftreeRepository {
 //                    transaction.getAccountId()+"\n" + transaction.getFirestoreId()+"\n"+
 //                    transaction.getAccountFirestoreId()+"\n");
             mTransactionDao.insert(transaction);
+            mAccountDao.updateLastTransDate(transaction.getAccountId(), nowTs);
             triggerSync();
         });
     }
@@ -1261,7 +1275,8 @@ public class DaftreeRepository {
             transaction.setAccountFirestoreId(accountFirestoreId);
             transaction.setFirestoreId(UUIDGenerator.generateSequentialUUID());
             transaction.setSyncStatus("NEW");
-            transaction.setLastModified(System.currentTimeMillis());
+            long nowTs = System.currentTimeMillis();
+            transaction.setLastModified(nowTs);
             if (transaction.getOwnerUID() == null) {
                 transaction.setOwnerUID(currentUserId);
             }
@@ -1274,6 +1289,7 @@ public class DaftreeRepository {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             Transaction currentTransaction = mTransactionDao.getTransactionByIdBlocking(transaction.getId());
             if (currentTransaction == null) return;
+            long nowTs = System.currentTimeMillis();
             String currencyFirestoreId = currencyDao.getCurrencyFirestoreId(transaction.getCurrencyId());
             mTransactionDao.updateUserChanges(
                     transaction.getId(),
@@ -1282,8 +1298,10 @@ public class DaftreeRepository {
                     transaction.getCurrencyId(), // <-- تم التحديث هنا
                     transaction.getType(),
                     transaction.getTimestamp().getTime(),
-                    System.currentTimeMillis(), currencyFirestoreId
+                    nowTs,
+                    currencyFirestoreId
             );
+            mAccountDao.updateLastTransDate(transaction.getAccountId(), nowTs);
             triggerSync();
         });
     }
@@ -1293,6 +1311,7 @@ public class DaftreeRepository {
             Transaction currentTransaction = mTransactionDao.getTransactionByFirestoreId(transaction.getFirestoreId());
             if (currentTransaction == null) return;
 
+            long nowTs = System.currentTimeMillis();
             String currencyFirestoreId = currencyDao.getCurrencyFirestoreId(transaction.getCurrencyId());
             mTransactionDao.updateUserChanges(
                     transaction.getId(),
@@ -1318,11 +1337,13 @@ public class DaftreeRepository {
 
                     String currencyFirestoreId = currencyDao.getCurrencyFirestoreId(tx.getCurrencyId());
                     tx.setCurrencyFirestoreId(currencyFirestoreId);
+                    long txTs = tx.getLastModified() > 0 ? tx.getLastModified() : System.currentTimeMillis();
                     if (Objects.equals(tx.getSyncStatus(), "NEW")) {
-//                        tx.setLastModified(System.currentTimeMillis());
                         mTransactionDao.insert(tx);
+                        mAccountDao.updateLastTransDate(tx.getAccountId(), txTs);
                     } else if (Objects.equals(tx.getSyncStatus(), "EDITED")) {
                         updateInvoice(tx);
+                        mAccountDao.updateLastTransDate(tx.getAccountId(), txTs);
                     } else {
                         deleteTransaction(tx);
                     }

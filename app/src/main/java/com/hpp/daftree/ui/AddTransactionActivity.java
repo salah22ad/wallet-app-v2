@@ -430,6 +430,11 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
             if (accounts != null) {
                 this.allAccounts = accounts;
                 updateAccountMaps(accounts);
+                List<String> names = new ArrayList<>(accountNameToIdMap.keySet());
+                accountSuggestionsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, names);
+                binding.accountNameAutoComplete.setAdapter(accountSuggestionsAdapter);
+                int itemHeight = (int) (48 * getResources().getDisplayMetrics().density);
+                binding.accountNameAutoComplete.setDropDownHeight(itemHeight * 4);
                 Log.d(TAG, "Account list updated. Total accounts: " + allAccounts.size());
             }
         });
@@ -480,7 +485,7 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
     private void setupEventListeners() {
         binding.dateEditText.setOnClickListener(v -> showDatePicker());
 
-        // --- المستمع المحسّن لحقل اسم الحساب ---
+        // --- المستمع المحسّن لحقل اسم الحساب (مطابق لـ InvoiceDialog) ---
         binding.accountNameAutoComplete.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -489,9 +494,13 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
             @Override
             public void afterTextChanged(Editable s) {
                 if (isSelectionFromList) return;
-                String query = s.toString();
-                String normalizedText = normalizeText(s.toString());
-                filterAccountSuggestions(query);
+                if (accountSuggestionsAdapter != null) {
+                    accountSuggestionsAdapter.getFilter().filter(s);
+                    if (binding.accountNameAutoComplete.hasFocus() && s != null && s.length() > 0
+                            && !binding.accountNameAutoComplete.isPopupShowing()) {
+                        binding.accountNameAutoComplete.showDropDown();
+                    }
+                }
             }
         });
 

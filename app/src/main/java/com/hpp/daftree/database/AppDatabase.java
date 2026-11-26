@@ -50,7 +50,7 @@ import java.util.concurrent.Executors;
                 BudgetCategory.class,
                 BudgetEntry.class,
                 MonthlyBudgetLimit.class}
-        , version = 20, exportSchema = false)
+        , version = 21, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -110,7 +110,8 @@ public abstract class AppDatabase extends RoomDatabase {
                                     MIGRATION_13_14, MIGRATION_14_16,
                                     MIGRATION_16_17,MIGRATION_17_18,
                                     createMigration18To19(context),
-                                    MIGRATION_19_20
+                                    MIGRATION_19_20,
+                                    MIGRATION_20_21
                             )
                             .addCallback(new Callback() {
                                 @Override
@@ -156,7 +157,8 @@ public abstract class AppDatabase extends RoomDatabase {
                 "migration_6_7_pending",
                 "migration_17_18_pending",
                 "migration_18_19_pending",
-                "migration_19_20_pending"
+                "migration_19_20_pending",
+                "migration_20_21_pending"
         };
 
         boolean needsSync = false;
@@ -219,6 +221,20 @@ public abstract class AppDatabase extends RoomDatabase {
     // ================= MIGRATIONS =================
 
     static final Migration MIGRATION_19_20 = BudgetDatabaseMigration.MIGRATION_19_20;
+
+    static final Migration MIGRATION_20_21 = new Migration(20, 21) {
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE accounts ADD COLUMN lastTransDate INTEGER NOT NULL DEFAULT 0");
+            database.execSQL(
+                    "UPDATE accounts SET " +
+                    "lastTransDate = COALESCE((SELECT MAX(tx.lastModified) FROM transactions tx " +
+                    "WHERE tx.accountId = accounts.id AND tx.isDeleted = 0), accounts.lastModified, 0), " +
+                    "syncStatus = 'EDITED'"
+            );
+            database.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('migration_20_21_pending', 1)");
+        }
+    };
 
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override

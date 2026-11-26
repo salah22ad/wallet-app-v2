@@ -53,8 +53,7 @@ public class MainViewModel extends AndroidViewModel {
         android.content.SharedPreferences sharedPreferences = application.getSharedPreferences("AppPrefs", android.content.Context.MODE_PRIVATE);
         int savedSortOrder = sharedPreferences.getInt("KEY_SORT_ORDER", 4);
         this.sortOrder.setValue(savedSortOrder);
-        latestTransactionTimes = mRepository.getLatestTransactionTimestamps();
-        setupDataSources();
+                setupDataSources();
         updateDataSource();
     }
 
@@ -79,19 +78,6 @@ public class MainViewModel extends AndroidViewModel {
                 }
             }
             updateDataSource();
-        });
-        accounts.addSource(latestTransactionTimes, list -> {
-            latestTransactionTimesMap.clear();
-            if (list != null) {
-                for (AccountLatestTransaction item : list) {
-                    latestTransactionTimesMap.put(item.accountId, item.latestTimestamp);
-                }
-            }
-            // إعادة فرز القائمة الحالية فور تغيّر أوقات العمليات
-            List<AccountWithBalance> current = accounts.getValue();
-            if (current != null) {
-                accounts.setValue(applySorting(current));
-            }
         });
         accounts.addSource(currentCurrencyName, s -> updateDataSource());
         accounts.addSource(searchQuery, s -> updateDataSource());
@@ -171,6 +157,40 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     // --- Getters and Setters for UI ---
+    public LiveData<List<AccountWithBalance>> getAccountsForType(String acTypeFirestoreId) {
+        MediatorLiveData<List<AccountWithBalance>> pageAccounts = new MediatorLiveData<>();
+        final LiveData<List<AccountWithBalance>>[] sourceHolder = new LiveData[]{null};
+
+        Runnable reload = () -> {
+            if (sourceHolder[0] != null) {
+                pageAccounts.removeSource(sourceHolder[0]);
+            }
+            String currencyName = currentCurrencyName.getValue();
+            String search = searchQuery.getValue();
+            Integer currencyId = currencyNameToIdMap.get(currencyName);
+            if (currencyId == null) currencyId = 1;
+
+            sourceHolder[0] = mRepository.getAccountsWithBalances(
+                    currencyId,
+                    acTypeFirestoreId,
+                    search != null ? search : ""
+            );
+            pageAccounts.addSource(sourceHolder[0], list -> pageAccounts.setValue(applySorting(list)));
+        };
+
+        pageAccounts.addSource(allCurrencies, c -> reload.run());
+        pageAccounts.addSource(currentCurrencyName, c -> reload.run());
+        pageAccounts.addSource(searchQuery, s -> reload.run());
+        pageAccounts.addSource(refreshTrigger, r -> reload.run());
+        pageAccounts.addSource(forceRefresh, f -> reload.run());
+        pageAccounts.addSource(sortOrder, o -> {
+            List<AccountWithBalance> cur = pageAccounts.getValue();
+            if (cur != null) pageAccounts.setValue(applySorting(cur));
+        });
+
+        return pageAccounts;
+    }
+
     public LiveData<List<AccountWithBalance>> getAccounts() {
         Log.d("MainViewModel", "استدعاء getAccounts()");
         return accounts;
@@ -259,15 +279,11 @@ public class MainViewModel extends AndroidViewModel {
             case 0: // التاريخ الأقدم أولاً (تصاعدي بناءً على lastModified)
                 sortedList.sort((a, b) -> Long.compare(a.account.getLastModified(), b.account.getLastModified()));
                 break;
-            case 4: // الأحدث عمليات أولاً
+            case 4: // الأحدث عمليات أولاً (مباشرة من جدول الحسابات)
                 sortedList.sort((a, b) -> {
-                    long timeA = latestTransactionTimesMap.getOrDefault(a.account.getId(), 0L);
-                    long timeB = latestTransactionTimesMap.getOrDefault(b.account.getId(), 0L);
-                    if (timeA == timeB) {
-                        // في حالة التعادل (أو كلاهما بلا عمليات) نستخدم lastModified كـ fallback
-                        return Long.compare(b.account.getLastModified(), a.account.getLastModified());
-                    }
-                    return Long.compare(timeB, timeA); // تنازلي: الأحدث في الأعلى
+                    long timeA = a.account.getLastTransDate() > 0 ? a.account.getLastTransDate() : a.account.getLastModified();
+                    long timeB = b.account.getLastTransDate() > 0 ? b.account.getLastTransDate() : b.account.getLastModified();
+                    return Long.compare(timeB, timeA);
                 });
                 break;
         }

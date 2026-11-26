@@ -260,10 +260,12 @@ public class FirestoreRestoreHelper {
                                                     needsBatchCommit = true;
                                                 }
                                             }
-                                            long lastModified = doc.contains("lastModified") ? doc.getLong("lastModified") : System.currentTimeMillis();
-                                            long lastSyncDate = doc.contains("lastSyncDate") ? doc.getLong("lastSyncDate") : lastModified;
+                                            long lastModified = readDocLong(doc, "lastModified", System.currentTimeMillis());
+                                            long lastTransDate = readDocLong(doc, "lastTransDate", lastModified);
+                                            long lastSyncDate = readDocLong(doc, "lastSyncDate", lastModified);
                                             secureManager.updateLastSyncTime(SecureLicenseManager.getAccountKey(), lastSyncDate);
                                             account.setLastModified(lastModified);
+                                            account.setLastTransDate(lastTransDate);
                                             account.setLastSyncDate(lastSyncDate);
 
                                             account.setAcTypeFirestoreId(currentTypeId);
@@ -1783,6 +1785,7 @@ public class FirestoreRestoreHelper {
                                     } else {
                                         appDb.transactionDao().insert(trans);
                                     }
+                                    appDb.accountDao().updateLastTransDate(trans.getAccountId(), trans.getLastModified());
                                 }
                             });
 

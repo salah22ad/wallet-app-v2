@@ -128,6 +128,23 @@ public class AddBudgetEntryBottomSheet extends BottomSheetDialogFragment {
         setupCategoryGrid();
         setupListeners();
         updateDateDisplay();
+        focusAmountAndShowKeyboard();
+    }
+
+    private void focusAmountAndShowKeyboard() {
+        if (binding == null) return;
+        binding.etBudgetAmount.postDelayed(() -> {
+            if (binding == null || !isAdded()) return;
+            binding.etBudgetAmount.requestFocus();
+            if (binding.etBudgetAmount.getText() != null) {
+                binding.etBudgetAmount.setSelection(binding.etBudgetAmount.getText().length());
+            }
+            android.view.inputmethod.InputMethodManager imm =
+                    (android.view.inputmethod.InputMethodManager) requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.showSoftInput(binding.etBudgetAmount, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 150);
     }
 
     private long resolveDefaultDateForSelectedMonth() {

@@ -37,6 +37,10 @@ public class Account {
     @PropertyName("lastSyncDate")
     private long lastSyncDate;
 
+    @ColumnInfo(name = "lastTransDate")
+    @PropertyName("lastTransDate")
+    private long lastTransDate = 0L;
+
     @NonNull
     @ColumnInfo(name = "ownerUID")
     @PropertyName("ownerUID")
@@ -97,6 +101,7 @@ public class Account {
         this.firestoreId = other.firestoreId;
         this.syncStatus = other.syncStatus;
         this.lastModified = other.lastModified;
+        this.lastTransDate = other.lastTransDate;
         this.ownerUID = other.ownerUID;
         this.accountName = other.accountName;
         this.phoneNumber = other.phoneNumber;
@@ -164,6 +169,11 @@ public class Account {
     public long getLastSyncDate() { return lastSyncDate; }
     @PropertyName("lastSyncDate")
     public void setLastSyncDate(long lastSyncDate) { this.lastSyncDate = lastSyncDate; }
+
+    @PropertyName("lastTransDate")
+    public long getLastTransDate() { return lastTransDate; }
+    @PropertyName("lastTransDate")
+    public void setLastTransDate(long lastTransDate) { this.lastTransDate = lastTransDate; }
 
 
     @PropertyName("isDeleted")
