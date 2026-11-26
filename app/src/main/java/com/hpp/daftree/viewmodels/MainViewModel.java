@@ -40,8 +40,6 @@ public class MainViewModel extends AndroidViewModel {
     private final LiveData<List<String>> currenciesWithTransactions;
     private final LiveData<List<Account>> allAccounts;
     private AtomicBoolean isInitialLoad = new AtomicBoolean(true);
-    private final LiveData<List<AccountLatestTransaction>> latestTransactionTimes;
-    private final Map<Integer, Long> latestTransactionTimesMap = new HashMap<>();
     public MainViewModel(@NonNull Application application) {
         super(application);
         mRepository = new DaftreeRepository(application);
