@@ -446,10 +446,16 @@ public class NotificationHelper {
                 );
                 expandedView.setOnClickPendingIntent(R.id.btnRemindLater, remindPendingIntent);
 
+                RemoteViews collapsedView = new RemoteViews(context.getPackageName(), R.layout.layout_notif_collapsed);
+                collapsedView.setTextViewText(R.id.tvNotifTitle, title);
+                collapsedView.setTextViewText(R.id.tvNotifBody, body);
+
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_MAIN)
                         .setSmallIcon(R.drawable.ic_stat_name)
+                        .setLargeIcon(largeIcon)
                         .setContentTitle(title)
                         .setContentText(body)
+                        .setCustomContentView(collapsedView)
                         .setCustomBigContentView(expandedView)
                         .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                         .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -458,11 +464,9 @@ public class NotificationHelper {
                         .setSound(soundUri)
                         .setDefaults(NotificationCompat.DEFAULT_ALL)
                         .setAutoCancel(true)
-                        .setGroup(GROUP_DAFTREE)
                         .setContentIntent(mainPendingIntent);
 
                 manager.notify(notificationId, builder.build());
-                showSummaryNotification(largeIcon);
             } catch (Exception e) {
                 android.util.Log.e("NotificationHelper", "showPromoNotification error", e);
             }
