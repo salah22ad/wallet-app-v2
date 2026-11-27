@@ -98,7 +98,8 @@ public class DebtSummaryViewModel extends AndroidViewModel {
         }
         isLoading.setValue(true);
         SharedPreferences prefs = getApplication().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        long lastSyncTime = prefs.getLong(KEY_LAST_SYNC, 0);
+        long rawLastSyncTime = prefs.getLong(KEY_LAST_SYNC, 0);
+        long lastSyncTime = rawLastSyncTime > 0 ? Math.max(0L, rawLastSyncTime - (5 * 60 * 1000L)) : 0L;
         Handler handler = new Handler(Looper.getMainLooper());
         Runnable timeoutRunnable = new Runnable() {
             @Override

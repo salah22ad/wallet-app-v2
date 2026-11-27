@@ -158,10 +158,15 @@ public class NotificationHelper {
                 targetIntent = new Intent(context, clazz);
             } catch (ClassNotFoundException e1) {
                 try {
-                    Class<?> clazz = Class.forName("com.hpp.daftree." + type);
+                    Class<?> clazz = Class.forName("com.hpp.daftree.debt." + type);
                     targetIntent = new Intent(context, clazz);
                 } catch (ClassNotFoundException e2) {
-                    targetIntent = new Intent(context, MainActivity.class);
+                    try {
+                        Class<?> clazz = Class.forName("com.hpp.daftree." + type);
+                        targetIntent = new Intent(context, clazz);
+                    } catch (ClassNotFoundException e3) {
+                        targetIntent = new Intent(context, MainActivity.class);
+                    }
                 }
             }
         }
@@ -174,6 +179,7 @@ public class NotificationHelper {
 
         // 2. إذا كانت الشاشة المستهدفة ليست الرئيسية، نضعها فوق الرئيسية
         if (!targetIntent.getComponent().getClassName().equals(MainActivity.class.getName())) {
+            targetIntent.putExtra("FROM_NOTIFICATION", true);
             stackBuilder.addNextIntent(targetIntent);
         }
 
@@ -215,14 +221,19 @@ public class NotificationHelper {
                     targetIntent = new Intent(context, Class.forName("com.hpp.daftree.ui." + type));
                 } catch (ClassNotFoundException e1) {
                     try {
-                        targetIntent = new Intent(context, Class.forName("com.hpp.daftree." + type));
-                    } catch (ClassNotFoundException ignored) {
-                        return false;
+                        targetIntent = new Intent(context, Class.forName("com.hpp.daftree.debt." + type));
+                    } catch (ClassNotFoundException e2) {
+                        try {
+                            targetIntent = new Intent(context, Class.forName("com.hpp.daftree." + type));
+                        } catch (ClassNotFoundException ignored) {
+                            return false;
+                        }
                     }
                 }
             }
 
             if (targetIntent != null) {
+                targetIntent.putExtra("FROM_NOTIFICATION", true);
                 targetIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(targetIntent);
                 return true;

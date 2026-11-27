@@ -76,6 +76,7 @@ public class DebtSummaryActivity extends BaseActivity {
             mainIntent.putExtra("DEBUT_GUEST", "true");
             startActivity(mainIntent);
             finish();
+            return;
         } else {
             isLinked = SecureLicenseManager.getInstance(this).isLinkedAccount();
             isDebtFeatureEnabled = SecureLicenseManager.getInstance(this).isDebtFeatureEnabled();
@@ -84,11 +85,13 @@ public class DebtSummaryActivity extends BaseActivity {
                 mainIntent.putExtra("DEBUT_USER", "true");
                 startActivity(mainIntent);
                 finish();
+                return;
             } else if (!isDebtFeatureEnabled) {
                 Intent mainIntent = new Intent(this, MainActivity.class);
                 mainIntent.putExtra("DEBUT_USER", "true");
                 startActivity(mainIntent);
                 finish();
+                return;
             }
 
         }
@@ -119,13 +122,12 @@ public class DebtSummaryActivity extends BaseActivity {
 
         setupRecyclerView();
         observeViewModel();
-        binding.btnBack.setOnClickListener(v -> finish());
+        binding.btnBack.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
         binding.btnRetry.setOnClickListener(v -> loadData());
         binding.swipeRefresh.setOnRefreshListener(this::loadData);
         binding.tvLastSync.setText(getString(R.string.offline_last) + viewModel.getLastSyncTimeFormatted());
 
-
-        loadData();
+        loadDataAfterFirestoreReady();
     }
 
 
@@ -483,4 +485,31 @@ public class DebtSummaryActivity extends BaseActivity {
     private String formatCurrency(double amount) {
         return NumberFormat.getNumberInstance(Locale.US).format(amount);
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        loadDataAfterFirestoreReady();
+    }
+
+    private void loadDataAfterFirestoreReady() {
+        java.util.concurrent.CompletableFuture<FirebaseFirestore> future = MyApplication.getFirestoreAsync();
+        if (future == null || future.isDone()) {
+            loadData();
+            return;
+        }
+        new Thread(() -> {
+            try {
+                future.get(3, java.util.concurrent.TimeUnit.SECONDS);
+            } catch (Exception ignored) {
+            }
+            runOnUiThread(() -> {
+                if (!isFinishing() && !isDestroyed()) {
+                    loadData();
+                }
+            });
+        }).start();
+    }
+
 }

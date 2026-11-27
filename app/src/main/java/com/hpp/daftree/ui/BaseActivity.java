@@ -3,6 +3,7 @@ package com.hpp.daftree.ui;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -12,6 +13,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +23,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.hpp.daftree.R;
+import com.hpp.daftree.MainActivity;
 import com.hpp.daftree.SplashActivity;
 import android.view.ViewGroup;
 
@@ -158,6 +161,24 @@ public abstract class BaseActivity extends AppCompatActivity {
                         AppFontHelper.applyFontToViewTree(BaseActivity.this, v);
                     }
                 }, true);
+        if (!(this instanceof MainActivity) && !(this instanceof SplashActivity)) {
+            getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    boolean fromNotification = getIntent() != null
+                            && getIntent().getBooleanExtra("FROM_NOTIFICATION", false);
+                    if (fromNotification) {
+                        Intent mainIntent = new Intent(BaseActivity.this, MainActivity.class);
+                        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(mainIntent);
+                        finish();
+                    } else {
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                    }
+                }
+            });
+        }
       //  applyFixedFontScale();   // ✅ الاحتفاظ بها
     }
 
