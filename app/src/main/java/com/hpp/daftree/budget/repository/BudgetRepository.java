@@ -104,25 +104,55 @@ public class BudgetRepository {
 
     private void ensureDefaultCategories() {
         AppDatabase.databaseWriteExecutor.execute(() -> {
-            if (categoryDao.getCountSync() > 0) {
-                categoryDao.migrateDefaultCategoryCode("network", "freelance", "freelance");
-                categoryDao.migrateDefaultCategoryCode("apps", "investments", "investments");
-                return;
-            }
+            categoryDao.migrateDefaultCategoryCode("network", "freelance", "freelance");
+            categoryDao.migrateDefaultCategoryCode("apps", "investments", "investments");
+
             String uid = resolveOwnerUid(appContext);
             long now = System.currentTimeMillis();
             List<BudgetCategory> defaults = new ArrayList<>();
-            defaults.add(makeSeed(uid, "bills", BudgetCategory.TYPE_EXPENSE, "bills", "#F59E0B", 1, now));
+            // المصروفات (10 تصنيفات بالترتيب المعتمد)
+            defaults.add(makeSeed(uid, "food", BudgetCategory.TYPE_EXPENSE, "food", "#F97316", 1, now));
             defaults.add(makeSeed(uid, "housing", BudgetCategory.TYPE_EXPENSE, "housing", "#22C55E", 2, now));
-            defaults.add(makeSeed(uid, "food", BudgetCategory.TYPE_EXPENSE, "food", "#F97316", 3, now));
-            defaults.add(makeSeed(uid, "transport", BudgetCategory.TYPE_EXPENSE, "transport", "#3B82F6", 4, now));
-            defaults.add(makeSeed(uid, "health", BudgetCategory.TYPE_EXPENSE, "health", "#A855F7", 5, now));
-            defaults.add(makeSeed(uid, "other", BudgetCategory.TYPE_EXPENSE, "other", "#06B6D4", 6, now));
+            defaults.add(makeSeed(uid, "transport", BudgetCategory.TYPE_EXPENSE, "transport", "#3B82F6", 3, now));
+            defaults.add(makeSeed(uid, "bills", BudgetCategory.TYPE_EXPENSE, "bills", "#F59E0B", 4, now));
+            defaults.add(makeSeed(uid, "education", BudgetCategory.TYPE_EXPENSE, "education", "#8B5CF6", 5, now));
+            defaults.add(makeSeed(uid, "health", BudgetCategory.TYPE_EXPENSE, "health", "#A855F7", 6, now));
+            defaults.add(makeSeed(uid, "shopping", BudgetCategory.TYPE_EXPENSE, "shopping", "#14B8A6", 7, now));
+            defaults.add(makeSeed(uid, "family", BudgetCategory.TYPE_EXPENSE, "family", "#EF4444", 8, now));
+            defaults.add(makeSeed(uid, "gifts", BudgetCategory.TYPE_EXPENSE, "gifts", "#EAB308", 9, now));
+            defaults.add(makeSeed(uid, "other", BudgetCategory.TYPE_EXPENSE, "other", "#06B6D4", 10, now));
+            // الدخل (7 تصنيفات بالترتيب المعتمد)
             defaults.add(makeSeed(uid, "salary", BudgetCategory.TYPE_INCOME, "salary", "#10B981", 1, now));
             defaults.add(makeSeed(uid, "freelance", BudgetCategory.TYPE_INCOME, "freelance", "#0EA5E9", 2, now));
-            defaults.add(makeSeed(uid, "investments", BudgetCategory.TYPE_INCOME, "investments", "#6366F1", 3, now));
-            defaults.add(makeSeed(uid, "income_other", BudgetCategory.TYPE_INCOME, "income_other", "#EAB308", 4, now));
-            categoryDao.insertAll(defaults);
+            defaults.add(makeSeed(uid, "transfers", BudgetCategory.TYPE_INCOME, "transfers", "#14B8A6", 3, now));
+            defaults.add(makeSeed(uid, "investments", BudgetCategory.TYPE_INCOME, "investments", "#6366F1", 4, now));
+            defaults.add(makeSeed(uid, "income_gifts", BudgetCategory.TYPE_INCOME, "gifts", "#F59E0B", 5, now));
+            defaults.add(makeSeed(uid, "extra_income", BudgetCategory.TYPE_INCOME, "extra_income", "#8B5CF6", 6, now));
+            defaults.add(makeSeed(uid, "income_other", BudgetCategory.TYPE_INCOME, "income_other", "#EAB308", 7, now));
+
+            boolean changed = false;
+            for (BudgetCategory seed : defaults) {
+                BudgetCategory existing = categoryDao.getByCodeSync(seed.getCode());
+                if (existing == null) {
+                    categoryDao.insert(seed);
+                    changed = true;
+                } else if (existing.getSortOrder() != seed.getSortOrder()
+                        || !seed.getIconKey().equals(existing.getIconKey())
+                        || !seed.getColorHex().equals(existing.getColorHex())) {
+                    existing.setSortOrder(seed.getSortOrder());
+                    existing.setIconKey(seed.getIconKey());
+                    existing.setColorHex(seed.getColorHex());
+                    existing.setLastModified(now);
+                    if (!"NEW".equals(existing.getSyncStatus())) {
+                        existing.setSyncStatus("EDITED");
+                    }
+                    categoryDao.update(existing);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                triggerBudgetSync(appContext);
+            }
         });
     }
 

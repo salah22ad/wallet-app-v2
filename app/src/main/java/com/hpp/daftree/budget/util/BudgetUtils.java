@@ -135,15 +135,22 @@ public final class BudgetUtils {
             case "housing": return R.string.budget_cat_housing;
             case "food": return R.string.budget_cat_food;
             case "transport": return R.string.budget_cat_transport;
+            case "education": return R.string.budget_cat_education;
             case "health": return R.string.budget_cat_health;
+            case "shopping": return R.string.budget_cat_shopping;
+            case "family": return R.string.budget_cat_family;
+            case "gifts": return R.string.budget_cat_gifts;
             case "other": return R.string.budget_cat_other;
             case "salary": return R.string.budget_cat_salary;
             case "freelance":
             case "network":
                 return R.string.budget_cat_freelance;
+            case "transfers": return R.string.budget_cat_transfers;
             case "investments":
             case "apps":
                 return R.string.budget_cat_investments;
+            case "income_gifts": return R.string.budget_cat_income_gifts;
+            case "extra_income": return R.string.budget_cat_extra_income;
             case "income_other": return R.string.budget_cat_income_other;
             default: return 0;
         }
@@ -192,14 +199,22 @@ public final class BudgetUtils {
             case "housing": return R.drawable.ic_budget_housing;
             case "food": return R.drawable.ic_budget_food;
             case "transport": return R.drawable.ic_budget_transport;
+            case "education": return R.drawable.ic_budget_education;
             case "health": return R.drawable.ic_budget_health;
+            case "shopping": return R.drawable.ic_budget_shopping;
+            case "family": return R.drawable.ic_budget_family;
+            case "gifts":
+            case "income_gifts":
+                return R.drawable.ic_budget_gifts;
             case "salary": return R.drawable.ic_budget_salary;
             case "freelance":
             case "network":
                 return R.drawable.ic_budget_freelance;
+            case "transfers": return R.drawable.ic_budget_transfers;
             case "investments":
             case "apps":
                 return R.drawable.ic_budget_investments;
+            case "extra_income": return R.drawable.ic_budget_extra_income;
             case "income_other": return R.drawable.ic_budget_income_other;
             case "other":
             default:

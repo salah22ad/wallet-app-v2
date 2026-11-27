@@ -10,9 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="18dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="24dp">
+        android:paddingHorizontal="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="18dp">
 
         <View
             android:layout_width="42dp"
@@ -24,7 +24,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="10dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -34,61 +34,126 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@color/budget_expense"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/btnCloseSheet"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="34dp"
+                android:layout_height="34dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/budget_cancel"
-                android:padding="6dp"
+                android:padding="5dp"
                 android:src="@drawable/ic_close"
                 app:tint="@color/budget_text_secondary" />
         </LinearLayout>
 
-        <!-- حقل المبلغ -->
-        <TextView
-            android:id="@+id/tvAmountLabel"
+        <!-- صف أفقي واحد: المبلغ + التاريخ في القسم الأخير -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:textColor="@color/budget_text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="10dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/etBudgetAmount"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="6dp"
-            android:background="@drawable/budget_bg_input_field"
-            android:hint="@string/budget_amount_hint"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no"
-            android:inputType="numberDecimal"
-            android:paddingHorizontal="14dp"
-            android:textColor="@color/budget_text_primary"
-            android:textColorHint="@color/budget_text_secondary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            <!-- قسم المبلغ -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.35"
+                android:orientation="vertical">
 
-        <!-- شبكة التصنيفات (3 أعمدة) -->
+                <TextView
+                    android:id="@+id/tvAmountLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textColor="@color/budget_text_secondary"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etBudgetAmount"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/budget_bg_input_field"
+                    android:hint="@string/budget_amount_hint"
+                    android:imeOptions="actionNext"
+                    android:importantForAutofill="no"
+                    android:inputType="numberDecimal"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/budget_text_primary"
+                    android:textColorHint="@color/budget_text_secondary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- قسم التاريخ -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/budget_date_label"
+                    android:textColor="@color/budget_text_secondary"
+                    android:textSize="11.5sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/layoutEntryDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/budget_bg_input_field"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="8dp">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="@null"
+                        android:src="@drawable/ic_modern_calendar" />
+
+                    <TextView
+                        android:id="@+id/tvEntryDateValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:maxLines="1"
+                        android:textColor="@color/budget_text_primary"
+                        android:textDirection="ltr"
+                        android:textSize="12.5sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- شبكة التصنيفات (4 أعمدة) -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="10dp"
             android:text="@string/budget_category_label"
             android:textColor="@color/budget_text_secondary"
-            android:textSize="12sp"
+            android:textSize="11.5sp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvBudgetCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="4dp"
             android:nestedScrollingEnabled="false"
             android:overScrollMode="never" />
 
@@ -96,73 +161,34 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             android:text="@string/budget_note_label"
             android:textColor="@color/budget_text_secondary"
-            android:textSize="12sp"
+            android:textSize="11.5sp"
             android:textStyle="bold" />
 
         <EditText
             android:id="@+id/etBudgetNote"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="6dp"
+            android:layout_height="46dp"
+            android:layout_marginTop="4dp"
             android:background="@drawable/budget_bg_input_field"
             android:hint="@string/budget_note_expense_hint"
             android:imeOptions="actionDone"
             android:importantForAutofill="no"
             android:inputType="textCapSentences"
             android:maxLines="1"
-            android:paddingHorizontal="14dp"
+            android:paddingHorizontal="12dp"
             android:textColor="@color/budget_text_primary"
             android:textColorHint="@color/budget_text_secondary"
-            android:textSize="14sp" />
-
-        <!-- التاريخ القابل للتعديل -->
-        <LinearLayout
-            android:id="@+id/layoutEntryDate"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/budget_bg_input_field"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="14dp">
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_modern_calendar" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1"
-                android:text="@string/budget_date_label"
-                android:textColor="@color/budget_text_secondary"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tvEntryDateValue"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/budget_text_primary"
-                android:textDirection="ltr"
-                android:textSize="13sp"
-                android:textStyle="bold" />
-        </LinearLayout>
+            android:textSize="13.5sp" />
 
         <!-- زر الحفظ الرئيسي -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveBudgetEntry"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="18dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="14dp"
             android:text="@string/budget_save_and_update"
             android:textAllCaps="false"
             android:textColor="@color/budget_text_on_card"

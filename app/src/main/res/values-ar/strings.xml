@@ -1897,4 +1897,11 @@
     <string name="notif_tx_guest_body">تم تسجيل مبلغ %1$s %2$s (%3$s) على حساب مرتبط برقمك. فعّل «متابعة حساباتي» لمعرفة التفاصيل ومن قام بالتسجيل.</string>
     <string name="notif_new_account_title">👤 تمت إضافتك إلى حساب مالي</string>
     <string name="badge_new">جديد</string>
+    <string name="budget_cat_education">تعليم</string>
+    <string name="budget_cat_shopping">تسوق وملابس</string>
+    <string name="budget_cat_family">الأسرة والأطفال</string>
+    <string name="budget_cat_gifts">هدايا</string>
+    <string name="budget_cat_transfers">حوالات</string>
+    <string name="budget_cat_income_gifts">هدايا</string>
+    <string name="budget_cat_extra_income">دخل إضافي</string>
 </resources>

@@ -195,7 +195,7 @@ public class AddBudgetEntryBottomSheet extends BottomSheetDialogFragment {
 
     private void setupCategoryGrid() {
         categoryAdapter = new BudgetCategoryGridAdapter(category -> {});
-        binding.rvBudgetCategories.setLayoutManager(new GridLayoutManager(requireContext(), 3));
+        binding.rvBudgetCategories.setLayoutManager(new GridLayoutManager(requireContext(), 4));
         binding.rvBudgetCategories.setAdapter(categoryAdapter);
 
         viewModel.getCategoriesByType(entryType).observe(getViewLifecycleOwner(), categories -> {
