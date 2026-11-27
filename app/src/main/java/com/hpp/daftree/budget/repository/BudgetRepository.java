@@ -126,9 +126,10 @@ public class BudgetRepository {
             defaults.add(makeSeed(uid, "freelance", BudgetCategory.TYPE_INCOME, "freelance", "#0EA5E9", 2, now));
             defaults.add(makeSeed(uid, "transfers", BudgetCategory.TYPE_INCOME, "transfers", "#14B8A6", 3, now));
             defaults.add(makeSeed(uid, "investments", BudgetCategory.TYPE_INCOME, "investments", "#6366F1", 4, now));
-            defaults.add(makeSeed(uid, "income_gifts", BudgetCategory.TYPE_INCOME, "gifts", "#F59E0B", 5, now));
-            defaults.add(makeSeed(uid, "extra_income", BudgetCategory.TYPE_INCOME, "extra_income", "#8B5CF6", 6, now));
-            defaults.add(makeSeed(uid, "income_other", BudgetCategory.TYPE_INCOME, "income_other", "#EAB308", 7, now));
+            defaults.add(makeSeed(uid, "sales", BudgetCategory.TYPE_INCOME, "sales", "#059669", 5, now));
+            defaults.add(makeSeed(uid, "income_gifts", BudgetCategory.TYPE_INCOME, "gifts", "#F59E0B", 6, now));
+            defaults.add(makeSeed(uid, "extra_income", BudgetCategory.TYPE_INCOME, "extra_income", "#8B5CF6", 7, now));
+            defaults.add(makeSeed(uid, "income_other", BudgetCategory.TYPE_INCOME, "income_other", "#EAB308", 8, now));
 
             boolean changed = false;
             for (BudgetCategory seed : defaults) {

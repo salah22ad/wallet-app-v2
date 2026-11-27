@@ -149,6 +149,7 @@ public final class BudgetUtils {
             case "investments":
             case "apps":
                 return R.string.budget_cat_investments;
+            case "sales": return R.string.budget_cat_sales;
             case "income_gifts": return R.string.budget_cat_income_gifts;
             case "extra_income": return R.string.budget_cat_extra_income;
             case "income_other": return R.string.budget_cat_income_other;
@@ -214,6 +215,7 @@ public final class BudgetUtils {
             case "investments":
             case "apps":
                 return R.drawable.ic_budget_investments;
+            case "sales": return R.drawable.ic_budget_sales;
             case "extra_income": return R.drawable.ic_budget_extra_income;
             case "income_other": return R.drawable.ic_budget_income_other;
             case "other":

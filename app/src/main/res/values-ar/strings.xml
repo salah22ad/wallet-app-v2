@@ -1904,4 +1904,5 @@
     <string name="budget_cat_transfers">حوالات</string>
     <string name="budget_cat_income_gifts">هدايا</string>
     <string name="budget_cat_extra_income">دخل إضافي</string>
+    <string name="budget_cat_sales">مبيعات</string>
 </resources>

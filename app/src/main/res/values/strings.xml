@@ -1820,4 +1820,5 @@
     <string name="budget_cat_transfers">Transfers</string>
     <string name="budget_cat_income_gifts">Gifts</string>
     <string name="budget_cat_extra_income">Extra Income</string>
+    <string name="budget_cat_sales">Sales</string>
 </resources>
