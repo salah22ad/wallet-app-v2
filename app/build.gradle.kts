@@ -42,8 +42,8 @@ android {
         applicationId = "com.hpp.daftree"
         minSdk = 24
         targetSdk = 36
-        versionCode = 71
-        versionName = "1.7.1"
+        versionCode = 72
+        versionName = "1.7.2"
 
         // إظهار ديالوج التحديث
         buildConfigField("boolean", "IS_MAJOR_UPDATE", "true")
