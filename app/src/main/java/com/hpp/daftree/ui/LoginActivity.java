@@ -130,6 +130,9 @@ public class LoginActivity extends BaseActivity {
     private ActivityResultLauncher<Intent> googleSignInLauncher;
     //    private CallbackManager facebookCallbackManager;
     private static final String TAG = "LoginActivity";
+    private static final String KEY_PENDING_EMAIL_FIRST_REG = "pending_email_first_reg";
+    private static final String KEY_PENDING_EMAIL_REG_ADDRESS = "pending_email_reg_address";
+    private static final String KEY_PENDING_EMAIL_WAS_GUEST = "pending_email_was_guest";
     private Executor executor;
     private AlertDialog accountDeletedDialog;
     private SecureLicenseManager licenceData;
@@ -730,7 +733,9 @@ public class LoginActivity extends BaseActivity {
     String savedLanguage = "";
 
     public void handleAppOpen() {
-
+        if (resumePendingEmailVerificationIfNeeded()) {
+            return;
+        }
 
         if (isFirstRun) {
 
@@ -2108,12 +2113,26 @@ public class LoginActivity extends BaseActivity {
                                     editor.putBoolean("isUserUIDAdded", true);
                                     editor.apply();
 
-                                    isNewUser = task.getResult().getAdditionalUserInfo().isNewUser();
-                                    if (isNewUser) {
+                                    boolean isAdditionalNew = task.getResult().getAdditionalUserInfo() != null
+                                            && task.getResult().getAdditionalUserInfo().isNewUser();
+                                    boolean isFirstEmailReg = isPendingEmailFirstRegistration(user.getEmail());
+                                    if (isAdditionalNew || isFirstEmailReg) {
+                                        if (isFirstEmailReg) {
+                                            if (prefs.getBoolean(KEY_PENDING_EMAIL_WAS_GUEST, false)) {
+                                                isRegisterGuestMode = true;
+                                                isGuest = true;
+                                            }
+                                            clearPendingEmailRegistrationFlag();
+                                        }
+                                        isNewUser = true;
+                                        userEmail = user.getEmail();
                                         editor.putBoolean("isNewUser", true);
                                         editor.apply();
+                                        handleNewUserRegistration(user);
+                                    } else {
+                                        isNewUser = false;
+                                        performDeviceLicenseCheck(user);
                                     }
-                                    performDeviceLicenseCheck(user);
                                 }
                             } else {
                                 // 🛑 3. معالجة الأخطاء وتفصيل الأسباب بناءً على استجابة فايرباس
@@ -2279,6 +2298,7 @@ public class LoginActivity extends BaseActivity {
         isWaitingForEmailVerification = false;
         isRegistrationInProgress = false;
         pendingVerificationUser = null;
+        clearPendingEmailRegistrationFlag();
 
         // تسجيل الخروج من الحساب غير المفعل
         if (firebaseAuth.getCurrentUser() != null) {
@@ -2950,6 +2970,9 @@ public class LoginActivity extends BaseActivity {
                     if (verifyTask.isSuccessful()) {
                         Log.d(TAG, "تم إرسال رابط التحقق بنجاح إلى: " + email);
 
+                        // حفظ وسم تسجيل البريد لأول مرة ليصمد إذا أغلق النظام التطبيق
+                        savePendingEmailRegistrationFlag(email);
+
                         // حفظ حالة المستخدم المنتظر التحقق
                         pendingVerificationUser = firebaseUser;
                         isWaitingForEmailVerification = true;
@@ -3127,6 +3150,12 @@ public class LoginActivity extends BaseActivity {
             isEmailVerificationInProgress = false;
             isWaitingForEmailVerification = false;
 
+            if (prefs.getBoolean(KEY_PENDING_EMAIL_WAS_GUEST, false)) {
+                isRegisterGuestMode = true;
+                isGuest = true;
+            }
+            clearPendingEmailRegistrationFlag();
+
             // تحديث preferences
             SharedPreferences.Editor editor = prefs.edit();
             editor.putBoolean("isNewUser", true);
@@ -3203,6 +3232,7 @@ public class LoginActivity extends BaseActivity {
         }
 
         pendingVerificationUser = null;
+        clearPendingEmailRegistrationFlag();
 
         SnackbarHelper.showSnackbar(binding.getRoot(),
                 getString(R.string.registration_cancelled),
@@ -3632,4 +3662,66 @@ public class LoginActivity extends BaseActivity {
 //        @Override
 //        public void onSignOutSuccess() { }
 //    };
+
+    private void savePendingEmailRegistrationFlag(String email) {
+        if (prefs == null) return;
+        String normalizedEmail = email != null ? email.trim().toLowerCase(Locale.US) : "";
+        boolean wasGuest = (isRegisterGuestMode && isGuest)
+                || SecureLicenseManager.getInstance(this).isGuest();
+        prefs.edit()
+                .putBoolean(KEY_PENDING_EMAIL_FIRST_REG, true)
+                .putString(KEY_PENDING_EMAIL_REG_ADDRESS, normalizedEmail)
+                .putBoolean(KEY_PENDING_EMAIL_WAS_GUEST, wasGuest)
+                .apply();
+        Log.d(TAG, "تم حفظ وسم تسجيل البريد لأول مرة: " + normalizedEmail + " | wasGuest=" + wasGuest);
+    }
+
+    private void clearPendingEmailRegistrationFlag() {
+        if (prefs == null) return;
+        prefs.edit()
+                .remove(KEY_PENDING_EMAIL_FIRST_REG)
+                .remove(KEY_PENDING_EMAIL_REG_ADDRESS)
+                .remove(KEY_PENDING_EMAIL_WAS_GUEST)
+                .apply();
+    }
+
+    private boolean isPendingEmailFirstRegistration(String email) {
+        if (prefs == null || email == null) return false;
+        if (!prefs.getBoolean(KEY_PENDING_EMAIL_FIRST_REG, false)) return false;
+        String savedEmail = prefs.getString(KEY_PENDING_EMAIL_REG_ADDRESS, "");
+        return !savedEmail.isEmpty() && savedEmail.equalsIgnoreCase(email.trim());
+    }
+
+    private boolean resumePendingEmailVerificationIfNeeded() {
+        if (prefs == null || !prefs.getBoolean(KEY_PENDING_EMAIL_FIRST_REG, false)) {
+            return false;
+        }
+        FirebaseUser pendingUser = firebaseAuth.getCurrentUser();
+        if (pendingUser == null) {
+            return false;
+        }
+        String savedEmail = prefs.getString(KEY_PENDING_EMAIL_REG_ADDRESS, "");
+        if (pendingUser.getEmail() == null || !savedEmail.equalsIgnoreCase(pendingUser.getEmail().trim())) {
+            return false;
+        }
+
+        Log.d(TAG, "استئناف حالة التحقق المعلقة بعد إعادة فتح التطبيق للبريد: " + savedEmail);
+        showProgressDialog(getString(R.string.checking_account_status));
+        pendingUser.reload().addOnCompleteListener(task -> {
+            hideProgressDialog();
+            FirebaseUser refreshed = firebaseAuth.getCurrentUser();
+            if (refreshed != null && refreshed.isEmailVerified()) {
+                handleSuccessfulVerification();
+            } else if (refreshed != null) {
+                pendingVerificationUser = refreshed;
+                isWaitingForEmailVerification = true;
+                isEmailVerificationInProgress = true;
+                showStableVerificationDialog(refreshed.getDisplayName(), refreshed.getEmail());
+            } else {
+                toggleFormVisibility("emailEnter");
+            }
+        });
+        return true;
+    }
+
 }
