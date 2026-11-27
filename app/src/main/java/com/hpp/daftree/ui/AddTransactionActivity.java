@@ -363,11 +363,14 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
             String passedCurrency = getIntent().getStringExtra("CURRENCY");
 
             if (passedAccountId != -1) {
-                binding.accountNameAutoComplete.setText(passedAccountName);
+                isSelectionFromList = true;
+                binding.accountNameAutoComplete.setText(passedAccountName, false);
+                isSelectionFromList = false;
                 binding.accountNameAutoComplete.setEnabled(false);
                 viewModel.setSelectedAccount(passedAccountId);
                 viewModel.setSelectedCurrency(passedCurrency);
                 binding.amountEditText.requestFocus();
+                showKeyboard(binding.amountEditText);
                 new Handler(Looper.getMainLooper()).postDelayed(() -> viewModel.updateTransactionSource(), 300);
             }
         } else {
@@ -386,8 +389,10 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
         binding.detailsEditText.setAdapter(detailSuggestionsAdapter);
         binding.detailsEditText.setThreshold(1);
 
-        binding.accountNameAutoComplete.requestFocus();
-        showKeyboard(binding.accountNameAutoComplete);
+        if (!getIntent().hasExtra("ACCOUNT_ID")) {
+            binding.accountNameAutoComplete.requestFocus();
+            showKeyboard(binding.accountNameAutoComplete);
+        }
     }
 
     private void setupRecyclerView() {
@@ -484,25 +489,6 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
 
     private void setupEventListeners() {
         binding.dateEditText.setOnClickListener(v -> showDatePicker());
-
-        // --- المستمع المحسّن لحقل اسم الحساب (مطابق لـ InvoiceDialog) ---
-        binding.accountNameAutoComplete.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (isSelectionFromList) return;
-                if (accountSuggestionsAdapter != null) {
-                    accountSuggestionsAdapter.getFilter().filter(s);
-                    if (binding.accountNameAutoComplete.hasFocus() && s != null && s.length() > 0
-                            && !binding.accountNameAutoComplete.isPopupShowing()) {
-                        binding.accountNameAutoComplete.showDropDown();
-                    }
-                }
-            }
-        });
 
         binding.accountNameAutoComplete.setOnItemClickListener((parent, view, position, id) -> {
             String selectedName = (String) parent.getItemAtPosition(position);
@@ -792,7 +778,7 @@ public class AddTransactionActivity extends BaseActivity implements CalculatorDi
         binding.amountEditText.setText("");
         binding.detailsEditText.setText("");
         binding.switchLinkToBudget.setChecked(false);
-        binding.accountNameAutoComplete.setText(accountName);
+        binding.accountNameAutoComplete.setText(accountName, false);
         binding.accountNameAutoComplete.dismissDropDown();
         viewModel.setSelectedAccount(accountId);
         binding.amountEditText.requestFocus();
