@@ -31,7 +31,7 @@ import androidx.core.content.ContextCompat;
  */
 @SuppressWarnings("deprecation")
 public class DailyReminderNotification {
-    private static final String CHANNEL_ID = "daftree_daily_reminder_channel_v2"; // تغيير الـ ID لضمان تحديث الإعدادات
+    private static final String CHANNEL_ID = "daftree_daily_reminder_channel_v3"; // تغيير الـ ID لضمان تحديث الإعدادات
     static final int NOTIFICATION_ID = 2001;
     private static final String TAG = "DailyReminderNotif";
     private final Context context;
@@ -89,6 +89,9 @@ public class DailyReminderNotification {
      * تشغيل الصوت المخصص بقوة (يخترق الوضع الصامت)
      */
     public void playCustomSound() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return; // القناة v3 تشغّل النغمة مباشرة عبر USAGE_ALARM لضمان الانبثاق ومنع التكرار
+        }
         stopSound();
         try {
             // إيقاف أي صوت سابق
@@ -179,7 +182,8 @@ public class DailyReminderNotification {
                 .setDeleteIntent(dismissPendingIntent)
                 .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setOngoing(true) // لنجبره يضغط على الأزرار
+                .setOngoing(false)
+                .setFullScreenIntent(pendingIntent, true)
 
                 // إضافة الأزرار
                 .addAction(R.drawable.ic_stat_name, context.getString(R.string.open_app), pendingIntent)
@@ -233,18 +237,34 @@ public class DailyReminderNotification {
     }
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            if (notificationManager == null) return;
+
+            // حذف القناة الصامتة القديمة إن وجدت
+            try {
+                notificationManager.deleteNotificationChannel("daftree_daily_reminder_channel_v2");
+            } catch (Exception ignored) {}
+
             CharSequence name = context.getString(R.string.daily_reminder_channel_name);
             String description = context.getString(R.string.daily_reminder_channel_desc);
             int importance = NotificationManager.IMPORTANCE_HIGH;
 
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
-
-            // إلغاء صوت القناة الافتراضي لأننا نتحكم به يدوياً
-            channel.setSound(null, null);
+            channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+            channel.setBypassDnd(true);
+            channel.setShowBadge(true);
             channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            channel.enableLights(true);
 
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/raw/my_wallet_tone");
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_ALARM)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+            channel.setSound(soundUri, audioAttributes);
+
             notificationManager.createNotificationChannel(channel);
         }
     }
