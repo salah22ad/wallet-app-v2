@@ -134,7 +134,7 @@ public class ProfileActivity extends BaseActivity {
         Map<String, Object> data = new HashMap<>();
         data.put("reason", "user_initiated_from_app");
         data.put("customReason", "تم الحذف مباشرة من التطبيق");
-        data.put("language", "ar");
+        data.put("language", com.hpp.daftree.helpers.LanguageManager.getInstance(this).getCurrentLanguage());
 
         // استدعاء دالة Firebase Functions
         firebaseFunctions
@@ -168,159 +168,126 @@ public class ProfileActivity extends BaseActivity {
                 });
     }
     /**
-     * إكمال عملية الحذف المحلي بعد نجاح الحذف من السيرفر
+     * إكمال عملية الحذف المحلي الشامل (مكافئ لمسح بيانات التطبيق من إعدادات الهاتف)
      */
     private void completeLocalDeletion() {
         try {
-            // إيقاف المزامنة أولاً
-            FirestoreSyncManager.getInstance().stopListening();
+            // 1. إيقاف كافة المهام الخلفية والمستمعين والمنبهات قبل لمس الملفات
+            try {
+                androidx.work.WorkManager.getInstance(getApplicationContext()).cancelAllWork();
+            } catch (Exception ignored) {}
 
-            // تسجيل الخروج من Firebase
+            try {
+                FirestoreSyncManager.getInstance().stopListening();
+            } catch (Exception ignored) {}
+
+            try {
+                LicenseManager.getInstance(this).stopAndResetLicenseListener();
+            } catch (Exception ignored) {}
+
+            try {
+                com.hpp.daftree.dailyreminder.DailyReminderScheduler.cancelScheduledReminder(this);
+            } catch (Exception ignored) {}
+
+            // 2. تسجيل الخروج من Firebase و Google
             FirebaseAuth.getInstance().signOut();
-
-            // إعادة تعيين إعدادات الضيف
-            SecureLicenseManager secureLicenseManager = SecureLicenseManager.getInstance(this);
-            secureLicenseManager.setGuest(false);
-            secureLicenseManager.setGuestUID("");
-
-            // مسح جميع الإعدادات المحلية
-            clearAllSharedPreferences();
-
-            // إعادة تعيين إعدادات المزامنة
-            sharedPrefsManager.setFirstSyncComplete(false);
-//            sharedPrefsManager.clearAllSyncData();
-
-            // إلغاء تفعيل إصدار Firestore
-            new VersionManager(this).setFirestoreUser_isAdded(false);
-
-            // تسجيل الخروج من جوجل إذا كان متصلاً
             if (googleAuthHelper != null) {
                 googleAuthHelper.signOut(new GoogleAuthHelper.AuthCallback() {
-                    @Override
-                    public void onAccountInfoReceived(String email, String token, String provider){
-
-                    }
-                    @Override
-                    public void onSignInProgress(String message) {}
-
-                    @Override
-                    public void onSignInSuccess(FirebaseUser user, AuthResult authResult) {}
-
-                    @Override
-                    public void onSignInFailure(String error) {}
-
-                    @Override
-                    public void onSignOutSuccess() {}
+                    @Override public void onAccountInfoReceived(String email, String token, String provider) {}
+                    @Override public void onSignInProgress(String message) {}
+                    @Override public void onSignInSuccess(FirebaseUser user, AuthResult authResult) {}
+                    @Override public void onSignInFailure(String error) {}
+                    @Override public void onSignOutSuccess() {}
                 });
             }
 
-            // حذف قاعدة البيانات المحلية بما في ذلك العملات وأنواع الحسابات
+            // 3. إغلاق وتصفير قاعدة البيانات وحذف كافة ملفات التطبيق في خيط خلفي
             AppDatabase.databaseWriteExecutor.execute(() -> {
                 try {
-                    AppDatabase db = AppDatabase.getDatabase(ProfileActivity.this);
-
-                    // بدء معاملة لحذف جميع البيانات من جميع الجداول
-                    db.runInTransaction(() -> {
-                        try {
-                            // حذف جميع البيانات من جميع الجداول بالترتيب الصحيح
-                            db.transactionDao().deleteGuestData();
-                            db.accountDao().deleteGuestData();
-                            db.accountTypeDao().deleteGuestData();
-                            db.currencyDao().deleteGuestData();
-                            db.budgetEntryDao().deleteGuestData();
-                            db.monthlyBudgetLimitDao().deleteGuestData();
-                            db.budgetCategoryDao().deleteGuestData();
-
-                            Log.d("ProfileActivity", "تم حذف جميع البيانات من قاعدة البيانات المحلية");
-                        } catch (Exception e) {
-                            Log.e("ProfileActivity", "خطأ في حذف البيانات من الجداول: " + e.getMessage());
+                    try {
+                        AppDatabase db = AppDatabase.getDatabase(getApplicationContext());
+                        if (db != null) {
+                            db.clearAllTables();
+                            db.close();
                         }
-                    });
+                        AppDatabase.destroyInstance();
+                    } catch (Exception e) {
+                        Log.e("ProfileActivity", "خطأ أثناء إغلاق قاعدة البيانات: " + e.getMessage());
+                    }
 
-                    db.close();
+                    // مسح كافة ملفات SharedPreferences من الذاكرة والقرص
+                    clearAllSharedPreferences();
 
-                    // حذف ملفات قاعدة البيانات
+                    // حذف ملفات SQLite وملفات التطبيق والكاش
                     deleteDatabaseFiles();
-
-                    // حذف الملفات الأخرى المرتبطة بالتطبيق
                     deleteAppFiles();
 
-                    // على الخيط الرئيسي، ننهي التطبيق
+                    // تهيئة قاعدة بيانات نظيفة جديدة قبل إعادة التشغيل
+                    try {
+                        AppDatabase freshDb = AppDatabase.getDatabase(getApplicationContext());
+                        if (freshDb != null) {
+                            freshDb.close();
+                        }
+                        AppDatabase.destroyInstance();
+                    } catch (Exception ignored) {}
+
                     runOnUiThread(() -> {
                         showLoading(false);
                         restartApplication();
                     });
-
                 } catch (Exception e) {
                     runOnUiThread(() -> {
                         showLoading(false);
-                        showDeletionError("خطأ في حذف البيانات المحلية: " + e.getMessage());
+                        showDeletionError(getString(R.string.error_generic) + ": " + e.getMessage());
                     });
                 }
             });
 
         } catch (Exception e) {
             showLoading(false);
-            showDeletionError("خطأ في عملية الحذف: " + e.getMessage());
+            showDeletionError(getString(R.string.error_generic) + ": " + e.getMessage());
         }
     }
+
     /**
-     * مسح جميع إعدادات SharedPreferences
+     * مسح جميع إعدادات SharedPreferences (دون إعادة كتابة قيم لتبدأ SplashActivity كأول تشغيل)
      */
     private void clearAllSharedPreferences() {
         try {
-            // مسح prefs_uid
-            SharedPreferences prefsUid = getSharedPreferences("prefs_uid", MODE_PRIVATE);
-            prefsUid.edit().clear().apply();
-
-            // مسح AppPrefs
-            SharedPreferences appPrefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-            appPrefs.edit().clear().apply();
-
-            // مسح sync_preferences
-            SharedPreferences syncPrefs = getSharedPreferences("sync_preferences", MODE_PRIVATE);
-            syncPrefs.edit().clear().apply();
-
-            // مسح license_prefs إذا كان موجوداً
-            SharedPreferences licensePrefs = getSharedPreferences("license_prefs", MODE_PRIVATE);
-            licensePrefs.edit().clear().apply();
-
-            // مسح default_preferences إذا كان موجوداً
-            SharedPreferences defaultPrefs = getSharedPreferences("default_preferences", MODE_PRIVATE);
-            defaultPrefs.edit().clear().apply();
-
-            // إعادة تعيين الإعدادات الأساسية
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("language", "ar");
-            editor.putBoolean("first_run", true);
-            editor.putBoolean("is_first_launch", true);
-            editor.apply();
-
-            Log.d("ProfileActivity", "تم مسح جميع إعدادات SharedPreferences");
+            File sharedPrefsDir = new File(getApplicationInfo().dataDir, "shared_prefs");
+            if (sharedPrefsDir.exists() && sharedPrefsDir.isDirectory()) {
+                File[] prefFiles = sharedPrefsDir.listFiles();
+                if (prefFiles != null) {
+                    for (File file : prefFiles) {
+                        String name = file.getName();
+                        if (name.endsWith(".xml")) {
+                            String prefName = name.substring(0, name.length() - 4);
+                            try {
+                                getSharedPreferences(prefName, MODE_PRIVATE).edit().clear().commit();
+                            } catch (Exception ignored) {}
+                        }
+                        file.delete();
+                    }
+                }
+            }
+            Log.d("ProfileActivity", "تم مسح جميع ملفات SharedPreferences بالكامل");
         } catch (Exception e) {
             Log.e("ProfileActivity", "خطأ في مسح SharedPreferences: " + e.getMessage());
         }
     }
 
     /**
-     * حذف ملفات قاعدة البيانات
+     * حذف جميع ملفات قاعدة البيانات
      */
     private void deleteDatabaseFiles() {
         try {
-            File databasePath = getDatabasePath("daftree_database");
-
-            // حذف ملفات SQLite الرئيسية
-            File[] databaseFiles = {
-                    databasePath,
-                    new File(databasePath.getParent(), "daftree_database-wal"),
-                    new File(databasePath.getParent(), "daftree_database-shm"),
-                    new File(databasePath.getParent(), "daftree_database-journal")
-            };
-
-            for (File file : databaseFiles) {
-                if (file.exists()) {
-                    boolean deleted = file.delete();
-                    Log.d("ProfileActivity", "حذف ملف " + file.getName() + ": " + (deleted ? "نجح" : "فشل"));
+            File databasesDir = new File(getApplicationInfo().dataDir, "databases");
+            if (databasesDir.exists() && databasesDir.isDirectory()) {
+                File[] files = databasesDir.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        deleteRecursive(file);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -329,45 +296,20 @@ public class ProfileActivity extends BaseActivity {
     }
 
     /**
-     * حذف ملفات التطبيق الأخرى
+     * حذف ملفات التطبيق والكاش
      */
     private void deleteAppFiles() {
         try {
-            // حذف مجلد SharedPreferences
-            File sharedPrefsDir = new File(getFilesDir().getParent() + "/shared_prefs");
-            if (sharedPrefsDir.exists() && sharedPrefsDir.isDirectory()) {
-                File[] prefFiles = sharedPrefsDir.listFiles();
-                if (prefFiles != null) {
-                    for (File file : prefFiles) {
-                        boolean deleted = file.delete();
-                        Log.d("ProfileActivity", "حذف ملف " + file.getName() + ": " + (deleted ? "نجح" : "فشل"));
-                    }
-                }
+            deleteRecursive(getCacheDir());
+            if (getExternalCacheDir() != null) {
+                deleteRecursive(getExternalCacheDir());
             }
-
-            // حذف مجلد cache
-            File cacheDir = getCacheDir();
-            if (cacheDir.exists() && cacheDir.isDirectory()) {
-                File[] cacheFiles = cacheDir.listFiles();
-                if (cacheFiles != null) {
-                    for (File file : cacheFiles) {
-                        boolean deleted = file.delete();
-                        Log.d("ProfileActivity", "حذف ملف cache " + file.getName() + ": " + (deleted ? "نجح" : "فشل"));
-                    }
-                }
-            }
-
-            // حذف مجلد files (باستثناء الملفات الأساسية)
             File filesDir = getFilesDir();
-            if (filesDir.exists() && filesDir.isDirectory()) {
+            if (filesDir != null && filesDir.exists() && filesDir.isDirectory()) {
                 File[] appFiles = filesDir.listFiles();
                 if (appFiles != null) {
                     for (File file : appFiles) {
-                        // تجنب حذف المجلدات الأساسية إذا لزم الأمر
-                        if (!file.getName().equals("important_folder")) { // تعدل حسب الحاجة
-                            boolean deleted = file.delete();
-                            Log.d("ProfileActivity", "حذف ملف " + file.getName() + ": " + (deleted ? "نجح" : "فشل"));
-                        }
+                        deleteRecursive(file);
                     }
                 }
             }
@@ -376,37 +318,32 @@ public class ProfileActivity extends BaseActivity {
         }
     }
 
+    private void deleteRecursive(File fileOrDir) {
+        if (fileOrDir == null || !fileOrDir.exists()) return;
+        if (fileOrDir.isDirectory()) {
+            File[] children = fileOrDir.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    deleteRecursive(child);
+                }
+            }
+        }
+        fileOrDir.delete();
+    }
+
     /**
-     * إعادة تشغيل التطبيق
+     * إعادة تشغيل التطبيق من SplashActivity بنفس منطق MainActivity.restartAppFromSplash()
      */
     private void restartApplication() {
-        try {
-            // إعادة تشغيل التطبيق من البداية
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
             Intent intent = new Intent(ProfileActivity.this, SplashActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-            // إضافة إشارة لإعادة التعيين الكامل
-            intent.putExtra("RESET_APP", true);
-            intent.putExtra("CLEAR_ALL_DATA", true);
-
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    | Intent.FLAG_ACTIVITY_NEW_TASK
+                    | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-            finishAffinity(); // إنهاء جميع الأنشطة
-
-            // تأكيد إنهاء العملية
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                android.os.Process.killProcess(android.os.Process.myPid());
-                System.exit(0);
-            }, 1000);
-
-        } catch (Exception e) {
-            Log.e("ProfileActivity", "خطأ في إعادة تشغيل التطبيق: " + e.getMessage());
-
-            // طريقة بديلة إذا فشلت الطريقة الأولى
-            Intent intent = new Intent(ProfileActivity.this, SplashActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        }
+            finishAffinity();
+            android.os.Process.killProcess(android.os.Process.myPid());
+        }, 500);
     }
 
     private void showDeletionError(String errorMessage) {
