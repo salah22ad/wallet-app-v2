@@ -250,17 +250,16 @@ public class DaftreeRepository {
                 }
             }
 
-            // الخطوة 2: تسجيل الحساب نفسه للحذف من Firestore
-            if (!account.getFirestoreId().isEmpty()) {
+            // الخطوة 2: تعليم الحساب كمحذوف ناعماً في Room و Firestore دون إزالته فعلياً
+            long nowTs = System.currentTimeMillis();
+            if (account.getFirestoreId() != null && !account.getFirestoreId().isEmpty()) {
                 account.setSyncStatus("DELETED");
                 account.setDeleted(true);
+                account.setDeleteDate(nowTs);
                 account.setDeletedBy(currentUserName);
-                //account.setLastModified(System.currentTimeMillis());
+                account.setLastModified(nowTs);
                 mAccountDao.update(account);
             }
-            // الخطوة 3: حذف الحساب من Room (سيقوم Room بحذف كل عملياته تلقائيًا بسبب onDelete = CASCADE)
-            // هذا الاستدعاء هو الذي سيُعلم LiveData بالتغيير.
-            mAccountDao.delete(account);
             triggerSync();
         });
 
