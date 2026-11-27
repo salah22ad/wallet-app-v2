@@ -873,7 +873,8 @@ public class AccountDetailsActivity extends BaseActivity implements
         List<TransactionItem> currentItems = historyAdapter != null ? historyAdapter.getCurrentList() : null;
         double actualBalance = (currentItems != null && !currentItems.isEmpty())
                 ? currentItems.get(0).getBalanceAfter() : 0.0;
-        String message = ShareNotificationHelper.buildBalanceSummaryMessage(this, currency, actualBalance);
+        String waMessage = ShareNotificationHelper.buildBalanceSummaryMessage(this, currency, actualBalance);
+        String smsMessage = ShareNotificationHelper.buildBalanceSummarySmsMessage(this, currency, actualBalance);
 
         String phone = currentAccount.getPhoneNumber() != null ? currentAccount.getPhoneNumber().trim() : "";
         if (phone.isEmpty()) {
@@ -886,17 +887,17 @@ public class AccountDetailsActivity extends BaseActivity implements
                     String savedPhone = savedAccount.getPhoneNumber() != null ? savedAccount.getPhoneNumber().trim() : "";
                     if (savedPhone.isEmpty()) return;
                     if (savedAccount.isNotifyWhatsApp()) {
-                        ShareNotificationHelper.sendViaWhatsAppSilently(AccountDetailsActivity.this, savedPhone, message);
+                        ShareNotificationHelper.sendViaWhatsAppSilently(AccountDetailsActivity.this, savedPhone, waMessage);
                     } else {
-                        ShareNotificationHelper.sendViaSms(AccountDetailsActivity.this, savedPhone, message);
+                        ShareNotificationHelper.sendViaSms(AccountDetailsActivity.this, savedPhone, smsMessage);
                     }
                 }
             });
             sheet.show(getSupportFragmentManager(), "AccountBottomSheetBalanceShare");
         } else if (currentAccount.isNotifyWhatsApp()) {
-            ShareNotificationHelper.sendViaWhatsAppSilently(this, phone, message);
+            ShareNotificationHelper.sendViaWhatsAppSilently(this, phone, waMessage);
         } else {
-            ShareNotificationHelper.sendViaSms(this, phone, message);
+            ShareNotificationHelper.sendViaSms(this, phone, smsMessage);
         }
     }
 

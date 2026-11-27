@@ -30,6 +30,7 @@ import com.hpp.daftree.utils.DialogHelper;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -124,6 +125,95 @@ public final class ShareNotificationHelper {
                 + "• " + ctx.getString(R.string.share_tx_date_label) + ": " + dateStr;
     }
 
+    // ==================== صيغ رسائل SMS المختصرة (1 إلى 2 رسالة كحد أقصى) ====================
+
+    public static String buildTransactionSmsMessage(Context ctx, Transaction tx, String currencyName, double finalBalance) {
+        String typeLabel = tx.getType() == 1
+                ? ctx.getString(R.string.sms_tx_debit)
+                : ctx.getString(R.string.sms_tx_credit);
+        String amountStr = formatAmount(tx.getAmount());
+        String cur = currencyName != null ? currencyName.trim() : "";
+        String details = tx.getDetails() != null ? tx.getDetails().trim() : "";
+        Date txDate = tx.getTimestamp() != null ? tx.getTimestamp() : new Date();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(typeLabel).append(" ").append(amountStr);
+        if (!cur.isEmpty()) sb.append(" ").append(cur);
+        if (!isToday(txDate)) {
+            sb.append("\n").append(ctx.getString(R.string.sms_date_prefix)).append(" ").append(formatSmsFullDate(txDate));
+        }
+        if (!details.isEmpty()) {
+            sb.append("\n").append(details);
+        }
+        sb.append("\n").append(buildSmsBalanceLine(ctx, finalBalance));
+        return sb.toString();
+    }
+
+    public static String buildInvoiceSmsMessage(Context ctx, boolean isSales, double invoiceAmount,
+                                                double paidAmount, String details, Date date,
+                                                String currencyName, double finalBalance) {
+        String header = isSales
+                ? ctx.getString(R.string.sms_inv_sales)
+                : ctx.getString(R.string.sms_inv_purchases);
+        String cur = currencyName != null ? currencyName.trim() : "";
+        double remaining = Math.max(0.0, invoiceAmount - paidAmount);
+        String safeDetails = details != null ? details.trim() : "";
+        Date invDate = date != null ? date : new Date();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(header).append(" ").append(formatAmount(invoiceAmount));
+        if (!cur.isEmpty()) sb.append(" ").append(cur);
+        if (!isToday(invDate)) {
+            sb.append("\n").append(ctx.getString(R.string.sms_date_prefix)).append(" ").append(formatSmsFullDate(invDate));
+        }
+        if (paidAmount > 0.005) {
+            sb.append("\n")
+              .append(ctx.getString(R.string.sms_inv_paid)).append(": ").append(formatAmount(paidAmount))
+              .append(" || ")
+              .append(ctx.getString(R.string.sms_inv_rem)).append(": ").append(formatAmount(remaining));
+        }
+        if (!safeDetails.isEmpty()) {
+            sb.append("\n").append(safeDetails);
+        }
+        sb.append("\n").append(buildSmsBalanceLine(ctx, finalBalance));
+        return sb.toString();
+    }
+
+    public static String buildBalanceSummarySmsMessage(Context ctx, String currencyName, double finalBalance) {
+        String cur = currencyName != null ? currencyName.trim() : "";
+        if (Math.abs(finalBalance) < 0.005) {
+            return ctx.getString(R.string.sms_bal_zero, cur);
+        }
+        String balSide = finalBalance > 0
+                ? ctx.getString(R.string.sms_balance_debit)
+                : ctx.getString(R.string.sms_balance_credit);
+        return ctx.getString(R.string.sms_bal_summary, formatAmount(Math.abs(finalBalance)), cur, balSide);
+    }
+
+    private static String buildSmsBalanceLine(Context ctx, double finalBalance) {
+        String label = ctx.getString(R.string.sms_balance_label);
+        if (Math.abs(finalBalance) < 0.005) {
+            return label + ": 0 " + ctx.getString(R.string.sms_balance_settled);
+        }
+        String side = finalBalance > 0
+                ? ctx.getString(R.string.sms_balance_debit)
+                : ctx.getString(R.string.sms_balance_credit);
+        return label + ": " + formatAmount(Math.abs(finalBalance)) + " " + side;
+    }
+
+    private static boolean isToday(Date date) {
+        if (date == null) return true;
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c2.setTime(date);
+        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR)
+                && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private static String formatSmsFullDate(Date date) {
+        return new SimpleDateFormat("dd/MM/yyyy", Locale.US).format(date);
+    }
+
     // ==================== الإرسال الصامت (واتساب أعمال -> واتساب عادي -> تنبيه / SMS) ====================
 
     public static boolean isPackageInstalled(Context context, String packageName) {
@@ -197,14 +287,19 @@ public final class ShareNotificationHelper {
     }
 
     public static void dispatchAccordingToAccount(Context context, Account account, String message) {
+        dispatchAccordingToAccount(context, account, message, message);
+    }
+
+    public static void dispatchAccordingToAccount(Context context, Account account,
+                                                  String whatsappMessage, String smsMessage) {
         if (context == null || account == null) return;
         String phone = account.getPhoneNumber() != null ? account.getPhoneNumber().trim() : "";
         if (phone.isEmpty()) return;
 
         if (account.isNotifyWhatsApp()) {
-            sendViaWhatsAppSilently(context, phone, message);
+            sendViaWhatsAppSilently(context, phone, whatsappMessage);
         } else if (account.isNotifySms()) {
-            sendViaSms(context, phone, message);
+            sendViaSms(context, phone, smsMessage);
         }
     }
 
@@ -230,9 +325,10 @@ public final class ShareNotificationHelper {
                 db.migrationFlagDao().setFlag(FLAG_UPGRADE_BANNER, 0);
             }
 
-            String message = buildTransactionMessage(activity, savedTx, currencyName, balance);
+            String waMessage = buildTransactionMessage(activity, savedTx, currencyName, balance);
+            String smsMessage = buildTransactionSmsMessage(activity, savedTx, currencyName, balance);
             activity.runOnUiThread(() ->
-                    deliverPostSaveFlow(activity, account, message, isFirstOperation, showUpgradeNotice));
+                    deliverPostSaveFlow(activity, account, waMessage, smsMessage, isFirstOperation, showUpgradeNotice));
         });
     }
 
@@ -261,10 +357,12 @@ public final class ShareNotificationHelper {
                 db.migrationFlagDao().setFlag(FLAG_UPGRADE_BANNER, 0);
             }
 
-            String message = buildInvoiceMessage(
+            String waMessage = buildInvoiceMessage(
+                    activity, isSales, invoiceAmount, paidAmount, details, date, currencyName, balance);
+            String smsMessage = buildInvoiceSmsMessage(
                     activity, isSales, invoiceAmount, paidAmount, details, date, currencyName, balance);
             activity.runOnUiThread(() ->
-                    deliverPostSaveFlow(activity, account, message, isFirstOperation, showUpgradeNotice));
+                    deliverPostSaveFlow(activity, account, waMessage, smsMessage, isFirstOperation, showUpgradeNotice));
         });
     }
 
@@ -296,7 +394,8 @@ public final class ShareNotificationHelper {
 
     private static void deliverPostSaveFlow(@NonNull FragmentActivity activity,
                                             @NonNull Account account,
-                                            @NonNull String message,
+                                            @NonNull String waMessage,
+                                            @NonNull String smsMessage,
                                             boolean isFirstOperation,
                                             boolean showUpgradeNotice) {
         if (activity.isFinishing() || activity.isDestroyed()) return;
@@ -306,7 +405,7 @@ public final class ShareNotificationHelper {
             boolean hasPhone = account.getPhoneNumber() != null && !account.getPhoneNumber().trim().isEmpty();
 
             if (hasPhone && (account.isNotifyWhatsApp() || account.isNotifySms())) {
-                dispatchAccordingToAccount(activity, account, message);
+                dispatchAccordingToAccount(activity, account, waMessage, smsMessage);
                 return;
             }
 
@@ -316,7 +415,7 @@ public final class ShareNotificationHelper {
                 String key = "prompted_acc_" + account.getId();
                 if (!sp.getBoolean(key, false)) {
                     sp.edit().putBoolean(key, true).apply();
-                    showEnableSharePromptBubble(activity, account, message);
+                    showEnableSharePromptBubble(activity, account, waMessage, smsMessage);
                 }
             }
         };
@@ -361,7 +460,8 @@ public final class ShareNotificationHelper {
 
     private static void showEnableSharePromptBubble(@NonNull FragmentActivity activity,
                                                     @NonNull Account account,
-                                                    @NonNull String pendingMessage) {
+                                                    @NonNull String pendingWaMessage,
+                                                    @NonNull String pendingSmsMessage) {
         View view = LayoutInflater.from(activity).inflate(R.layout.dialog_share_prompt, null);
         AppFontHelper.applyFontToViewTree(activity, view);
 
@@ -391,7 +491,7 @@ public final class ShareNotificationHelper {
                 @Override
                 public void onAccountSaved(Account savedAccount, boolean isNew) {
                     if (savedAccount != null && (savedAccount.isNotifyWhatsApp() || savedAccount.isNotifySms())) {
-                        dispatchAccordingToAccount(activity, savedAccount, pendingMessage);
+                        dispatchAccordingToAccount(activity, savedAccount, pendingWaMessage, pendingSmsMessage);
                     }
                 }
             });

@@ -1905,4 +1905,17 @@
     <string name="budget_cat_income_gifts">هدايا</string>
     <string name="budget_cat_extra_income">دخل إضافي</string>
     <string name="budget_cat_sales">مبيعات</string>
+    <string name="sms_tx_debit">عليكم</string>
+    <string name="sms_tx_credit">لكم</string>
+    <string name="sms_balance_label">الرصيد</string>
+    <string name="sms_balance_debit">عليكم</string>
+    <string name="sms_balance_credit">لكم</string>
+    <string name="sms_balance_settled">خالص</string>
+    <string name="sms_inv_sales">فاتورة مبيعات</string>
+    <string name="sms_inv_purchases">فاتورة مشتريات</string>
+    <string name="sms_inv_paid">مدفوع</string>
+    <string name="sms_inv_rem">متبقي</string>
+    <string name="sms_date_prefix">بتاريخ</string>
+    <string name="sms_bal_summary">رصيدكم الحالي: %1$s %2$s (%3$s)</string>
+    <string name="sms_bal_zero">رصيدكم الحالي: 0 %1$s (خالص)</string>
 </resources>

@@ -1821,4 +1821,17 @@
     <string name="budget_cat_income_gifts">Gifts</string>
     <string name="budget_cat_extra_income">Extra Income</string>
     <string name="budget_cat_sales">Sales</string>
+    <string name="sms_tx_debit">Debit</string>
+    <string name="sms_tx_credit">Credit</string>
+    <string name="sms_balance_label">Bal</string>
+    <string name="sms_balance_debit">On you</string>
+    <string name="sms_balance_credit">For you</string>
+    <string name="sms_balance_settled">Settled</string>
+    <string name="sms_inv_sales">Sales Inv</string>
+    <string name="sms_inv_purchases">Purchase Inv</string>
+    <string name="sms_inv_paid">Paid</string>
+    <string name="sms_inv_rem">Rem</string>
+    <string name="sms_date_prefix">on</string>
+    <string name="sms_bal_summary">Current balance: %1$s %2$s (%3$s)</string>
+    <string name="sms_bal_zero">Current balance: 0 %1$s (Settled)</string>
 </resources>
