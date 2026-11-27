@@ -139,6 +139,7 @@ import com.hpp.daftree.dialogs.UpdateAppDialog;
 import com.hpp.daftree.dialogs.UpdateDialog;
 import com.hpp.daftree.helpers.AccountTypeIconHelper;
 import com.hpp.daftree.helpers.AppFontHelper;
+import com.hpp.daftree.helpers.FeatureBadgeManager;
 import com.hpp.daftree.helpers.LanguageManager;
 import com.hpp.daftree.database.AccountWithBalance;
 import com.hpp.daftree.models.AppAuth;
@@ -1633,6 +1634,7 @@ public class MainActivity extends BaseActivity implements
     private void setupEventListeners() {
         setupAddTransactionButtonGlow();
         setupCurrencyTextViewColorTransition();
+        FeatureBadgeManager.bindBadge(binding.badgeBudgetNew, FeatureBadgeManager.FEATURE_BUDGET_V2);
         binding.navItemBudget.setOnClickListener(v -> switchMainTab(true));
         binding.navItemReports.setOnClickListener(v -> {
             if (!licenseManager.canCreateTransaction() && !licenceData.isPremium()) {
@@ -5476,6 +5478,7 @@ private void handlePurchaseApp() {
     private void switchMainTab(boolean showBudget) {
         isBudgetTabActive = showBudget;
         if (showBudget) {
+            FeatureBadgeManager.markFeatureSeen(this, binding.badgeBudgetNew, FeatureBadgeManager.FEATURE_BUDGET_V2);
             if (isSearchMode) {
                 toggleSearchMode(false);
             }

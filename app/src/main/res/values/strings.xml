@@ -1812,4 +1812,5 @@
     <string name="notif_tx_guest_title">🔔 New Activity on Your Number</string>
     <string name="notif_tx_guest_body">%1$s %2$s (%3$s) was recorded on an account linked to your number. Activate \"Track My Accounts\" to see who recorded it.</string>
     <string name="notif_new_account_title">👤 You Were Added to an Account</string>
+    <string name="badge_new">NEW</string>
 </resources>
