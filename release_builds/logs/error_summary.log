@@ -1,0 +1,252 @@
+====================================================
+ملخص الأخطاء والاستثناءات Error Summary
+====================================================
+Welcome to Gradle 9.5.0!
+
+Here are the highlights of this release:
+ - Task provenance in reports and failure messages
+ - Type-safe accessors for precompiled Kotlin Settings plugins
+
+For more details see https://docs.gradle.org/9.5.0/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Task :app:signingReport
+Variant: debug
+Config: debug
+Store: /home/runner/.config/.android/debug.keystore
+Alias: AndroidDebugKey
+Error: Missing keystore
+----------
+Variant: release
+Config: release
+Store: /home/runner/work/wallet-app-v2/wallet-app-v2/app/release.jks
+Alias: key0
+MD5: 0C:77:B8:B3:4D:A2:CC:D2:A2:FA:CF:1F:DB:93:47:83
+SHA1: 1F:94:F6:DD:5C:3B:4B:97:F0:75:B2:FE:C1:C1:C9:8A:41:19:EE:40
+SHA-256: 1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D
+Valid until: Wednesday, November 24, 2049
+----------
+Variant: debugAndroidTest
+Config: debug
+Store: /home/runner/.config/.android/debug.keystore
+Alias: AndroidDebugKey
+Error: Missing keystore
+----------
+
+BUILD SUCCESSFUL in 9s
+1 actionable task: 1 executed
+🔹 البصمة التي قرأها Gradle فعلياً لنسخة release : 1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D
+🔹 البصمة المطلوبة لمفتاح التحميل (Upload Key)  : 1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D
+✅ الفحص الثاني نجح: Gradle مرتبط رسمياً بمفتاح التحميل الصحيح (1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D) وجاهز للبناء!
+Picked up JAVA_TOOL_OPTIONS: -Dfile.encoding=UTF-8 -Duser.timezone=Asia/Aden
+> Task :app:clean UP-TO-DATE
+> Task :clean UP-TO-DATE
+
+BUILD SUCCESSFUL in 1s
+2 actionable tasks: 2 up-to-date
+=== الذاكرة المتاحة قبل بناء AAB ===
+               total        used        free      shared  buff/cache   available
+====================================================
+آخر 200 سطر من سجل البناء الكامل:
+====================================================
+                                                                                              ^
+  required: Map<String,Object>
+  found:    Object
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/models/LocalWebServer.java:85: warning: [deprecation] getParms() in IHTTPSession has been deprecated
+            Map<String, String> params = session.getParms();
+                                                ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MainActivity.java:740: warning: [deprecation] SHOW_IMPLICIT in InputMethodManager has been deprecated
+            imm.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT);
+                                                                  ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MainActivity.java:3283: warning: [deprecation] GoogleSignInOptions in com.google.android.gms.auth.api.signin has been deprecated
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MainActivity.java:3283: warning: [deprecation] GoogleSignInOptions in com.google.android.gms.auth.api.signin has been deprecated
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                      ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MainActivity.java:3283: warning: [deprecation] Builder in GoogleSignInOptions has been deprecated
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                                         ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MainActivity.java:3283: warning: [deprecation] GoogleSignInOptions in com.google.android.gms.auth.api.signin has been deprecated
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                                                  ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MainActivity.java:3287: warning: [deprecation] GoogleSignInClient in com.google.android.gms.auth.api.signin has been deprecated
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
+        ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MainActivity.java:3287: warning: [deprecation] GoogleSignIn in com.google.android.gms.auth.api.signin has been deprecated
+        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this, gso);
+                                                ^
+warning: [deprecation] GoogleSignInAccount in com.google.android.gms.auth.api.signin has been deprecated
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MainActivity.java:3912: warning: [deprecation] getFromLocation(double,double,int) in Geocoder has been deprecated
+                List<android.location.Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                                                                   ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/ReferralRewardDialog.java:94: warning: [deprecation] onBackPressed() in Dialog has been deprecated
+    public void onBackPressed() {
+                ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/ReferralRewardDialog.java:96: warning: [deprecation] onBackPressed() in Dialog has been deprecated
+        super.onBackPressed();
+             ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/viewmodels/MainViewModel.java:167: warning: [unchecked] unchecked conversion
+        final LiveData<List<AccountWithBalance>>[] sourceHolder = new LiveData[]{null};
+                                                                  ^
+  required: LiveData<List<AccountWithBalance>>[]
+  found:    LiveData[]
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/MyApplication.java:221: warning: [deprecation] sdkInitialize(Context) in FacebookSdk has been deprecated
+                    FacebookSdk.sdkInitialize(getApplicationContext());
+                               ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/ProfileActivity.java:150: warning: [unchecked] unchecked cast
+                                Map<String, Object> resultData = (Map<String, Object>) dataResult;
+                                                                                       ^
+  required: Map<String,Object>
+  found:    Object
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/AccountsTypeActivity.java:413: warning: [deprecation] onBackPressed() in ComponentActivity has been deprecated
+        onBackPressed();
+        ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/AccountDetailsActivity.java:612: warning: [deprecation] SHOW_IMPLICIT in InputMethodManager has been deprecated
+            imm.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT);
+                                                                  ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/AccountDetailsActivity.java:1214: warning: [deprecation] SHOW_IMPLICIT in InputMethodManager has been deprecated
+                    imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+                                                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:777: warning: [deprecation] getRunningTasks(int) in ActivityManager has been deprecated
+        List<android.app.ActivityManager.RunningTaskInfo> runningTasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
+                                                                                        ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:918: warning: [deprecation] getFromLocation(double,double,int) in Geocoder has been deprecated
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                                      ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1796: warning: [deprecation] MasterKey in androidx.security.crypto has been deprecated
+            MasterKey masterKey = new MasterKey.Builder(this)
+            ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1797: warning: [deprecation] MasterKey in androidx.security.crypto has been deprecated
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                  ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1797: warning: [deprecation] KeyScheme in MasterKey has been deprecated
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                                           ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1796: warning: [deprecation] MasterKey in androidx.security.crypto has been deprecated
+            MasterKey masterKey = new MasterKey.Builder(this)
+                                      ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1796: warning: [deprecation] Builder in MasterKey has been deprecated
+            MasterKey masterKey = new MasterKey.Builder(this)
+                                               ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1804: warning: [deprecation] EncryptedSharedPreferences in androidx.security.crypto has been deprecated
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1804: warning: [deprecation] PrefKeyEncryptionScheme in EncryptedSharedPreferences has been deprecated
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1805: warning: [deprecation] EncryptedSharedPreferences in androidx.security.crypto has been deprecated
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                    ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1805: warning: [deprecation] PrefValueEncryptionScheme in EncryptedSharedPreferences has been deprecated
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:1800: warning: [deprecation] EncryptedSharedPreferences in androidx.security.crypto has been deprecated
+            SharedPreferences encryptedPrefs = EncryptedSharedPreferences.create(
+                                               ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/LoginActivity.java:2794: warning: [unchecked] unchecked cast
+                                Map<String, Object> resultData = (Map<String, Object>) result.getData();
+                                                                                                     ^
+  required: Map<String,Object>
+  found:    Object
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/ui/AddTransactionActivity.java:816: warning: [deprecation] SHOW_IMPLICIT in InputMethodManager has been deprecated
+                    imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+                                                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/SecurityBootstrap.java:162: warning: [deprecation] GET_SIGNATURES in PackageManager has been deprecated
+                        packageInfo = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), PackageManager.GET_SIGNATURES);
+                                                                                                                 ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/SecurityBootstrap.java:163: warning: [deprecation] signatures in PackageInfo has been deprecated
+                        if (packageInfo.signatures != null) {
+                                       ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/SecurityBootstrap.java:164: warning: [deprecation] signatures in PackageInfo has been deprecated
+                            for (Signature s : packageInfo.signatures) {
+                                                          ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/TamperDetection.java:42: warning: [deprecation] GET_SIGNATURES in PackageManager has been deprecated
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
+                                                                                                                         ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/utils/TamperDetection.java:43: warning: [deprecation] signatures in PackageInfo has been deprecated
+            for (Signature signature : packageInfo.signatures) {
+                                                  ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/budget/ui/AddBudgetEntryBottomSheet.java:145: warning: [deprecation] SHOW_IMPLICIT in InputMethodManager has been deprecated
+                imm.showSoftInput(binding.etBudgetAmount, android.view.inputmethod.InputMethodManager.SHOW_IMPLICIT);
+                                                                                                     ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/UpdateAppDialog.java:205: warning: [deprecation] VIBRATOR_SERVICE in Context has been deprecated
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                                                                           ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/UpdateAppDialog.java:210: warning: [deprecation] vibrate(long) in Vibrator has been deprecated
+                    vibrator.vibrate(500);
+                            ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/UpdateAppDialog.java:220: warning: [deprecation] VIBRATOR_SERVICE in Context has been deprecated
+            Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                                                                           ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/UpdateAppDialog.java:225: warning: [deprecation] vibrate(long) in Vibrator has been deprecated
+                    vibrator.vibrate(50);
+                            ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/ReportsBottomSheet.java:178: warning: [deprecation] getSerializable(String) in Bundle has been deprecated
+            LaunchMode mode = (LaunchMode) getArguments().getSerializable(ARG_LAUNCH_MODE);
+                                                         ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/ReportsBottomSheet.java:227: warning: [deprecation] setOnCheckedChangeListener(OnCheckedChangeListener) in ChipGroup has been deprecated
+        binding.chipGroupScope.setOnCheckedChangeListener((group, checkedId) -> updateScopeVisibility(checkedId));
+                              ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/DeviceManagementDialog.java:77: warning: [deprecation] getSerializable(String) in Bundle has been deprecated
+            devices = (List<DeviceInfo>) getArguments().getSerializable(ARG_DEVICES);
+                                                       ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/DeviceManagementDialog.java:77: warning: [unchecked] unchecked cast
+            devices = (List<DeviceInfo>) getArguments().getSerializable(ARG_DEVICES);
+                                                                       ^
+  required: List<DeviceInfo>
+  found:    Serializable
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/dialogs/DeviceManagementDialog.java:97: warning: [deprecation] onBackPressed() in Dialog has been deprecated
+            public void onBackPressed() {
+                        ^
+/home/runner/work/wallet-app-v2/wallet-app-v2/app/src/main/java/com/hpp/daftree/SplashActivity.java:219: warning: [deprecation] updateConfiguration(Configuration,DisplayMetrics) in Resources has been deprecated
+            getResources().updateConfiguration(configuration, resources.getDisplayMetrics());
+                          ^
+74 warnings
+
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:compileReleaseNavigationResources FROM-CACHE
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease FROM-CACHE
+> Task :app:processReleaseMainManifest FROM-CACHE
+> Task :app:processReleaseManifest FROM-CACHE
+> Task :app:processReleaseManifestForPackage FROM-CACHE
+> Task :app:extractProguardFiles
+> Task :app:processReleaseJavaRes
+> Task :app:mergeReleaseJavaResource
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseNativeLibs
+> Task :app:processReleaseResources
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libdatastore_shared_counter.so. Run with --info option to learn more.
+
+> Task :app:mergeReleaseGeneratedProguardFiles
+> Task :app:writeReleaseAppMetadata
+> Task :app:collectReleaseDependencies
+> Task :app:configureReleaseDependencies
+> Task :app:extractReleaseNativeDebugMetadata FROM-CACHE
+> Task :app:parseReleaseIntegrityConfig
+> Task :app:validateSigningRelease
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:minifyReleaseWithR8
+> Task :app:buildReleasePreBundle
+> Task :app:compileReleaseArtProfile
+> Task :app:packageReleaseBundle
+> Task :app:signReleaseBundle
+> Task :app:produceReleaseBundleIdeListingFile
+> Task :app:createReleaseBundleListingFileRedirect
+> Task :app:bundleRelease
+
+[Incubating] Problems report is available at: file:///home/runner/work/wallet-app-v2/wallet-app-v2/build/reports/problems/problems-report.html
+
+BUILD SUCCESSFUL in 3m 31s
+49 actionable tasks: 40 executed, 9 from cache
+=== فحص شهادة وبصمة ملف AAB النهائي ===
+Owner: C=YE, ST=Taiz, L=Taiz, O=HPP, CN=Salah Ahmed
+Issuer: C=YE, ST=Taiz, L=Taiz, O=HPP, CN=Salah Ahmed
+	 SHA1: 1F:94:F6:DD:5C:3B:4B:97:F0:75:B2:FE:C1:C1:C9:8A:41:19:EE:40
+	 SHA256: 1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D
+✅ تم التأكد القاطع من توقيع ملف AAB ببصمة مفتاح التحميل الصحيحة (1C:36:97:38:51:F5:85:01:A8:EA:6C:94:15:51:1C:EC:7A:0F:AB:1A:F8:35:73:2A:65:81:BA:62:67:27:39:0D)!
