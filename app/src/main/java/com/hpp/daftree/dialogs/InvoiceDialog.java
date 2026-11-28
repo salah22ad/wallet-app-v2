@@ -553,6 +553,9 @@ public class InvoiceDialog extends BottomSheetDialogFragment {
 
                 if (hostActivity != null) {
                     hostActivity.runOnUiThread(() -> {
+                        if (hostActivity instanceof com.hpp.daftree.ui.AccountDetailsActivity) {
+                            ((com.hpp.daftree.ui.AccountDetailsActivity) hostActivity).switchToCurrency(finalCurrencyName);
+                        }
                         Toast.makeText(hostActivity, R.string.save_2, Toast.LENGTH_SHORT).show();
                         dismissAllowingStateLoss();
                     });
@@ -613,6 +616,9 @@ public class InvoiceDialog extends BottomSheetDialogFragment {
                 final int finalCreatedCount = createdCount;
                 if (hostActivity != null) {
                     hostActivity.runOnUiThread(() -> {
+                        if (hostActivity instanceof com.hpp.daftree.ui.AccountDetailsActivity) {
+                            ((com.hpp.daftree.ui.AccountDetailsActivity) hostActivity).switchToCurrency(finalCurrencyName);
+                        }
                         Toast.makeText(hostActivity, R.string.save_2, Toast.LENGTH_SHORT).show();
                         dismissAllowingStateLoss();
                         ShareNotificationHelper.handleAfterInvoiceSaved(

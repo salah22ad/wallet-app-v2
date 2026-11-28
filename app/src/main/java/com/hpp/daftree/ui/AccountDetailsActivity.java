@@ -1348,9 +1348,8 @@ public class AccountDetailsActivity extends BaseActivity implements
             oldTransaction.setTimestamp(newDate.getTime());
 
             viewModel.updateTransaction(oldTransaction);
+            switchToCurrency(newCurrencyName);
             viewModel.refreshTransactions();
-            binding.currencyTextView.setText(newCurrencyName);
-            viewModel.setCurrency(newCurrencyName);
             Toast.makeText(this, getString(R.string.transaction_updated), Toast.LENGTH_SHORT).show();
 
             tempEncodedImage = null;
@@ -1426,6 +1425,7 @@ public class AccountDetailsActivity extends BaseActivity implements
                 .sendTransactionNotification(newTransaction, newCurrencyName, this);
 
         viewModel.addTransaction(newTransaction);
+        switchToCurrency(newCurrencyName);
         boolean linkToBudget = activeDialogBinding != null && activeDialogBinding.switchLinkToBudget.isChecked();
         if (linkToBudget) {
             String linkedAccName = currentAccount != null && currentAccount.getAccountName() != null
@@ -1598,6 +1598,18 @@ public class AccountDetailsActivity extends BaseActivity implements
         // إخبار الـ ViewModel بتغيير العملة
         viewModel.setCurrency(selectedCurrency);
 
+    }
+
+    public void switchToCurrency(String currencyName) {
+        if (currencyName == null || currencyName.trim().isEmpty() || binding == null || viewModel == null) {
+            return;
+        }
+        String cleanCurrency = currencyName.trim();
+        if (!activeCurrenciesForAccount.contains(cleanCurrency)) {
+            activeCurrenciesForAccount.add(cleanCurrency);
+        }
+        binding.currencyTextView.setText(cleanCurrency);
+        viewModel.setCurrency(cleanCurrency);
     }
     private void switchToViewMode(DialogAddNewTransactionBinding dialogBinding) {
         dialogBinding.currencySpinnerLayout.setEnabled(false);
@@ -1973,6 +1985,7 @@ public class AccountDetailsActivity extends BaseActivity implements
         transaction.setTimestamp(new Date());
         // حفظ العملية
         viewModel.addTransaction(transaction);
+        switchToCurrency(currencyName);
         if (dialogBinding.switchLinkToBudget.isChecked()) {
             BudgetRepository.recordLinkedDebtTransaction(
                     this, op.getAccountName(), amount, type, currencyId, System.currentTimeMillis());
