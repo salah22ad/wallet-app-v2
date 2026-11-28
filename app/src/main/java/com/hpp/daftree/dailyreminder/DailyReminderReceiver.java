@@ -72,6 +72,18 @@ public class DailyReminderReceiver extends BroadcastReceiver {
                 // نمسك الـ WakeLock لمدة أقصاها دقيقة واحدة لضمان عمل الـ MediaPlayer
                 wl.acquire(60 * 1000L);
 
+                // إيقاظ الشاشة 8 ثوانٍ لإظهار الإشعار على شاشة القفل (يتحرر تلقائياً بعد 8 ثوانٍ)
+                try {
+                    @SuppressWarnings("deprecation")
+                    PowerManager.WakeLock screenWl = pm.newWakeLock(
+                            PowerManager.SCREEN_BRIGHT_WAKE_LOCK
+                                    | PowerManager.ACQUIRE_CAUSES_WAKEUP
+                                    | PowerManager.ON_AFTER_RELEASE,
+                            "Daftree:ReminderScreenWakeLock"
+                    );
+                    screenWl.acquire(8 * 1000L);
+                } catch (Exception ignored) {}
+
                 DailyReminderNotification notificationHandler = new DailyReminderNotification(context);
                 notificationHandler.playCustomSound(); // تشغيل الـ MediaPlayer الخاص بك
                 notificationHandler.showNotification(); // عرض الإشعار

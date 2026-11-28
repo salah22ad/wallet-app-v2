@@ -179,7 +179,7 @@ public class DailyReminderNotification {
                 .setDeleteIntent(dismissPendingIntent)
                 .setAutoCancel(true)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setOngoing(true) // لنجبره يضغط على الأزرار
+                .setOngoing(false)
 
                 // إضافة الأزرار
                 .addAction(R.drawable.ic_stat_name, context.getString(R.string.open_app), pendingIntent)
