@@ -194,14 +194,33 @@ public class AddBudgetEntryBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void setupCategoryGrid() {
-        categoryAdapter = new BudgetCategoryGridAdapter(category -> {});
+        categoryAdapter = new BudgetCategoryGridAdapter(this::updateNoteHintForCategory);
         binding.rvBudgetCategories.setLayoutManager(new GridLayoutManager(requireContext(), 4));
         binding.rvBudgetCategories.setAdapter(categoryAdapter);
 
         viewModel.getCategoriesByType(entryType).observe(getViewLifecycleOwner(), categories -> {
+            int targetId = preselectedCategoryId;
             categoryAdapter.submitList(categories, preselectedCategoryId);
             preselectedCategoryId = -1;
+            if (categories != null && !categories.isEmpty()) {
+                com.hpp.daftree.budget.data.BudgetCategory selected = categories.get(0);
+                if (targetId > 0) {
+                    for (com.hpp.daftree.budget.data.BudgetCategory c : categories) {
+                        if (c.id == targetId) {
+                            selected = c;
+                            break;
+                        }
+                    }
+                }
+                updateNoteHintForCategory(selected);
+            }
         });
+    }
+
+    private void updateNoteHintForCategory(@Nullable com.hpp.daftree.budget.data.BudgetCategory category) {
+        if (binding == null) return;
+        String code = category != null ? category.code : null;
+        binding.etBudgetNote.setHint(BudgetUtils.getCategoryNoteHintResId(code, entryType));
     }
 
     private void setupListeners() {

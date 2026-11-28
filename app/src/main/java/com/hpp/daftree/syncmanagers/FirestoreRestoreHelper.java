@@ -1717,7 +1717,7 @@ public class FirestoreRestoreHelper {
                         if (task.isSuccessful()) {
                             QuerySnapshot snapshot = task.getResult();
                             if (snapshot == null || snapshot.isEmpty()) {
-                                handler.post(() -> restoreBudgetCategories(listener));
+                                handler.post(() -> restoreBudgetLimits(listener));
                                 return;
                             }
 
@@ -1804,7 +1804,7 @@ public class FirestoreRestoreHelper {
                                 fetchTransactionsChunk(listener, accountMap, currFirestoreToLocal, currLocalToFirestore, allCurrencies, lastDoc, newTotal);
                             } else {
                                 appDb.accountDao().recalculateAllAccountsLastTransDate();
-                                handler.post(() -> restoreBudgetCategories(listener));
+                                handler.post(() -> restoreBudgetLimits(listener));
                             }
 
                         } else {

@@ -22,7 +22,7 @@ public final class BudgetDatabaseMigration {
             Log.i(TAG, "Starting MIGRATION_19_20: Budget tables + local account/type icon columns");
             addLocalVisualColumns(db);
             createBudgetTables(db);
-            seedDefaultCategoriesIfNeeded(db, "PENDING");
+            seedDefaultCategoriesIfNeeded(db, "SYNCED");
             // تسجيل علم المزامنة لرفع بيانات الترقية لمرة واحدة في runMaintenanceTasks
             db.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('migration_19_20_pending', 1)");
             Log.i(TAG, "Finished MIGRATION_19_20 successfully");
@@ -136,7 +136,7 @@ public final class BudgetDatabaseMigration {
     }
 
     public static void seedDefaultCategoriesIfNeeded(@NonNull SupportSQLiteDatabase db) {
-        seedDefaultCategoriesIfNeeded(db, "NEW");
+        seedDefaultCategoriesIfNeeded(db, "SYNCED");
     }
 
     public static void seedDefaultCategoriesIfNeeded(@NonNull SupportSQLiteDatabase db, @NonNull String initialSyncStatus) {
@@ -154,17 +154,21 @@ public final class BudgetDatabaseMigration {
         }
 
         long now = System.currentTimeMillis();
-        // فئات المصروفات الافتراضية (10 تصنيفات)
-        insertDefaultCategory(db, "food", "EXPENSE", "food", "#F97316", 1, now, initialSyncStatus);
-        insertDefaultCategory(db, "transport", "EXPENSE", "transport", "#3B82F6", 2, now, initialSyncStatus);
+        // فئات المصروفات الافتراضية (12 تصنيفاً - 4×3)
+        insertDefaultCategory(db, "personal", "EXPENSE", "personal", "#EC4899", 1, now, initialSyncStatus);
+        insertDefaultCategory(db, "food", "EXPENSE", "food", "#F97316", 2, now, initialSyncStatus);
         insertDefaultCategory(db, "bills", "EXPENSE", "bills", "#F59E0B", 3, now, initialSyncStatus);
-        insertDefaultCategory(db, "education", "EXPENSE", "education", "#8B5CF6", 4, now, initialSyncStatus);
-        insertDefaultCategory(db, "health", "EXPENSE", "health", "#A855F7", 5, now, initialSyncStatus);
-        insertDefaultCategory(db, "shopping", "EXPENSE", "shopping", "#14B8A6", 6, now, initialSyncStatus);
-        insertDefaultCategory(db, "family", "EXPENSE", "family", "#EF4444", 7, now, initialSyncStatus);
+        insertDefaultCategory(db, "transport", "EXPENSE", "transport", "#3B82F6", 4, now, initialSyncStatus);
+
+        insertDefaultCategory(db, "family", "EXPENSE", "family", "#EF4444", 5, now, initialSyncStatus);
+        insertDefaultCategory(db, "kids", "EXPENSE", "kids", "#06B6D4", 6, now, initialSyncStatus);
+        insertDefaultCategory(db, "shopping", "EXPENSE", "shopping", "#14B8A6", 7, now, initialSyncStatus);
         insertDefaultCategory(db, "gifts", "EXPENSE", "gifts", "#EAB308", 8, now, initialSyncStatus);
+
         insertDefaultCategory(db, "housing", "EXPENSE", "housing", "#22C55E", 9, now, initialSyncStatus);
-        insertDefaultCategory(db, "other", "EXPENSE", "other", "#06B6D4", 10, now, initialSyncStatus);
+        insertDefaultCategory(db, "education", "EXPENSE", "education", "#8B5CF6", 10, now, initialSyncStatus);
+        insertDefaultCategory(db, "health", "EXPENSE", "health", "#A855F7", 11, now, initialSyncStatus);
+        insertDefaultCategory(db, "other", "EXPENSE", "other", "#64748B", 12, now, initialSyncStatus);
 
         // فئات الدخل الافتراضية (8 تصنيفات)
         insertDefaultCategory(db, "salary", "INCOME", "salary", "#10B981", 1, now, initialSyncStatus);

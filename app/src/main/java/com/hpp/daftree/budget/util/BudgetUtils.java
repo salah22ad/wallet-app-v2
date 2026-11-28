@@ -132,6 +132,8 @@ public final class BudgetUtils {
         if (code == null) return 0;
         switch (code) {
             case "bills": return R.string.budget_cat_bills;
+            case "personal": return R.string.budget_cat_personal;
+            case "kids": return R.string.budget_cat_kids;
             case "housing": return R.string.budget_cat_housing;
             case "food": return R.string.budget_cat_food;
             case "transport": return R.string.budget_cat_transport;
@@ -197,6 +199,8 @@ public final class BudgetUtils {
         if (iconKey == null) return R.drawable.ic_budget_other;
         switch (iconKey) {
             case "bills": return R.drawable.ic_budget_bills;
+            case "personal": return R.drawable.ic_budget_personal;
+            case "kids": return R.drawable.ic_budget_kids;
             case "housing": return R.drawable.ic_budget_housing;
             case "food": return R.drawable.ic_budget_food;
             case "transport": return R.drawable.ic_budget_transport;
@@ -222,5 +226,35 @@ public final class BudgetUtils {
             default:
                 return R.drawable.ic_budget_other;
         }
+    }
+
+    public static int getCategoryNoteHintResId(String code, String entryType) {
+        if (code != null) {
+            switch (code) {
+                case "personal": return R.string.budget_hint_personal;
+                case "food": return R.string.budget_hint_food;
+                case "bills": return R.string.budget_hint_bills;
+                case "transport": return R.string.budget_hint_transport;
+                case "family": return R.string.budget_hint_family;
+                case "kids": return R.string.budget_hint_kids;
+                case "shopping": return R.string.budget_hint_shopping;
+                case "gifts": return R.string.budget_hint_gifts;
+                case "housing": return R.string.budget_hint_housing;
+                case "education": return R.string.budget_hint_education;
+                case "health": return R.string.budget_hint_health;
+                case "other": return R.string.budget_hint_other;
+                case "salary": return R.string.budget_hint_salary;
+                case "freelance": return R.string.budget_hint_freelance;
+                case "transfers": return R.string.budget_hint_transfers;
+                case "investments": return R.string.budget_hint_investments;
+                case "sales": return R.string.budget_hint_sales;
+                case "income_gifts": return R.string.budget_hint_income_gifts;
+                case "extra_income": return R.string.budget_hint_extra_income;
+                case "income_other": return R.string.budget_hint_income_other;
+            }
+        }
+        return com.hpp.daftree.budget.data.BudgetEntry.TYPE_INCOME.equals(entryType)
+                ? R.string.budget_note_income_hint
+                : R.string.budget_note_expense_hint;
     }
 }

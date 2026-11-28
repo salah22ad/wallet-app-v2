@@ -146,7 +146,7 @@ public class SyncWorker extends Worker {
             uploadAccountTypes();
             uploadAccounts();
             uploadTransactions();
-            uploadBudgetCategories(currentUid);
+            // uploadBudgetCategories(currentUid); // التصنيفات الافتراضية محلية بالكامل، يُفعّل عند إضافة التصنيفات المخصّصة
             uploadBudgetLimits(currentUid);
             uploadBudgetEntries(currentUid);
             handleDeletions();

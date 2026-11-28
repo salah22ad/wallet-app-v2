@@ -110,4 +110,26 @@
     <string name="budget_report_net_surplus">صافي فائض</string>
     <string name="budget_report_net_deficit">صافي عجز</string>
     <string name="budget_report_scope_label">الميزانية الشخصية</string>
+    <string name="budget_cat_personal">شخصي</string>
+    <string name="budget_cat_kids">الأطفال</string>
+    <string name="budget_hint_personal">مثال: ملابس، حلاقة، عطور، عناية شخصية…</string>
+    <string name="budget_hint_food">مثال: غداء، بقالة، قهوة، خضار وفواكه…</string>
+    <string name="budget_hint_bills">مثال: فاتورة كهرباء، ماء، إنترنت، رصيد…</string>
+    <string name="budget_hint_transport">مثال: وقود، تاكسي، صيانة سيارة، مواصلات…</string>
+    <string name="budget_hint_family">مثال: مصاريف البيت، ضيافة، مستلزمات الأسرة…</string>
+    <string name="budget_hint_kids">مثال: حليب، ملابس أطفال، ألعاب، مصروف…</string>
+    <string name="budget_hint_shopping">مثال: أدوات منزلية، إلكترونيات، مشتريات…</string>
+    <string name="budget_hint_gifts">مثال: هدية، مناسبة، صدقة، تبرع…</string>
+    <string name="budget_hint_housing">مثال: إيجار شهري، صيانة منزل، أثاث…</string>
+    <string name="budget_hint_education">مثال: رسوم دراسية، كتب، دورات، قرطاسية…</string>
+    <string name="budget_hint_health">مثال: دواء، كشف طبي، فحوصات، صيدلية…</string>
+    <string name="budget_hint_other">مثال: مصروف متنوع أو غير مصنف…</string>
+    <string name="budget_hint_salary">مثال: راتب شهري، مكافأة، بدلات…</string>
+    <string name="budget_hint_freelance">مثال: مشروع حر، استشارة، عمل إضافي…</string>
+    <string name="budget_hint_transfers">مثال: حوالة واردة، تحويل بنكي، إيداع…</string>
+    <string name="budget_hint_investments">مثال: أرباح استثمار، أسهم، عوائد…</string>
+    <string name="budget_hint_sales">مثال: مبيعات يومية، أرباح بضاعة، إيراد محل…</string>
+    <string name="budget_hint_income_gifts">مثال: هدية نقدية، جائزة، إكرامية…</string>
+    <string name="budget_hint_extra_income">مثال: عمولة، وقت إضافي، دخل جانبي…</string>
+    <string name="budget_hint_income_other">مثال: مبلغ مسترد أو دخل آخر…</string>
 </resources>

@@ -121,18 +121,16 @@ public class FirestoreSyncManager {
                 syncAccountsFirst(userId, () ->
                     syncCurrencies(userId, () ->
                         syncTransactions(userId, () ->
-                            syncBudgetCategories(userId, () ->
-                                syncBudgetLimits(userId, () ->
-                                    syncBudgetEntries(userId, () -> {
-                                        listenForAccountTypeChanges(userId);
-                                        listenForAccountChanges(userId);
-                                        listenForCurrencyChanges(userId);
-                                        listenForTransactionChanges(userId);
-                                        listenForBudgetCategoryChanges(userId);
-                                        listenForBudgetLimitChanges(userId);
-                                        listenForBudgetEntryChanges(userId);
-                                    })
-                                )
+                            syncBudgetLimits(userId, () ->
+                                syncBudgetEntries(userId, () -> {
+                                    listenForAccountTypeChanges(userId);
+                                    listenForAccountChanges(userId);
+                                    listenForCurrencyChanges(userId);
+                                    listenForTransactionChanges(userId);
+                                    // listenForBudgetCategoryChanges(userId); // التصنيفات الافتراضية محلية بالكامل
+                                    listenForBudgetLimitChanges(userId);
+                                    listenForBudgetEntryChanges(userId);
+                                })
                             )
                         )
                     )

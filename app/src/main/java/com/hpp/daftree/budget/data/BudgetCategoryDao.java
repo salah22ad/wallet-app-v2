@@ -27,7 +27,7 @@ public interface BudgetCategoryDao {
     @Query("SELECT COUNT(*) FROM budget_categories")
     int getCountSync();
 
-    @Query("SELECT COUNT(*) FROM budget_categories WHERE syncStatus IN ('NEW', 'EDITED', 'DELETED')")
+    @Query("SELECT COUNT(*) FROM budget_categories WHERE isDefault = 0 AND syncStatus IN ('NEW', 'EDITED', 'DELETED')")
     int getUnsyncedCount();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -57,7 +57,7 @@ public interface BudgetCategoryDao {
     @Query("SELECT * FROM budget_categories WHERE firestoreId = :firestoreId LIMIT 1")
     BudgetCategory getByFirestoreIdSync(String firestoreId);
 
-    @Query("SELECT * FROM budget_categories WHERE syncStatus IN ('NEW', 'EDITED', 'DELETED')")
+    @Query("SELECT * FROM budget_categories WHERE isDefault = 0 AND syncStatus IN ('NEW', 'EDITED', 'DELETED')")
     List<BudgetCategory> getUnsyncedCategoriesSync();
 
     @Query("DELETE FROM budget_categories WHERE firestoreId = :firestoreId")
@@ -66,7 +66,7 @@ public interface BudgetCategoryDao {
     @Query("SELECT * FROM budget_categories WHERE isDeleted = 1 AND deleteDate > 0 AND deleteDate <= :threshold")
     List<BudgetCategory> getOldDeletedCategories(long threshold);
 
-    @Query("UPDATE budget_categories SET syncStatus = :status, ownerUID = :ownerUID WHERE isDeleted = 0")
+    @Query("UPDATE budget_categories SET syncStatus = CASE WHEN isDefault = 1 THEN 'SYNCED' ELSE :status END, ownerUID = :ownerUID WHERE isDeleted = 0")
     void upgradeToOfficialUser(String ownerUID, String status);
 
     @Query("DELETE FROM budget_categories WHERE isDeleted = 1")

@@ -49,25 +49,6 @@ public final class MigrationSyncGuard {
                 }
         );
 
-        // 2. فحص مستقل لتصنيفات الميزانية (budget_categories) حتى لا تُحذف إن كانت فارغة في Firestore
-        evaluateAndDispatch(
-                context,
-                db,
-                "migration_19_20_budget_pending",
-                "budget_categories",
-                "code",
-                null,
-                () -> {
-                    db.getOpenHelper().getWritableDatabase()
-                            .execSQL("DELETE FROM budget_categories WHERE syncStatus = 'PENDING'");
-                    Log.i(TAG, "Migration 19->20 budget_categories: remote exists -> cleared local PENDING");
-                },
-                () -> {
-                    db.getOpenHelper().getWritableDatabase()
-                            .execSQL("UPDATE budget_categories SET syncStatus = 'NEW' WHERE syncStatus = 'PENDING'");
-                    Log.i(TAG, "Migration 19->20 budget_categories: remote empty -> promoted PENDING -> NEW");
-                }
-        );
     }
 
     /**

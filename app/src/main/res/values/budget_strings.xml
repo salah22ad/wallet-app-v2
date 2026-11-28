@@ -110,4 +110,26 @@
     <string name="budget_report_net_surplus">Net Surplus</string>
     <string name="budget_report_net_deficit">Net Deficit</string>
     <string name="budget_report_scope_label">Personal Budget</string>
+    <string name="budget_cat_personal">Personal</string>
+    <string name="budget_cat_kids">Kids</string>
+    <string name="budget_hint_personal">e.g. Clothes, haircut, perfume, personal care…</string>
+    <string name="budget_hint_food">e.g. Lunch, groceries, coffee, vegetables…</string>
+    <string name="budget_hint_bills">e.g. Electricity, water, internet, mobile…</string>
+    <string name="budget_hint_transport">e.g. Fuel, taxi, car maintenance, parking…</string>
+    <string name="budget_hint_family">e.g. Home supplies, hospitality, family needs…</string>
+    <string name="budget_hint_kids">e.g. Milk, kids clothes, toys, allowance…</string>
+    <string name="budget_hint_shopping">e.g. Home goods, electronics, general shopping…</string>
+    <string name="budget_hint_gifts">e.g. Gift, occasion, charity, donation…</string>
+    <string name="budget_hint_housing">e.g. Monthly rent, home repair, furniture…</string>
+    <string name="budget_hint_education">e.g. Tuition, books, courses, stationery…</string>
+    <string name="budget_hint_health">e.g. Medicine, doctor visit, lab tests…</string>
+    <string name="budget_hint_other">e.g. Miscellaneous or uncategorized expense…</string>
+    <string name="budget_hint_salary">e.g. Monthly salary, bonus, allowance…</string>
+    <string name="budget_hint_freelance">e.g. Freelance project, consulting, side job…</string>
+    <string name="budget_hint_transfers">e.g. Incoming transfer, remittance, deposit…</string>
+    <string name="budget_hint_investments">e.g. Investment profit, dividends, shares…</string>
+    <string name="budget_hint_sales">e.g. Daily sales, product profit, store revenue…</string>
+    <string name="budget_hint_income_gifts">e.g. Cash gift, prize, reward…</string>
+    <string name="budget_hint_extra_income">e.g. Commission, overtime, extra revenue…</string>
+    <string name="budget_hint_income_other">e.g. Refund or other income source…</string>
 </resources>
