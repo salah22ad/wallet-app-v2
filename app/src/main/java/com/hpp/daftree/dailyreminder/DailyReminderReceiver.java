@@ -66,28 +66,20 @@ public class DailyReminderReceiver extends BroadcastReceiver {
 
             // ب) تشغيل الـ MediaPlayer وعرض الإشعار (كما طلبت)
             PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-            PowerManager.WakeLock screenWl = null;
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Daftree:MediaWakeLock");
 
             try {
-                if (pm != null) {
-                    @SuppressWarnings("deprecation")
-                    int wakeFlags = PowerManager.SCREEN_BRIGHT_WAKE_LOCK
-                            | PowerManager.ACQUIRE_CAUSES_WAKEUP
-                            | PowerManager.ON_AFTER_RELEASE;
-                    screenWl = pm.newWakeLock(wakeFlags, "Daftree:ReminderScreenWakeLock");
-                    screenWl.acquire(8 * 1000L); // إيقاظ الشاشة 8 ثوانٍ لإظهار الإشعار على شاشة القفل
-                }
+                // نمسك الـ WakeLock لمدة أقصاها دقيقة واحدة لضمان عمل الـ MediaPlayer
+                wl.acquire(60 * 1000L);
 
                 DailyReminderNotification notificationHandler = new DailyReminderNotification(context);
-                notificationHandler.playCustomSound();
-                notificationHandler.showNotification();
+                notificationHandler.playCustomSound(); // تشغيل الـ MediaPlayer الخاص بك
+                notificationHandler.showNotification(); // عرض الإشعار
 
             } catch (Exception e) {
                 Log.e(TAG, "خطأ أثناء تشغيل التنبيه", e);
             } finally {
-                if (screenWl != null && screenWl.isHeld()) {
-                    screenWl.release();
-                }
+                if (wl.isHeld()) wl.release();
             }
         }
     }
