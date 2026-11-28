@@ -34,10 +34,10 @@ public interface MonthlyBudgetLimitDao {
             "ORDER BY yearMonth DESC LIMIT 1")
     Double getEffectiveLimitSync(String yearMonth, int currencyId);
 
-    @Query("SELECT * FROM monthly_budget_limits WHERE syncStatus != 'SYNCED'")
+    @Query("SELECT * FROM monthly_budget_limits WHERE syncStatus IN ('NEW', 'EDITED', 'DELETED')")
     List<MonthlyBudgetLimit> getUnsyncedLimitsSync();
 
-    @Query("SELECT COUNT(*) FROM monthly_budget_limits WHERE syncStatus != 'SYNCED'")
+    @Query("SELECT COUNT(*) FROM monthly_budget_limits WHERE syncStatus IN ('NEW', 'EDITED', 'DELETED')")
     int getUnsyncedCount();
 
     @Query("SELECT COUNT(*) FROM monthly_budget_limits WHERE isDeleted = 0 AND limitAmount > 0")

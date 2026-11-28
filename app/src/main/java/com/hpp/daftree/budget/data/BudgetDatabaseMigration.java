@@ -154,19 +154,27 @@ public final class BudgetDatabaseMigration {
         }
 
         long now = System.currentTimeMillis();
-        // فئات المصروفات الافتراضية (حالتها NEW لرفعها إلى Firestore عند الترقية/المزامنة)
-        insertDefaultCategory(db, "bills", "EXPENSE", "bills", "#F59E0B", 1, now, initialSyncStatus);
-        insertDefaultCategory(db, "housing", "EXPENSE", "housing", "#22C55E", 2, now, initialSyncStatus);
-        insertDefaultCategory(db, "food", "EXPENSE", "food", "#F97316", 3, now, initialSyncStatus);
-        insertDefaultCategory(db, "transport", "EXPENSE", "transport", "#3B82F6", 4, now, initialSyncStatus);
+        // فئات المصروفات الافتراضية (10 تصنيفات)
+        insertDefaultCategory(db, "food", "EXPENSE", "food", "#F97316", 1, now, initialSyncStatus);
+        insertDefaultCategory(db, "transport", "EXPENSE", "transport", "#3B82F6", 2, now, initialSyncStatus);
+        insertDefaultCategory(db, "bills", "EXPENSE", "bills", "#F59E0B", 3, now, initialSyncStatus);
+        insertDefaultCategory(db, "education", "EXPENSE", "education", "#8B5CF6", 4, now, initialSyncStatus);
         insertDefaultCategory(db, "health", "EXPENSE", "health", "#A855F7", 5, now, initialSyncStatus);
-        insertDefaultCategory(db, "other", "EXPENSE", "other", "#06B6D4", 6, now, initialSyncStatus);
+        insertDefaultCategory(db, "shopping", "EXPENSE", "shopping", "#14B8A6", 6, now, initialSyncStatus);
+        insertDefaultCategory(db, "family", "EXPENSE", "family", "#EF4444", 7, now, initialSyncStatus);
+        insertDefaultCategory(db, "gifts", "EXPENSE", "gifts", "#EAB308", 8, now, initialSyncStatus);
+        insertDefaultCategory(db, "housing", "EXPENSE", "housing", "#22C55E", 9, now, initialSyncStatus);
+        insertDefaultCategory(db, "other", "EXPENSE", "other", "#06B6D4", 10, now, initialSyncStatus);
 
-        // فئات الدخل الافتراضية
+        // فئات الدخل الافتراضية (8 تصنيفات)
         insertDefaultCategory(db, "salary", "INCOME", "salary", "#10B981", 1, now, initialSyncStatus);
         insertDefaultCategory(db, "freelance", "INCOME", "freelance", "#0EA5E9", 2, now, initialSyncStatus);
-        insertDefaultCategory(db, "investments", "INCOME", "investments", "#6366F1", 3, now, initialSyncStatus);
-        insertDefaultCategory(db, "income_other", "INCOME", "income_other", "#EAB308", 4, now, initialSyncStatus);
+        insertDefaultCategory(db, "transfers", "INCOME", "transfers", "#14B8A6", 3, now, initialSyncStatus);
+        insertDefaultCategory(db, "investments", "INCOME", "investments", "#6366F1", 4, now, initialSyncStatus);
+        insertDefaultCategory(db, "sales", "INCOME", "sales", "#059669", 5, now, initialSyncStatus);
+        insertDefaultCategory(db, "income_gifts", "INCOME", "gifts", "#F59E0B", 6, now, initialSyncStatus);
+        insertDefaultCategory(db, "extra_income", "INCOME", "extra_income", "#8B5CF6", 7, now, initialSyncStatus);
+        insertDefaultCategory(db, "income_other", "INCOME", "income_other", "#EAB308", 8, now, initialSyncStatus);
     }
 
     private static void insertDefaultCategory(SupportSQLiteDatabase db,

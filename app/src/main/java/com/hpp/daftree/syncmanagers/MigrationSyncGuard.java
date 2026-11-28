@@ -29,35 +29,44 @@ public final class MigrationSyncGuard {
         Integer flagVal = db.migrationFlagDao().getFlagValue("migration_19_20_pending");
         if (flagVal == null || flagVal != 1) return;
 
-        Runnable onNeedsUpload = () -> {
-            db.runInTransaction(() -> {
-                db.getOpenHelper().getWritableDatabase()
-                        .execSQL("UPDATE accounts SET syncStatus = 'EDITED' WHERE syncStatus = 'PENDING'");
-                db.getOpenHelper().getWritableDatabase()
-                        .execSQL("UPDATE budget_categories SET syncStatus = 'NEW' WHERE syncStatus = 'PENDING'");
-            });
-            Log.i(TAG, "Migration 19->20: promoted PENDING -> EDITED/NEW for upload.");
-        };
-
-        Runnable onAlreadyMigrated = () -> {
-            db.runInTransaction(() -> {
-                db.getOpenHelper().getWritableDatabase()
-                        .execSQL("UPDATE accounts SET syncStatus = 'SYNCED' WHERE syncStatus = 'PENDING'");
-                db.getOpenHelper().getWritableDatabase()
-                        .execSQL("DELETE FROM budget_categories WHERE syncStatus = 'PENDING'");
-            });
-            Log.i(TAG, "Migration 19->20: remote already migrated, cleared local PENDING seeds.");
-        };
-
+        // 1. فحص مستقل للحسابات (notifyWhatsApp)
         evaluateAndDispatch(
                 context,
                 db,
                 "migration_19_20_pending",
                 "accounts",
                 "notifyWhatsApp",
+                null,
+                () -> {
+                    db.getOpenHelper().getWritableDatabase()
+                            .execSQL("UPDATE accounts SET syncStatus = 'SYNCED' WHERE syncStatus = 'PENDING'");
+                    Log.i(TAG, "Migration 19->20 accounts: remote has notifyWhatsApp -> SYNCED");
+                },
+                () -> {
+                    db.getOpenHelper().getWritableDatabase()
+                            .execSQL("UPDATE accounts SET syncStatus = 'EDITED' WHERE syncStatus = 'PENDING'");
+                    Log.i(TAG, "Migration 19->20 accounts: promoted PENDING -> EDITED");
+                }
+        );
+
+        // 2. فحص مستقل لتصنيفات الميزانية (budget_categories) حتى لا تُحذف إن كانت فارغة في Firestore
+        evaluateAndDispatch(
+                context,
+                db,
+                "migration_19_20_budget_pending",
                 "budget_categories",
-                onAlreadyMigrated,
-                onNeedsUpload
+                "code",
+                null,
+                () -> {
+                    db.getOpenHelper().getWritableDatabase()
+                            .execSQL("DELETE FROM budget_categories WHERE syncStatus = 'PENDING'");
+                    Log.i(TAG, "Migration 19->20 budget_categories: remote exists -> cleared local PENDING");
+                },
+                () -> {
+                    db.getOpenHelper().getWritableDatabase()
+                            .execSQL("UPDATE budget_categories SET syncStatus = 'NEW' WHERE syncStatus = 'PENDING'");
+                    Log.i(TAG, "Migration 19->20 budget_categories: remote empty -> promoted PENDING -> NEW");
+                }
         );
     }
 

@@ -27,7 +27,7 @@ public interface BudgetCategoryDao {
     @Query("SELECT COUNT(*) FROM budget_categories")
     int getCountSync();
 
-    @Query("SELECT COUNT(*) FROM budget_categories WHERE syncStatus != 'SYNCED'")
+    @Query("SELECT COUNT(*) FROM budget_categories WHERE syncStatus IN ('NEW', 'EDITED', 'DELETED')")
     int getUnsyncedCount();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -57,7 +57,7 @@ public interface BudgetCategoryDao {
     @Query("SELECT * FROM budget_categories WHERE firestoreId = :firestoreId LIMIT 1")
     BudgetCategory getByFirestoreIdSync(String firestoreId);
 
-    @Query("SELECT * FROM budget_categories WHERE syncStatus != 'SYNCED'")
+    @Query("SELECT * FROM budget_categories WHERE syncStatus IN ('NEW', 'EDITED', 'DELETED')")
     List<BudgetCategory> getUnsyncedCategoriesSync();
 
     @Query("DELETE FROM budget_categories WHERE firestoreId = :firestoreId")

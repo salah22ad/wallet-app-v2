@@ -86,10 +86,10 @@ public interface BudgetEntryDao {
             "GROUP BY yearMonth ORDER BY yearMonth ASC")
     LiveData<List<MonthlyTotals>> getMonthlyComparison(List<String> yearMonths, int currencyId);
 
-    @Query("SELECT * FROM budget_entries WHERE syncStatus != 'SYNCED'")
+    @Query("SELECT * FROM budget_entries WHERE syncStatus IN ('NEW', 'EDITED', 'DELETED')")
     List<BudgetEntry> getUnsyncedEntriesSync();
 
-    @Query("SELECT COUNT(*) FROM budget_entries WHERE syncStatus != 'SYNCED'")
+    @Query("SELECT COUNT(*) FROM budget_entries WHERE syncStatus IN ('NEW', 'EDITED', 'DELETED')")
     int getUnsyncedCount();
 
     @Query("SELECT COUNT(*) FROM budget_entries WHERE isDeleted = 0")

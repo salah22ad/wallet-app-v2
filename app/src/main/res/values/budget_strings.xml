@@ -68,7 +68,7 @@
     <string name="budget_cat_transport">Transport</string>
     <string name="budget_cat_health">Health</string>
     <string name="budget_cat_other">Other</string>
-    <string name="budget_cat_salary">Salary <string name="budget_cat_salary">Salary &amp; Revenue</string>amp; Bonuses</string>
+    <string name="budget_cat_salary">Salary &amp; Bonuses</string>
     <string name="budget_cat_freelance">Freelance / Side Work</string>
     <string name="budget_cat_investments">Investments</string>
     <string name="budget_cat_income_other">Other Income</string>
