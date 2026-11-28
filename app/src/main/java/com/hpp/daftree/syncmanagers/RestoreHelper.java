@@ -130,6 +130,7 @@ public class RestoreHelper {
                     .collect(Collectors.toMap(c -> c.name, c -> c.id));
 
             importTransactions(oldDb, type, accountIdMap, currencyMap, transactionsImported, currencyNameToIdMap);
+            appDb.accountDao().recalculateAllAccountsLastTransDate();
             if (type == SourceType.SOURCE_FOUR) {
                 importBudgetDataForSourceFour(oldDb, currencyMap, currencyNameToIdMap);
             }
@@ -795,7 +796,6 @@ private void importTransactions(SQLiteDatabase oldDb, SourceType type, Map<Integ
         long txMod = System.currentTimeMillis();
         newTransaction.setLastModified(txMod);
         appDb.transactionDao().insert(newTransaction);
-        appDb.accountDao().updateLastTransDate(accountId, timestamp != null ? timestamp.getTime() : txMod);
     }
 
 

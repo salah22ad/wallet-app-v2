@@ -65,6 +65,9 @@ public interface AccountDao {
 
     @Query("UPDATE accounts SET lastTransDate = :timestamp WHERE id = :accountId")
     void updateLastTransDate(int accountId, long timestamp);
+
+    @Query("UPDATE accounts SET lastTransDate = COALESCE((SELECT MAX(tx.lastModified) FROM transactions tx WHERE tx.accountId = accounts.id AND tx.isDeleted = 0), accounts.lastModified, 0)")
+    void recalculateAllAccountsLastTransDate();
     @Query("SELECT * FROM accounts WHERE firestoreId = :firestoreId LIMIT 1")
     Account getAccountByFirestoreId(String firestoreId);
 

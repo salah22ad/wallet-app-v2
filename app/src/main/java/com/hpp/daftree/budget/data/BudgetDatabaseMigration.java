@@ -22,7 +22,7 @@ public final class BudgetDatabaseMigration {
             Log.i(TAG, "Starting MIGRATION_19_20: Budget tables + local account/type icon columns");
             addLocalVisualColumns(db);
             createBudgetTables(db);
-            seedDefaultCategoriesIfNeeded(db);
+            seedDefaultCategoriesIfNeeded(db, "PENDING");
             // تسجيل علم المزامنة لرفع بيانات الترقية لمرة واحدة في runMaintenanceTasks
             db.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('migration_19_20_pending', 1)");
             Log.i(TAG, "Finished MIGRATION_19_20 successfully");
@@ -50,7 +50,7 @@ public final class BudgetDatabaseMigration {
         }
         // وسم كافة الحسابات بـ EDITED لرفع الحقول الجديدة إلى Firestore تلقائياً عبر SyncWorker
         long now = System.currentTimeMillis();
-        db.execSQL("UPDATE accounts SET syncStatus = 'EDITED', lastModified = " + now + " WHERE isDeleted = 0");
+        db.execSQL("UPDATE accounts SET syncStatus = 'PENDING', lastModified = " + now + " WHERE isDeleted = 0");
         // علم إظهار فقاعة الترقية التوضيحية عند أول عملية بعد التحديث للإصدار الجديد
         db.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('notify_upgrade_banner_pending', 1)");
     }
@@ -136,6 +136,10 @@ public final class BudgetDatabaseMigration {
     }
 
     public static void seedDefaultCategoriesIfNeeded(@NonNull SupportSQLiteDatabase db) {
+        seedDefaultCategoriesIfNeeded(db, "NEW");
+    }
+
+    public static void seedDefaultCategoriesIfNeeded(@NonNull SupportSQLiteDatabase db, @NonNull String initialSyncStatus) {
         Cursor cursor = null;
         try {
             cursor = db.query("SELECT COUNT(*) FROM budget_categories");
@@ -151,23 +155,23 @@ public final class BudgetDatabaseMigration {
 
         long now = System.currentTimeMillis();
         // فئات المصروفات الافتراضية (حالتها NEW لرفعها إلى Firestore عند الترقية/المزامنة)
-        insertDefaultCategory(db, "bills", "EXPENSE", "bills", "#F59E0B", 1, now);
-        insertDefaultCategory(db, "housing", "EXPENSE", "housing", "#22C55E", 2, now);
-        insertDefaultCategory(db, "food", "EXPENSE", "food", "#F97316", 3, now);
-        insertDefaultCategory(db, "transport", "EXPENSE", "transport", "#3B82F6", 4, now);
-        insertDefaultCategory(db, "health", "EXPENSE", "health", "#A855F7", 5, now);
-        insertDefaultCategory(db, "other", "EXPENSE", "other", "#06B6D4", 6, now);
+        insertDefaultCategory(db, "bills", "EXPENSE", "bills", "#F59E0B", 1, now, initialSyncStatus);
+        insertDefaultCategory(db, "housing", "EXPENSE", "housing", "#22C55E", 2, now, initialSyncStatus);
+        insertDefaultCategory(db, "food", "EXPENSE", "food", "#F97316", 3, now, initialSyncStatus);
+        insertDefaultCategory(db, "transport", "EXPENSE", "transport", "#3B82F6", 4, now, initialSyncStatus);
+        insertDefaultCategory(db, "health", "EXPENSE", "health", "#A855F7", 5, now, initialSyncStatus);
+        insertDefaultCategory(db, "other", "EXPENSE", "other", "#06B6D4", 6, now, initialSyncStatus);
 
         // فئات الدخل الافتراضية
-        insertDefaultCategory(db, "salary", "INCOME", "salary", "#10B981", 1, now);
-        insertDefaultCategory(db, "freelance", "INCOME", "freelance", "#0EA5E9", 2, now);
-        insertDefaultCategory(db, "investments", "INCOME", "investments", "#6366F1", 3, now);
-        insertDefaultCategory(db, "income_other", "INCOME", "income_other", "#EAB308", 4, now);
+        insertDefaultCategory(db, "salary", "INCOME", "salary", "#10B981", 1, now, initialSyncStatus);
+        insertDefaultCategory(db, "freelance", "INCOME", "freelance", "#0EA5E9", 2, now, initialSyncStatus);
+        insertDefaultCategory(db, "investments", "INCOME", "investments", "#6366F1", 3, now, initialSyncStatus);
+        insertDefaultCategory(db, "income_other", "INCOME", "income_other", "#EAB308", 4, now, initialSyncStatus);
     }
 
     private static void insertDefaultCategory(SupportSQLiteDatabase db,
                                               String code, String type, String iconKey,
-                                              String colorHex, int sortOrder, long now) {
+                                              String colorHex, int sortOrder, long now, String syncStatus) {
         String firestoreId = UUIDGenerator.generateSequentialUUID();
         String sql = "INSERT INTO budget_categories " +
                 "(firestoreId, ownerUID, code, name, type, iconKey, colorHex, isDefault, sortOrder, isDeleted, deleteDate, deletedBy, lastModified, lastSyncDate, syncStatus) VALUES (" +
@@ -176,7 +180,7 @@ public final class BudgetDatabaseMigration {
                 DatabaseUtils.sqlEscapeString(type) + ", " +
                 DatabaseUtils.sqlEscapeString(iconKey) + ", " +
                 DatabaseUtils.sqlEscapeString(colorHex) + ", " +
-                "1, " + sortOrder + ", 0, 0, '', " + now + ", 0, 'NEW')";
+                "1, " + sortOrder + ", 0, 0, '', " + now + ", 0, " + DatabaseUtils.sqlEscapeString(syncStatus) + ")";
         db.execSQL(sql);
     }
 }

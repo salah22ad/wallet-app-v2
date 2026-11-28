@@ -333,7 +333,6 @@ public class DaftreeRepository {
                 }
 
                 long remoteLastModified = readLongSafe(data, "lastModified", System.currentTimeMillis());
-                long remoteLastTransDate = readLongSafe(data, "lastTransDate", remoteLastModified);
                 long remoteLastSyncDate = readLongSafe(data, "lastSyncDate", remoteLastModified);
                 long deleteDate = readLongSafe(data, "deleteDate", 0L);
                 boolean isDeletedRemote = readIsDeletedSafe(data);
@@ -354,7 +353,6 @@ public class DaftreeRepository {
                         existing.setPhoneNumber((String) data.get("phoneNumber"));
                         existing.setAccountType((String) data.get("accountType"));
                         existing.setLastModified(remoteLastModified);
-                        if (remoteLastTransDate > existing.getLastTransDate()) existing.setLastTransDate(remoteLastTransDate);
                         existing.setLastSyncDate(remoteLastSyncDate);
                         String acTypeFsId = (String) data.get("acTypeFirestoreId");
                         if (acTypeFsId != null) existing.setAcTypeFirestoreId(acTypeFsId);
@@ -376,7 +374,7 @@ public class DaftreeRepository {
                     String owner = (String) data.get("ownerUID");
                     newAccount.setOwnerUID(owner != null ? owner : (currentUserId != null ? currentUserId : ""));
                     newAccount.setLastModified(remoteLastModified);
-                    newAccount.setLastTransDate(remoteLastTransDate);
+                    newAccount.setLastTransDate(remoteLastModified);
                     newAccount.setLastSyncDate(remoteLastSyncDate);
                     newAccount.setSyncStatus("SYNCED");
                     String acTypeFsId = (String) data.get("acTypeFirestoreId");

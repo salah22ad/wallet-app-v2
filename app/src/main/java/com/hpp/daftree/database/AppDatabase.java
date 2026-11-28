@@ -148,6 +148,7 @@ public abstract class AppDatabase extends RoomDatabase {
         return INSTANCE;
     }
     private static void runMaintenanceTasks(Context context) {
+        com.hpp.daftree.syncmanagers.MigrationSyncGuard.handleMigration19To20(context, INSTANCE);
         String[] flags = {
                 "migration_16_17_pending",
                 "migration_12_13_pending",
@@ -156,9 +157,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 "migration_8_9_pending",
                 "migration_6_7_pending",
                 "migration_17_18_pending",
-                "migration_18_19_pending",
-                "migration_19_20_pending",
-                "migration_20_21_pending"
+                "migration_18_19_pending"
         };
 
         boolean needsSync = false;
@@ -230,8 +229,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 database.execSQL(
                         "UPDATE accounts SET " +
                         "lastTransDate = COALESCE((SELECT MAX(tx.lastModified) FROM transactions tx " +
-                        "WHERE tx.accountId = accounts.id AND tx.isDeleted = 0), accounts.lastModified, 0), " +
-                        "syncStatus = 'EDITED'"
+                        "WHERE tx.accountId = accounts.id AND tx.isDeleted = 0), accounts.lastModified, 0)"
                 );
 
                 // 1. تعبئة iconKey و colorHex لجدول account_types باستخدام AccountTypeIconHelper (يدعم كل اللغات) دون تغيير syncStatus
@@ -278,7 +276,6 @@ public abstract class AppDatabase extends RoomDatabase {
                         "WHERE iconKey IS NULL OR TRIM(iconKey) = '' OR colorHex IS NULL OR TRIM(colorHex) = ''"
                 );
 
-                database.execSQL("INSERT OR REPLACE INTO migration_flags (flag_key, value) VALUES ('migration_20_21_pending', 1)");
             }
         };
     }

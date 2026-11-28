@@ -261,11 +261,10 @@ public class FirestoreRestoreHelper {
                                                 }
                                             }
                                             long lastModified = readDocLong(doc, "lastModified", System.currentTimeMillis());
-                                            long lastTransDate = readDocLong(doc, "lastTransDate", lastModified);
                                             long lastSyncDate = readDocLong(doc, "lastSyncDate", lastModified);
                                             secureManager.updateLastSyncTime(SecureLicenseManager.getAccountKey(), lastSyncDate);
                                             account.setLastModified(lastModified);
-                                            account.setLastTransDate(lastTransDate);
+                                            account.setLastTransDate(lastModified);
                                             account.setLastSyncDate(lastSyncDate);
 
                                             account.setAcTypeFirestoreId(currentTypeId);
@@ -1794,7 +1793,6 @@ public class FirestoreRestoreHelper {
                                     } else {
                                         appDb.transactionDao().insert(trans);
                                     }
-                                    appDb.accountDao().updateLastTransDate(trans.getAccountId(), trans.getLastModified());
                                 }
                             });
 
@@ -1805,6 +1803,7 @@ public class FirestoreRestoreHelper {
                                 DocumentSnapshot lastDoc = snapshot.getDocuments().get(snapshot.size() - 1);
                                 fetchTransactionsChunk(listener, accountMap, currFirestoreToLocal, currLocalToFirestore, allCurrencies, lastDoc, newTotal);
                             } else {
+                                appDb.accountDao().recalculateAllAccountsLastTransDate();
                                 handler.post(() -> restoreBudgetCategories(listener));
                             }
 
