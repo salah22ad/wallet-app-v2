@@ -31,7 +31,7 @@ import androidx.core.content.ContextCompat;
  */
 @SuppressWarnings("deprecation")
 public class DailyReminderNotification {
-    private static final String CHANNEL_ID = "daftree_daily_reminder_channel_v4"; // تغيير الـ ID لضمان تحديث الإعدادات
+    public static final String CHANNEL_ID = "daftree_daily_reminder_channel"; // تغيير الـ ID لضمان تحديث الإعدادات
     static final int NOTIFICATION_ID = 2001;
     private static final String TAG = "DailyReminderNotif";
     private final Context context;
@@ -238,36 +238,46 @@ public class DailyReminderNotification {
         ).build();
     }
     private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            if (notificationManager == null) return;
+     ensureChannelCreated(context);
+ }
 
-            try {
-                notificationManager.deleteNotificationChannel("daftree_daily_reminder_channel_v2");
-                notificationManager.deleteNotificationChannel("daftree_daily_reminder_channel_v3");
-            } catch (Exception ignored) {}
+ public static void ensureChannelCreated(Context ctx) {
+     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ctx != null) {
+         Context appCtx = ctx.getApplicationContext();
+         NotificationManager notificationManager = appCtx.getSystemService(NotificationManager.class);
+         if (notificationManager == null) return;
 
-            CharSequence name = context.getString(R.string.daily_reminder_channel_name);
-            String description = context.getString(R.string.daily_reminder_channel_desc);
-            int importance = NotificationManager.IMPORTANCE_HIGH;
+         for (String oldId : new String[]{
+                 "daftree_daily_reminder_channel_v2",
+                 "daftree_daily_reminder_channel_v3",
+                 "daftree_daily_reminder_channel_v4"
+         }) {
+             try {
+                 notificationManager.deleteNotificationChannel(oldId);
+             } catch (Exception ignored) {}
+         }
 
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
-            channel.setDescription(description);
-            channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
-            channel.setShowBadge(true);
-            channel.enableVibration(true);
-            channel.setVibrationPattern(new long[]{0, 500, 250, 500});
-            channel.enableLights(true);
-            channel.setLightColor(0xFF00FF00);
+         CharSequence name = appCtx.getString(R.string.daily_reminder_channel_name);
+         String description = appCtx.getString(R.string.daily_reminder_channel_desc);
+         int importance = NotificationManager.IMPORTANCE_HIGH;
 
-            Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/raw/my_wallet_tone");
-            AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                    .build();
-            channel.setSound(soundUri, audioAttributes);
+         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+         channel.setDescription(description);
+         channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+         channel.setShowBadge(true);
+         channel.enableVibration(true);
+         channel.setVibrationPattern(new long[]{0, 500, 250, 500});
+         channel.enableLights(true);
+         channel.setLightColor(0xFF00FF00);
 
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
+         Uri soundUri = Uri.parse("android.resource://" + appCtx.getPackageName() + "/raw/my_wallet_tone");
+         AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                 .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                 .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                 .build();
+         channel.setSound(soundUri, audioAttributes);
+
+         notificationManager.createNotificationChannel(channel);
+     }
+ }
 }

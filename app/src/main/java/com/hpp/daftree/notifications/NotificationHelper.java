@@ -89,6 +89,7 @@ public class NotificationHelper {
            if (manager != null) {
                 manager.createNotificationChannel(mainChannel);
             }
+            com.hpp.daftree.dailyreminder.DailyReminderNotification.ensureChannelCreated(context);
             // قناة الإشعارات الترويجية
 //            NotificationChannel promoChannel = new NotificationChannel(CHANNEL_PROMO,
 //                    context.getString(R.string.channel_poromr_name), NotificationManager.IMPORTANCE_HIGH);
