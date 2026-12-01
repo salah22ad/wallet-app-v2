@@ -31,7 +31,8 @@ import androidx.core.content.ContextCompat;
  */
 @SuppressWarnings("deprecation")
 public class DailyReminderNotification {
-    public static final String CHANNEL_ID = "daftree_daily_reminder_channel"; // تغيير الـ ID لضمان تحديث الإعدادات
+    // public static final String CHANNEL_ID = "daftree_daily_reminder_channel";
+    public static final String CHANNEL_ID = com.hpp.daftree.notifications.NotificationHelper.CHANNEL_MAIN; // تغيير الـ ID لضمان تحديث الإعدادات
     static final int NOTIFICATION_ID = 2001;
     private static final String TAG = "DailyReminderNotif";
     private final Context context;
@@ -238,30 +239,22 @@ public class DailyReminderNotification {
         ).build();
     }
     private void createNotificationChannel() {
-     ensureChannelCreated(context);
+     // تم تعليق إنشاء قناة التذكيرات المستقلة حالياً والاعتماد على القناة الرئيسية daftree_main
+     // ensureChannelCreated(context);
  }
 
  public static void ensureChannelCreated(Context ctx) {
+     /*
      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && ctx != null) {
          Context appCtx = ctx.getApplicationContext();
          NotificationManager notificationManager = appCtx.getSystemService(NotificationManager.class);
          if (notificationManager == null) return;
 
-         for (String oldId : new String[]{
-                 "daftree_daily_reminder_channel_v2",
-                 "daftree_daily_reminder_channel_v3",
-                 "daftree_daily_reminder_channel_v4"
-         }) {
-             try {
-                 notificationManager.deleteNotificationChannel(oldId);
-             } catch (Exception ignored) {}
-         }
-
          CharSequence name = appCtx.getString(R.string.daily_reminder_channel_name);
          String description = appCtx.getString(R.string.daily_reminder_channel_desc);
          int importance = NotificationManager.IMPORTANCE_HIGH;
 
-         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+         NotificationChannel channel = new NotificationChannel("daftree_daily_reminder_channel", name, importance);
          channel.setDescription(description);
          channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
          channel.setShowBadge(true);
@@ -279,5 +272,6 @@ public class DailyReminderNotification {
 
          notificationManager.createNotificationChannel(channel);
      }
+     */
  }
 }

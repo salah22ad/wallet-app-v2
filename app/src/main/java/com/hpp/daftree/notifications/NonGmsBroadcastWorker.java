@@ -139,6 +139,11 @@ public class NonGmsBroadcastWorker extends Worker {
         try {
             DailyReminderManager dm = DailyReminderManager.getInstance(context);
             if (!dm.areGeneralNotificationsEnabled() || !dm.isEnabled()) return;
+            if (dm.getLastNotificationTime() == 0L) {
+                dm.markNotificationShown();
+                DailyReminderScheduler.scheduleDailyReminder(context);
+                return;
+            }
 
             Calendar now = Calendar.getInstance();
             int hour = now.get(Calendar.HOUR_OF_DAY);
