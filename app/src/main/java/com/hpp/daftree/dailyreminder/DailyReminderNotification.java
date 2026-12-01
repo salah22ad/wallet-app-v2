@@ -31,7 +31,7 @@ import androidx.core.content.ContextCompat;
  */
 @SuppressWarnings("deprecation")
 public class DailyReminderNotification {
-    private static final String CHANNEL_ID = "daftree_daily_reminder_channel_v2"; // تغيير الـ ID لضمان تحديث الإعدادات
+    private static final String CHANNEL_ID = "daftree_daily_reminder_channel_v4"; // تغيير الـ ID لضمان تحديث الإعدادات
     static final int NOTIFICATION_ID = 2001;
     private static final String TAG = "DailyReminderNotif";
     private final Context context;
@@ -89,6 +89,12 @@ public class DailyReminderNotification {
      * تشغيل الصوت المخصص بقوة (يخترق الوضع الصامت)
      */
     public void playCustomSound() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+            if (am != null && am.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+                return; // القناة v4 تشغّل النغمة في الوضع العادي لضمان الانبثاق ومنع التكرار
+            }
+        }
         stopSound();
         try {
             // إيقاف أي صوت سابق
@@ -233,21 +239,35 @@ public class DailyReminderNotification {
     }
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            if (notificationManager == null) return;
+
+            try {
+                notificationManager.deleteNotificationChannel("daftree_daily_reminder_channel_v2");
+                notificationManager.deleteNotificationChannel("daftree_daily_reminder_channel_v3");
+            } catch (Exception ignored) {}
+
             CharSequence name = context.getString(R.string.daily_reminder_channel_name);
             String description = context.getString(R.string.daily_reminder_channel_desc);
             int importance = NotificationManager.IMPORTANCE_HIGH;
 
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
             channel.setDescription(description);
-
-            // إلغاء صوت القناة الافتراضي لأننا نتحكم به يدوياً
-            channel.setSound(null, null);
+            channel.setLockscreenVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+            channel.setShowBadge(true);
             channel.enableVibration(true);
+            channel.setVibrationPattern(new long[]{0, 500, 250, 500});
+            channel.enableLights(true);
+            channel.setLightColor(0xFF00FF00);
 
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            if (notificationManager != null) {
-                notificationManager.createNotificationChannel(channel);
-            }
+            Uri soundUri = Uri.parse("android.resource://" + context.getPackageName() + "/raw/my_wallet_tone");
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build();
+            channel.setSound(soundUri, audioAttributes);
+
+            notificationManager.createNotificationChannel(channel);
         }
     }
 }
